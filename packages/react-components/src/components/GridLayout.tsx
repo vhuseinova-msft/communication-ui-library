@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { mergeStyles } from '@fluentui/react';
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, CSSProperties, useMemo } from 'react';
 import { BaseCustomStylesProps } from '../types';
 import { gridLayoutStyle } from './styles/GridLayout.styles';
 import { calculateGridProps, GridProps } from './utils/GridLayoutUtils';
@@ -41,6 +41,7 @@ export const GridLayout = (props: GridLayoutProps): JSX.Element => {
   });
 
   useEffect(() => {
+    console.log('useEffect', numberOfChildren, containerRef.current?.offsetWidth, containerRef.current?.offsetHeight);
     const updateDynamicGridStyles = (): void => {
       if (containerRef.current) {
         setGridProps(
@@ -56,17 +57,15 @@ export const GridLayout = (props: GridLayoutProps): JSX.Element => {
     return () => observer.disconnect();
   }, [numberOfChildren, containerRef.current?.offsetWidth, containerRef.current?.offsetHeight]);
 
-  const blockGroup = useMemo(() => BlockGroup({ children, gridProps }), [children, gridProps]);
-
   return (
     <div ref={containerRef} className={mergeStyles(gridLayoutStyle, styles?.root)}>
-      {blockGroup}
+      <BlockGroup gridProps={gridProps}>{children}</BlockGroup>
     </div>
   );
 };
 
 const BlockGroup = (props: { children: React.ReactNode } & { gridProps: GridProps }): JSX.Element => {
-  console.log('rendering BlockGroup');
+  console.log('BlockGroup', props);
   const gridProps = props.gridProps;
   const numberOfChildren = React.Children.count(props.children);
 
@@ -78,53 +77,56 @@ const BlockGroup = (props: { children: React.ReactNode } & { gridProps: GridProp
   const blocksForBigCells = numBigCells / bigCellsPerBlock;
   const blocksForSmallCells = blocks - blocksForBigCells;
 
+  const smallChildrenStyles = gridProps.horizontalFill
+    ? {
+        display: 'grid',
+        width: '100%',
+        height: `${Math.floor((blocksForSmallCells * 100) / blocks)}%`,
+        gridTemplateColumns: `repeat(${smallCellsPerBlock}, 1fr)`,
+        gridTemplateRows: `repeat(${blocksForSmallCells}, 1fr)`
+      }
+    : {
+        display: 'grid',
+        width: `${Math.floor((blocksForSmallCells * 100) / blocks)}%`,
+        height: '100%',
+        gridTemplateRows: `repeat(${smallCellsPerBlock}, 1fr)`,
+        gridTemplateColumns: `repeat(${blocksForSmallCells}, 1fr)`,
+        float: 'left'
+      };
+
   const smallChildren = (
-    <div
-      style={
-        gridProps.horizontalFill
-          ? {
-              display: 'grid',
-              width: '100%',
-              height: `${Math.floor((blocksForSmallCells * 100) / blocks)}%`,
-              gridTemplateColumns: `repeat(${smallCellsPerBlock}, 1fr)`,
-              gridTemplateRows: `repeat(${blocksForSmallCells}, 1fr)`
-            }
-          : {
-              display: 'grid',
-              width: `${Math.floor((blocksForSmallCells * 100) / blocks)}%`,
-              height: '100%',
-              float: 'left',
-              gridTemplateRows: `repeat(${smallCellsPerBlock}, 1fr)`,
-              gridTemplateColumns: `repeat(${blocksForSmallCells}, 1fr)`
-            }
-      }
-    >
-      {React.Children.toArray(props.children).slice(0, numSmallChildren)}
-    </div>
+    <ChildrenComponent styles={smallChildrenStyles}>
+      {React.Children.map(React.Children.toArray(props.children), (child, index) => {
+        if (index < numSmallChildren) return child;
+        else return <></>;
+      })}
+    </ChildrenComponent>
   );
-  const bigChildren = numBigCells ? (
-    <div
-      style={
-        gridProps.horizontalFill
-          ? {
-              display: 'grid',
-              width: '100%',
-              height: `${Math.floor((blocksForBigCells * 100) / blocks)}%`,
-              gridTemplateColumns: `repeat(${bigCellsPerBlock}, 1fr)`,
-              gridTemplateRows: `repeat(${blocksForBigCells}, 1fr)`
-            }
-          : {
-              display: 'grid',
-              width: `${Math.floor((blocksForBigCells * 100) / blocks)}%`,
-              height: '100%',
-              float: 'left',
-              gridTemplateRows: `repeat(${bigCellsPerBlock}, 1fr)`,
-              gridTemplateColumns: `repeat(${blocksForBigCells}, 1fr)`
-            }
+
+  const bigChildrenStyles = gridProps.horizontalFill
+    ? {
+        display: 'grid',
+        width: '100%',
+        height: `${Math.floor((blocksForBigCells * 100) / blocks)}%`,
+        gridTemplateColumns: `repeat(${bigCellsPerBlock}, 1fr)`,
+        gridTemplateRows: `repeat(${blocksForBigCells}, 1fr)`
       }
-    >
-      {React.Children.toArray(props.children).slice(numSmallChildren)}
-    </div>
+    : {
+        display: 'grid',
+        width: `${Math.floor((blocksForBigCells * 100) / blocks)}%`,
+        height: '100%',
+        gridTemplateRows: `repeat(${bigCellsPerBlock}, 1fr)`,
+        gridTemplateColumns: `repeat(${blocksForBigCells}, 1fr)`,
+        float: 'left'
+      };
+
+  const bigChildren = numBigCells ? (
+    <ChildrenComponent styles={bigChildrenStyles}>
+      {React.Children.map(React.Children.toArray(props.children), (child, index) => {
+        if (index >= numSmallChildren) return child;
+        else return <></>;
+      })}
+    </ChildrenComponent>
   ) : null;
 
   return numBigCells ? (
@@ -135,4 +137,9 @@ const BlockGroup = (props: { children: React.ReactNode } & { gridProps: GridProp
   ) : (
     smallChildren
   );
+};
+
+const ChildrenComponent = (props: { children: React.ReactNode } & { styles: CSSProperties }): JSX.Element => {
+  console.log('ChildrenComponent', props);
+  return <div style={props.styles}>{props.children}</div>;
 };
