@@ -12,3 +12,7 @@ export * from './localization/locales';
 export type { CompositeStrings, CompositeLocale } from './localization';
 export type { AdapterError, AdapterErrors } from './common/adapters';
 export type { BaseCompositeProps } from './common/BaseComposite';
+
+export * from './ChatComposite/mocks/TestChatAdapter';
+export * from './ChatComposite/mocks/TestChatParticipant';
+export * from './ChatComposite/mocks/InMemoryTestChatClient';
