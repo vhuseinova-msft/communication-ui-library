@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Make webpack build all 3 test apps in one pass",
+  "packageName": "@internal/react-composites",
+  "email": "2684369+JamesBurnside@users.noreply.github.com",
+  "dependentChangeType": "none"
+}
