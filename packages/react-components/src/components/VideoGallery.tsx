@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { concatStyleSets, ContextualMenu, IDragOptions, IStyle, mergeStyles, Modal, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { GridLayoutStyles } from '.';
 import { smartDominantSpeakerParticipants } from '../gallery';
 import { useIdentifiers } from '../identifiers/IdentifierProvider';
@@ -34,8 +34,6 @@ import { isNarrowWidth, useContainerWidth } from './utils/responsive';
 import { LocalScreenShare } from './VideoGallery/LocalScreenShare';
 import { RemoteScreenShare } from './VideoGallery/RemoteScreenShare';
 import { VideoTile } from './VideoTile';
-
-const FLOATING_TILE_HOST_ID = 'UILibraryFloatingTileHost';
 
 // Currently the Calling JS SDK supports up to 4 remote video streams
 const DEFAULT_MAX_REMOTE_VIDEO_STREAMS = 4;
@@ -294,6 +292,12 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
     />
   );
 
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.id = Math.random().toString();
+    }
+  }, [containerRef]);
+
   return (
     <div
       id={containerRef.current?.id}
@@ -307,7 +311,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
           isModeless={true}
           dragOptions={DRAG_OPTIONS}
           styles={floatingLocalVideoModalStyle(theme, isNarrow)}
-          layerProps={{ hostId: FLOATING_TILE_HOST_ID }}
+          layerProps={{ hostId: containerRef.current?.id }}
         >
           {localParticipant && localVideoTile}
         </Modal>
