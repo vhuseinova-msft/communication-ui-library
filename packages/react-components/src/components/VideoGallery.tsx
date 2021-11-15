@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { concatStyleSets, ContextualMenu, IDragOptions, Modal, Stack } from '@fluentui/react';
+import { concatStyleSets, ContextualMenu, IDragOptions, IStyle, mergeStyles, Modal, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useRef } from 'react';
+import { GridLayoutStyles } from '.';
 import { smartDominantSpeakerParticipants } from '../gallery';
 import { useIdentifiers } from '../identifiers/IdentifierProvider';
 import { useTheme } from '../theming';
@@ -14,6 +15,7 @@ import {
   VideoStreamOptions
 } from '../types';
 import { GridLayout } from './GridLayout';
+import { HorizontalGalleryStyles } from './HorizontalGallery';
 import { RemoteVideoTile } from './RemoteVideoTile';
 import { ResponsiveHorizontalGallery } from './ResponsiveHorizontalGallery';
 import { StreamMedia } from './StreamMedia';
@@ -33,7 +35,6 @@ import { LocalScreenShare } from './VideoGallery/LocalScreenShare';
 import { RemoteScreenShare } from './VideoGallery/RemoteScreenShare';
 import { VideoTile } from './VideoTile';
 
-const emptyStyles = {};
 const FLOATING_TILE_HOST_ID = 'UILibraryFloatingTileHost';
 
 // Currently the Calling JS SDK supports up to 4 remote video streams
@@ -54,6 +55,18 @@ export interface VideoGalleryStrings {
 }
 
 /**
+ * @public
+ */
+export interface VideoGalleryStyles extends BaseCustomStyles {
+  /** Styles for the grid layout */
+  gridLayout?: GridLayoutStyles;
+  /** Styles for the horizontal gallery  */
+  horizontalGallery?: HorizontalGalleryStyles;
+  /** Styles for the local video  */
+  localVideo?: IStyle;
+}
+
+/**
  * Props for {@link VideoGallery}.
  *
  * @public
@@ -67,7 +80,7 @@ export interface VideoGalleryProps {
    * <VideoGallery styles={{ root: { border: 'solid 1px red' } }} />
    * ```
    */
-  styles?: BaseCustomStyles;
+  styles?: VideoGalleryStyles;
   /** Layout of the video tiles. */
   layout?: 'default' | 'floatingLocalVideo';
   /** Local video particpant */
@@ -177,9 +190,13 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
 
     const localVideoTileStyles = shouldFloatLocalVideo ? floatingLocalVideoTileStyle : {};
 
-    const localVideoTileStylesThemed = concatStyleSets(localVideoTileStyles, {
-      root: { borderRadius: theme.effects.roundedCorner4 }
-    });
+    const localVideoTileStylesThemed = concatStyleSets(
+      localVideoTileStyles,
+      {
+        root: { borderRadius: theme.effects.roundedCorner4 }
+      },
+      styles?.localVideo
+    );
 
     if (localVideoStream && !localVideoStream.renderElement) {
       onCreateLocalStreamView && onCreateLocalStreamView(localVideoViewOption);
@@ -279,10 +296,10 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
 
   return (
     <div
-      id={FLOATING_TILE_HOST_ID}
+      id={containerRef.current?.id}
       data-ui-id={ids.videoGallery}
       ref={containerRef}
-      className={videoGalleryOuterDivStyle}
+      className={mergeStyles(videoGalleryOuterDivStyle, styles?.root)}
     >
       {shouldFloatLocalVideo && (
         <Modal
@@ -295,13 +312,13 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
           {localParticipant && localVideoTile}
         </Modal>
       )}
-      <Stack styles={videoGalleryContainerStyle}>
+      <Stack horizontal={false} styles={videoGalleryContainerStyle}>
         {screenShareParticipant ? (
           remoteScreenShareComponent
         ) : localParticipant?.isScreenSharingOn ? (
           localScreenShareStreamComponent
         ) : (
-          <GridLayout key="grid-layout" styles={styles ?? emptyStyles}>
+          <GridLayout key="grid-layout" styles={styles?.gridLayout}>
             {gridTiles}
           </GridLayout>
         )}
@@ -309,7 +326,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
           <ResponsiveHorizontalGallery
             key="responsive-horizontal-gallery"
             containerStyles={horizontalGalleryContainerStyle(shouldFloatLocalVideo, isNarrow)}
-            horizontalGalleryStyles={horizontalGalleryStyle(isNarrow)}
+            horizontalGalleryStyles={concatStyleSets(horizontalGalleryStyle(isNarrow), styles?.horizontalGallery)}
             childWidthRem={
               isNarrow ? SMALL_HORIZONTAL_GALLERY_TILE_SIZE_REM.width : LARGE_HORIZONTAL_GALLERY_TILE_SIZE_REM.width
             }
