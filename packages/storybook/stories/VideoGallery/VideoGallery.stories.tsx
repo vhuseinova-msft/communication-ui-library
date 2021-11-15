@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { VideoGallery as VideoGalleryComponent } from '@azure/communication-react';
-import { Canvas, Description, Heading, Props, Source, Title } from '@storybook/addon-docs';
+import { Canvas, Description, Heading, Subheading, Props, Source, Title } from '@storybook/addon-docs';
 import { Meta } from '@storybook/react/types-6-0';
 import React from 'react';
 
@@ -11,29 +11,61 @@ import { controlsToAdd, hiddenControl } from '../controlsUtils';
 import { CustomAvatarVideoGalleryExample } from './snippets/CustomAvatar.snippet';
 import { CustomStyleVideoGalleryExample } from './snippets/CustomStyle.snippet';
 import { DefaultVideoGalleryExample } from './snippets/Default.snippet';
+import { FloatingLocalVideoExample } from './snippets/FloatingLocalVideo.snippet';
+import { WithHorizontalGalleryExample } from './snippets/WithHorizontalGallery.snippet';
 
 const CustomAvatarVideoGalleryExampleText = require('!!raw-loader!./snippets/CustomAvatar.snippet.tsx').default;
 const CustomStyleVideoGalleryExampleText = require('!!raw-loader!./snippets/CustomStyle.snippet.tsx').default;
 const DefaultVideoGalleryExampleText = require('!!raw-loader!./snippets/Default.snippet.tsx').default;
+const FloatingLocalVideoExampleText = require('!!raw-loader!./snippets/FloatingLocalVideo.snippet.tsx').default;
+const WithHorizontalGalleryExampleText = require('!!raw-loader!./snippets/WithHorizontalGallery.snippet.tsx').default;
 
 const importStatement = `import { VideoGallery } from '@azure/communication-react';`;
 
 const getDocs: () => JSX.Element = () => {
   return (
     <>
-      <Title>Video Gallery</Title>
-      <Description of={VideoGalleryComponent} />
+      <Title>VideoGallery</Title>
+      <Description>
+        The `VideoGallery` component arranges participants in
+        [VideoTile](./?path=/docs/ui-components-videotile--video-tile) components
+      </Description>
 
       <Heading>Importing</Heading>
       <Source code={importStatement} />
 
-      <Heading>Default Example</Heading>
-      <Description>
-        VideoGallery is by default a grid of [VideoTile](./?path=/docs/ui-components-videotile--video-tile) components
-        representing each participant to the call.
-      </Description>
+      <Heading>Example</Heading>
+      <Subheading>No participants with videos on</Subheading>
       <Canvas mdxSource={DefaultVideoGalleryExampleText}>
         <DefaultVideoGalleryExample />
+      </Canvas>
+
+      <Subheading>Some participants with videos on</Subheading>
+      <Description>
+        Remote participants with their video and the local participant are placed in a
+        [GridLayout](http://localhost:6006/?path=/docs/ui-components-gridlayout--grid-layout). The remaining
+        participants, if any, are placed in a HorizontalGallery in the lower section.
+      </Description>
+      <Canvas mdxSource={WithHorizontalGalleryExampleText}>
+        <WithHorizontalGalleryExample />
+      </Canvas>
+      <Description>
+        Note: The `maxRemoteVideoStreams` prop limits the number of remote video streams in the
+        [GridLayout](http://localhost:6006/?path=/docs/ui-components-gridlayout--grid-layout). If the number of remote
+        participants with their video stream on exceeds `maxRemoteVideoStreams` then remote participnats in the
+        `dominantSpeakers` prop will be prioritized. Furthermore, the VideoGallery is designed to limit the re-ordering
+        when the `dominantSpeakers` prop is changed.
+      </Description>
+
+      <Heading>Floating Local Video Layout</Heading>
+      <Description>
+        By default, the local participant is placed in the
+        [GridLayout](http://localhost:6006/?path=/docs/ui-components-gridlayout--grid-layout). But the local participant
+        can be placed in a floating and draggable video tile in the bottom right corner by setting the `layout` prop to
+        &apos;floatingLocalVideo&apos;.
+      </Description>
+      <Canvas mdxSource={FloatingLocalVideoExampleText}>
+        <FloatingLocalVideoExample />
       </Canvas>
 
       <Heading>Custom Avatar</Heading>
