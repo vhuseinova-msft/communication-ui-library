@@ -12,6 +12,9 @@ import { gridLayoutStyle } from './styles/GridLayout.styles';
  * @public
  */
 export interface GridLayoutProps {
+  /**
+   * Children to display in grid layout
+   */
   children: React.ReactNode;
   /**
    * Allows users to pass in an object contains custom CSS styles.
@@ -20,7 +23,7 @@ export interface GridLayoutProps {
    * <GridLayout styles={{ root: { background: 'blue' } }} />
    * ```
    */
-  styles?: BaseCustomStyles;
+  styles?: GridLayoutStyles;
 }
 
 /**
