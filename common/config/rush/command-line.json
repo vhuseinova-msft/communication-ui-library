@@ -106,6 +106,14 @@
       "enableParallelism": true,
       "allowWarningsInSuccessfulBuild": true,
       "safeForSimultaneousRushProcesses": true
+    },
+    {
+      "commandKind": "global",
+      "name": "change-build-flavor",
+      "summary": "you're it",
+      "description": "you're it",
+      "shellCommand": "node common/scripts/change-build-flavor.js",
+      "safeForSimultaneousRushProcesses": true
     }
   ],
   "parameters": []
