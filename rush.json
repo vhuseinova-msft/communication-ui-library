@@ -102,5 +102,11 @@
       "projectFolder": "tools/check-treeshaking",
       "reviewCategory": "tools"
     }
+  ],
+  "variants": [
+    {
+      "variantName": "flavor-stable",
+      "description": "FIXME"
+    }
   ]
 }
