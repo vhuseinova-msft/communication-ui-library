@@ -36,4 +36,4 @@ jobs:
 
       - name: Check pipeline run
         shell: bash
-        run: echo ${{ steps.pipeline_run.outputs }}
+        run: echo ${{ !steps.pipeline_run.outputs }}
