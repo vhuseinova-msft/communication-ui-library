@@ -35,5 +35,5 @@ jobs:
         id: pipeline_run
 
       - name: Check pipeline run
-        shell: bash
-        run: echo ${{ steps.pipeline_run.outputs }} | jq 'keys | .[]'
+        shell: pwsh
+        run: echo ${{ steps.pipeline_run }}
