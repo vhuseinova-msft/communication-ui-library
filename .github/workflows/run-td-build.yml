@@ -26,14 +26,14 @@ jobs:
         working-directory: ./.github/workflows/azure-pipeline-action-fork
 
       - name: Trigger touchdown build pipeline
-        id: pipeline_run
         uses: ./.github/workflows/azure-pipeline-action-fork
         with:
           azure-devops-project-url: 'https://skype.visualstudio.com/SCC'
           azure-pipeline-name: 'Azure.communication-ui-library-touchdown-build'
           azure-devops-token: '${{ secrets.AZURE_TOUCHDOWN_BUILD_PIPELINE_SECRET }}'
           azure-pipeline-variables: '{"commit": ${{ steps.extract_branch.outputs.branch != env.MAIN_BRANCH }} }'
+        id: pipeline_run
 
       - name: Check pipeline run
         shell: bash
-        run: echo ${{ !steps.pipeline_run.outputs }}
+        run: echo ${{ steps.pipeline_run.outputs }} | jq 'keys | .[]'
