@@ -211,7 +211,7 @@ export interface CallAdapterCallManagement {
    *
    * @public
    */
-  startCall(participants: string[]): Call | undefined;
+  startCall(participants?: string[]): Call | undefined;
   /**
    * Start sharing the screen during a call.
    *

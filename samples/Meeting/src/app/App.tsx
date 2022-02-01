@@ -16,13 +16,14 @@ import {
   getTeamsLinkFromUrl,
   isOnIphoneAndNotSafari
 } from './utils/AppUtils';
-import { MeetingScreen } from './views/MeetingScreen';
+import { MeetingScreen, TeamsUserMRI } from './views/MeetingScreen';
 import { HomeScreen } from './views/HomeScreen';
 import { UnsupportedBrowserPage } from './views/UnsupportedBrowserPage';
 import { getEndpointUrl } from './utils/getEndpointUrl';
 import { joinThread } from './utils/joinThread';
 import { getThread } from './utils/getThread';
 import { pushQSPUrl } from './utils/pushQSPUrl';
+import { LocalStorageKeys } from './utils/localStorage';
 
 const ALERT_TEXT_TRY_AGAIN = "You can't be added at this moment. Please wait at least 60 seconds to try again.";
 
@@ -32,7 +33,7 @@ interface Credentials {
 }
 
 interface CallArgs {
-  callLocator: GroupLocator | TeamsMeetingLinkLocator;
+  callLocator: GroupLocator | TeamsMeetingLinkLocator | TeamsUserMRI;
   displayName: string;
 }
 
@@ -83,7 +84,7 @@ const App = (): JSX.Element => {
             return;
           }
           setThreadId(newThreadId);
-          pushQSPUrl({ name: 'threadId', value: newThreadId });
+          // pushQSPUrl({ name: 'threadId', value: newThreadId }); TODO: suppressed for dev work, reapply when complete.
         }
         setEndpointUrl(await getEndpointUrl());
       }
@@ -102,6 +103,18 @@ const App = (): JSX.Element => {
       return (
         <HomeScreen
           joiningExistingCall={joiningExistingMeeting}
+          startTeamsAdhocCall={(callDetails) => {
+            // For ease of use, add 8:orgid: if the MRI was not prefixed already (allows pasting just an MRI without the prefix)
+            window.localStorage.setItem(LocalStorageKeys.AdhocTeamsUserMRI, callDetails.mri);
+            const teamsUserMRI = callDetails.mri.startsWith('8:orgid:')
+              ? callDetails.mri
+              : '8:orgid:' + callDetails.mri;
+            setCallArgs({
+              displayName: callDetails.displayName,
+              callLocator: teamsUserMRI
+            });
+            setPage('meeting');
+          }}
           startMeetingHandler={(callDetails) => {
             const isTeamsMeeting = !!callDetails.teamsLink;
             const localCallArgs = {

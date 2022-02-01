@@ -132,6 +132,7 @@ export class AzureCommunicationCallAdapter implements CallAdapter {
   private deviceManager: StatefulDeviceManager;
   private localStream: SDKLocalVideoStream | undefined;
   private locator: TeamsMeetingLinkLocator | GroupCallLocator;
+  private outboundTeamsUserMRI: string | undefined;
   // Never use directly, even internally. Use `call` property instead.
   private _call?: Call;
   private context: CallContext;
@@ -154,14 +155,19 @@ export class AzureCommunicationCallAdapter implements CallAdapter {
     callClient: StatefulCallClient,
     locator: TeamsMeetingLinkLocator | GroupCallLocator,
     callAgent: CallAgent,
-    deviceManager: StatefulDeviceManager
+    deviceManager: StatefulDeviceManager,
+    /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+    outboundTeamsUserMRI?: string
   ) {
     this.bindPublicMethods();
     this.callClient = callClient;
     this.callAgent = callAgent;
     this.locator = locator;
+    /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+    this.outboundTeamsUserMRI = outboundTeamsUserMRI;
+    console.log('setting outboundTeamsUserMRI: ', outboundTeamsUserMRI);
     this.deviceManager = deviceManager;
-    const isTeamsMeeting = 'meetingLink' in this.locator;
+    const isTeamsMeeting = Object.keys(this.locator).includes('meetingLink');
     this.context = new CallContext(callClient.getState(), isTeamsMeeting);
     const onStateChange = (clientState: CallClientState): void => {
       // unsubscribe when the instance gets disposed
@@ -361,11 +367,19 @@ export class AzureCommunicationCallAdapter implements CallAdapter {
   }
 
   //TODO: a better way to expose option parameter
-  public startCall(participants: string[]): Call | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public startCall(participants?: string[]): Call | undefined {
+    // TODO: for now just have start call dictate if group call or 1:1 adhoc call
+    if (!this.outboundTeamsUserMRI) {
+      return this.joinCall();
+    }
+
+    const callParticipants = [this.outboundTeamsUserMRI];
+
     if (_isInCall(this.getState().call?.state ?? 'None')) {
       throw new Error('You are already in the call.');
     } else {
-      const idsToAdd = participants.map((participant) => {
+      const idsToAdd = callParticipants.map((participant) => {
         // FIXME: `onStartCall` does not allow a Teams user.
         // Need some way to return an error if a Teams user is provided.
         const backendId = fromFlatCommunicationIdentifier(participant) as CommunicationUserIdentifier;
@@ -537,6 +551,10 @@ export type AzureCommunicationCallAdapterArgs = {
   displayName: string;
   credential: CommunicationTokenCredential;
   locator: TeamsMeetingLinkLocator | GroupCallLocator;
+
+  /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+  /** This should be combined into `callLocator` once it is moved out of beta compile */
+  outboundTeamsUserMRI?: string;
 };
 
 /**
@@ -552,11 +570,18 @@ export const createAzureCommunicationCallAdapter = async ({
   userId,
   displayName,
   credential,
-  locator
+  locator,
+  /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+  outboundTeamsUserMRI
 }: AzureCommunicationCallAdapterArgs): Promise<CallAdapter> => {
   const callClient = createStatefulCallClient({ userId });
   const callAgent = await callClient.createCallAgent(credential, { displayName });
-  const adapter = createAzureCommunicationCallAdapterFromClient(callClient, callAgent, locator);
+  const adapter = createAzureCommunicationCallAdapterFromClient(
+    callClient,
+    callAgent,
+    locator,
+    /* @conditional-compile-remove-from(stable) TeamsAdhocCall */ outboundTeamsUserMRI
+  );
   return adapter;
 };
 
@@ -571,10 +596,18 @@ export const createAzureCommunicationCallAdapter = async ({
 export const createAzureCommunicationCallAdapterFromClient = async (
   callClient: StatefulCallClient,
   callAgent: CallAgent,
-  locator: TeamsMeetingLinkLocator | GroupCallLocator
+  locator: TeamsMeetingLinkLocator | GroupCallLocator,
+  /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+  outboundTeamsUserMRI?: string
 ): Promise<CallAdapter> => {
   const deviceManager = (await callClient.getDeviceManager()) as StatefulDeviceManager;
-  return new AzureCommunicationCallAdapter(callClient, locator, callAgent, deviceManager);
+  return new AzureCommunicationCallAdapter(
+    callClient,
+    locator,
+    callAgent,
+    deviceManager,
+    /* @conditional-compile-remove-from(stable) TeamsAdhocCall */ outboundTeamsUserMRI
+  );
 };
 
 const isCallError = (e: Error): e is CallError => {

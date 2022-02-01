@@ -14,10 +14,13 @@ import { MeetingAdapter } from '@internal/react-composites';
 
 const detectMobileSession = (): boolean => !!new MobileDetect(window.navigator.userAgent).mobile();
 
+/** MRI of a teams user, this should start with '8:orgid:' */
+export type TeamsUserMRI = string;
+
 export interface MeetingScreenProps {
   token: string;
   userId: CommunicationUserIdentifier;
-  callLocator: GroupCallLocator | TeamsMeetingLinkLocator;
+  callLocator: GroupCallLocator | TeamsMeetingLinkLocator | TeamsUserMRI;
   displayName: string;
   webAppTitle: string;
   endpoint: string;
@@ -41,14 +44,16 @@ export const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
 
   useEffect(() => {
     (async () => {
-      if (!userId || !displayName || !callLocator || !threadId || !token || !endpoint) {
+      if (!userId || !displayName || !callLocator || !token || !endpoint) {
         return;
       }
       const adapter = await createAzureCommunicationMeetingAdapter({
         userId,
         displayName,
         credential: createAutoRefreshingCredential(toFlatCommunicationIdentifier(userId), token),
-        callLocator: callLocator,
+        callLocator: callLocator as GroupCallLocator,
+        /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+        outboundTeamsUserMRI: typeof callLocator === 'string' ? callLocator : undefined,
         endpoint,
         chatThreadId: threadId
       });

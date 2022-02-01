@@ -5,7 +5,8 @@ export const localStorageAvailable = typeof Storage !== 'undefined';
 
 export enum LocalStorageKeys {
   DisplayName = 'DisplayName',
-  Theme = 'AzureCommunicationUI_Theme'
+  Theme = 'AzureCommunicationUI_Theme',
+  AdhocTeamsUserMRI = 'AdhocTeamsUserMRI' // TODO: Remove, just added for quicker development
 }
 
 /**

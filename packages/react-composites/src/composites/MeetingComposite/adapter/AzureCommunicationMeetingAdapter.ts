@@ -399,6 +399,10 @@ export type AzureCommunicationMeetingAdapterArgs = {
   credential: CommunicationTokenCredential;
   chatThreadId: string;
   callLocator: TeamsMeetingLinkLocator | GroupCallLocator;
+
+  /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+  /** This should be combined into `callLocator` once it is moved out of beta compile */
+  outboundTeamsUserMRI?: string;
 };
 
 /**
@@ -413,15 +417,21 @@ export const createAzureCommunicationMeetingAdapter = async ({
   credential,
   endpoint,
   chatThreadId,
-  callLocator
+  callLocator,
+  /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+  outboundTeamsUserMRI
 }: AzureCommunicationMeetingAdapterArgs): Promise<MeetingAdapter> => {
+  console.log('creating call adapter');
   const callAdapter = await createAzureCommunicationCallAdapter({
     userId,
     displayName,
     credential,
-    locator: callLocator
+    locator: callLocator,
+    /* @conditional-compile-remove-from(stable) TeamsAdhocCall */
+    outboundTeamsUserMRI
   });
 
+  console.log('creating chat adapter');
   const chatAdapter = await createAzureCommunicationChatAdapter({
     endpoint,
     userId,
@@ -430,5 +440,6 @@ export const createAzureCommunicationMeetingAdapter = async ({
     threadId: chatThreadId
   });
 
+  console.log('creating meeting adapter');
   return new AzureCommunicationMeetingAdapter(callAdapter, chatAdapter);
 };
