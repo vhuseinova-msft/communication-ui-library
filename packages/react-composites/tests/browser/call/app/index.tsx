@@ -27,7 +27,7 @@ import { MockCallAdapter } from './mocks/MockCallAdapter';
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
 
-const mockCallState = JSON.parse(params.mockCallState);
+const mockCallState = params.mockCallState ? JSON.parse(params.mockCallState) : undefined;
 const useFrLocale = Boolean(params.useFrLocale);
 const showCallDescription = Boolean(params.showCallDescription);
 const injectParticipantMenuItems = Boolean(params.injectParticipantMenuItems);
