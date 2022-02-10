@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { CallState } from '@azure/communication-calling';
-import { mergeStyles, PartialTheme, Stack, Theme } from '@fluentui/react';
+import { PartialTheme, Stack, Theme } from '@fluentui/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CallAdapter, CallComposite, CallControlOptions } from '../CallComposite';
 import { CallAdapterProvider } from '../CallComposite/adapter/CallAdapterProvider';
@@ -15,10 +15,10 @@ import { MeetingAdapter } from './adapter/MeetingAdapter';
 import { MeetingBackedCallAdapter } from './adapter/MeetingBackedCallAdapter';
 import { MeetingBackedChatAdapter } from './adapter/MeetingBackedChatAdapter';
 import { MeetingCallControlBar } from './MeetingCallControlBar';
-import { MobilePane } from './MobilePane';
+import { ChatAndPeoplePane } from './ChatAndPeoplePane';
 import { EmbeddedChatPane, EmbeddedPeoplePane } from './SidePane';
 import { hasJoinedCall as hasJoinedCallFn, MeetingCompositePage } from './state/MeetingCompositePage';
-import { compositeOuterContainerStyles, coverAllHiddenStyle, coverAllStyle } from './styles/MeetingCompositeStyles';
+import { compositeOuterContainerStyles, hiddenStyle, allHeightAndWidthStyle } from './styles/MeetingCompositeStyles';
 
 /**
  * Props required for the {@link MeetingComposite}
@@ -150,21 +150,20 @@ const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
     />
   );
 
-  const showMobilePane = showChat || showPeople;
-
   return isMobile ? (
-    <Stack className={coverAllStyle}>
+    <Stack className={allHeightAndWidthStyle}>
       {callAdapter && chatProps.adapter && hasJoinedCall && (
-        <MobilePane
-          closePane={closePane}
-          onFetchAvatarPersonaData={props.onFetchAvatarPersonaData}
+        <ChatAndPeoplePane
           chatAdapter={chatProps.adapter}
           callAdapter={callAdapter}
-          activeTab={showChat ? 'chat' : 'people'}
-          hidden={!showMobilePane}
+          onFetchAvatarPersonaData={props.onFetchAvatarPersonaData}
+          activeTab={showChat ? 'chat' : showPeople ? 'people' : undefined}
+          toggleChat={toggleChat}
+          togglePeople={togglePeople}
+          closePane={closePane}
         />
       )}
-      <Stack verticalFill grow className={showMobilePane ? coverAllHiddenStyle : coverAllStyle}>
+      <Stack verticalFill grow className={showChat || showPeople ? hiddenStyle : allHeightAndWidthStyle}>
         {callComposite}
         {(isInLobbyOrConnecting || hasJoinedCall) && (
           <ChatAdapterProvider adapter={chatProps.adapter}>
@@ -175,7 +174,7 @@ const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
               onChatButtonClicked={toggleChat}
               peopleButtonChecked={showPeople}
               onPeopleButtonClicked={togglePeople}
-              mobileView={props.formFactor === 'mobile'}
+              mobileView={isMobile}
               disableButtonsForLobbyPage={isInLobbyOrConnecting}
               callControls={props.callControls}
             />
@@ -219,7 +218,7 @@ const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
             onChatButtonClicked={toggleChat}
             peopleButtonChecked={showPeople}
             onPeopleButtonClicked={togglePeople}
-            mobileView={props.formFactor === 'mobile'}
+            mobileView={isMobile}
             disableButtonsForLobbyPage={isInLobbyOrConnecting}
             callControls={props.callControls}
           />

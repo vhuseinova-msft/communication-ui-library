@@ -3,7 +3,7 @@
 import { concatStyleSets, DefaultButton, Stack } from '@fluentui/react';
 import { ChevronLeft28Regular } from '@fluentui/react-icons';
 import { ParticipantList, useTheme } from '@internal/react-components';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { CallAdapter } from '../CallComposite';
 import { CallAdapterProvider } from '../CallComposite/adapter/CallAdapterProvider';
 import { usePropsFor } from '../CallComposite/hooks/usePropsFor';
@@ -12,64 +12,62 @@ import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
 import { ParticipantListWithHeading } from '../common/ParticipantContainer';
 import { useMeetingCompositeStrings } from './hooks/useMeetingCompositeStrings';
 import {
-  mobilePaneButtonStyles,
-  mobilePaneCloseButtonStyles,
-  mobilePaneContentStyle,
-  mobilePaneControlBarStyle,
-  mobilePaneHiddenContentStyle,
-  mobilePaneHiddenStyle,
-  mobilePaneStyle
-} from './styles/MobilePaneStyles';
+  chatAndPeoplePaneButtonStyles,
+  chatAndPeoplePaneCloseButtonStyles,
+  chatAndPeoplePaneContentHiddenStyle,
+  chatAndPeoplePaneContentStyle,
+  chatAndPeoplePaneControlBarStyle,
+  chatAndPeoplePaneHiddenStyle,
+  chatAndPeoplePaneStyle
+} from './styles/ChatAndPeoplePaneStyles';
 
-export const MobilePane = (props: {
+export const ChatAndPeoplePane = (props: {
   chatAdapter: ChatAdapter;
   callAdapter: CallAdapter;
   closePane: () => void;
-  activeTab: MobileTab;
-  hidden: boolean;
+  toggleChat: () => void;
+  togglePeople: () => void;
+  activeTab?: ChatAndPeoplePane;
   onFetchAvatarPersonaData?: AvatarPersonaDataCallback;
 }): JSX.Element => {
-  const { chatAdapter, callAdapter, closePane, onFetchAvatarPersonaData, hidden, activeTab } = props;
-
-  const [showChat, setShowChat] = useState(activeTab === 'chat');
-  const [showPeople, setShowPeople] = useState(activeTab === 'people');
+  const { chatAdapter, callAdapter, closePane, toggleChat, togglePeople, onFetchAvatarPersonaData, activeTab } = props;
 
   const theme = useTheme();
   const meetingStrings = useMeetingCompositeStrings();
-  const mobilePaneButtonStylesThemed = concatStyleSets(mobilePaneButtonStyles, {
+  const mobilePaneButtonStylesThemed = concatStyleSets(chatAndPeoplePaneButtonStyles, {
     rootChecked: {
       borderBottom: `0.125rem solid ${theme.palette.themePrimary}`
     }
   });
 
   return (
-    <Stack verticalFill grow className={hidden ? mobilePaneHiddenStyle : mobilePaneStyle}>
-      <Stack horizontal grow className={mobilePaneControlBarStyle}>
-        <DefaultButton onClick={closePane} styles={mobilePaneCloseButtonStyles}>
+    <Stack verticalFill grow className={activeTab ? chatAndPeoplePaneStyle : chatAndPeoplePaneHiddenStyle}>
+      <Stack horizontal grow className={chatAndPeoplePaneControlBarStyle}>
+        <DefaultButton onClick={closePane} styles={chatAndPeoplePaneCloseButtonStyles}>
           <ChevronLeft28Regular />
         </DefaultButton>
         <DefaultButton
           onClick={() => {
-            setShowChat(true);
-            setShowPeople(false);
+            toggleChat();
           }}
           styles={mobilePaneButtonStylesThemed}
-          checked={showChat}
+          checked={activeTab === 'chat'}
         >
           {meetingStrings.chatButtonLabel}
         </DefaultButton>
         <DefaultButton
           onClick={() => {
-            setShowPeople(true);
-            setShowChat(false);
+            togglePeople();
           }}
           styles={mobilePaneButtonStylesThemed}
-          checked={showPeople}
+          checked={activeTab === 'people'}
         >
           {meetingStrings.peopleButtonLabel}
         </DefaultButton>
       </Stack>
-      <Stack.Item className={showPeople ? mobilePaneContentStyle : mobilePaneHiddenContentStyle}>
+      <Stack.Item
+        className={activeTab === 'people' ? chatAndPeoplePaneContentStyle : chatAndPeoplePaneContentHiddenStyle}
+      >
         <CallAdapterProvider adapter={callAdapter}>
           <ParticipantPane
             chatAdapter={chatAdapter}
@@ -78,7 +76,9 @@ export const MobilePane = (props: {
           ></ParticipantPane>
         </CallAdapterProvider>
       </Stack.Item>
-      <Stack.Item className={showChat ? mobilePaneContentStyle : mobilePaneHiddenContentStyle}>
+      <Stack.Item
+        className={activeTab === 'chat' ? chatAndPeoplePaneContentStyle : chatAndPeoplePaneContentHiddenStyle}
+      >
         <ChatComposite
           adapter={chatAdapter}
           fluentTheme={theme}
@@ -90,7 +90,7 @@ export const MobilePane = (props: {
   );
 };
 
-type MobileTab = 'chat' | 'people';
+type ChatAndPeoplePane = 'chat' | 'people';
 
 /**
  * @private

@@ -30,6 +30,6 @@ export const ChatButtonContainerStyles: IStackStyles = {
   }
 };
 
-export const coverAllStyle = mergeStyles({ width: '100%', height: '100%' });
+export const allHeightAndWidthStyle = mergeStyles({ width: '100%', height: '100%' });
 
-export const coverAllHiddenStyle = mergeStyles({ width: '100%', height: '100%', display: 'none' });
+export const hiddenStyle = mergeStyles({ display: 'none' });
