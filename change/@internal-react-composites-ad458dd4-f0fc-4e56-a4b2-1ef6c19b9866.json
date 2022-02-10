@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Created chat and people pane for MeetingComposite in 'mobile' form factor ",
+  "packageName": "@internal/react-composites",
+  "email": "miguelgamis@microsoft.com",
+  "dependentChangeType": "patch"
+}
