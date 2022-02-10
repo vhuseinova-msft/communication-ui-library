@@ -1,24 +1,27 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { PartialTheme, Stack, Theme } from '@fluentui/react';
-import { CallComposite, CallControlOptions } from '../CallComposite';
-import { CallAdapterProvider } from '../CallComposite/adapter/CallAdapterProvider';
-import { EmbeddedChatPane, EmbeddedPeoplePane } from './SidePane';
-import { MeetingCallControlBar } from './MeetingCallControlBar';
 import { CallState } from '@azure/communication-calling';
-import { compositeOuterContainerStyles } from './styles/MeetingCompositeStyles';
+import { DefaultButton, PartialTheme, Stack, Theme } from '@fluentui/react';
+import { ChevronLeft28Regular } from '@fluentui/react-icons';
+import { useTheme } from '@internal/react-components';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { CallAdapter, CallComposite, CallControlOptions } from '../CallComposite';
+import { CallAdapterProvider } from '../CallComposite/adapter/CallAdapterProvider';
+import { ChatComposite, ChatCompositeProps } from '../ChatComposite';
+import { ChatAdapterProvider } from '../ChatComposite/adapter/ChatAdapterProvider';
+import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
+import { BaseComposite, BaseCompositeProps } from '../common/BaseComposite';
+import { CallCompositeIcons, ChatCompositeIcons } from '../common/icons';
 import { MeetingAdapter } from './adapter/MeetingAdapter';
 import { MeetingBackedCallAdapter } from './adapter/MeetingBackedCallAdapter';
 import { MeetingBackedChatAdapter } from './adapter/MeetingBackedChatAdapter';
+import { useMeetingCompositeStrings } from './hooks/useMeetingCompositeStrings';
+import { MeetingCallControlBar } from './MeetingCallControlBar';
+import { MobilePane, ParticipantPane } from './MobilePane';
+import { EmbeddedChatPane, EmbeddedPeoplePane } from './SidePane';
 import { hasJoinedCall as hasJoinedCallFn, MeetingCompositePage } from './state/MeetingCompositePage';
-import { CallAdapter } from '../CallComposite';
-import { ChatCompositeProps } from '../ChatComposite';
-import { BaseComposite, BaseCompositeProps } from '../common/BaseComposite';
-import { CallCompositeIcons, ChatCompositeIcons } from '../common/icons';
-import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
-import { ChatAdapterProvider } from '../ChatComposite/adapter/ChatAdapterProvider';
+import { compositeOuterContainerStyles } from './styles/MeetingCompositeStyles';
 
 /**
  * Props required for the {@link MeetingComposite}
@@ -92,6 +95,8 @@ type MeetingScreenProps = {
 
 const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
   const { meetingAdapter, fluentTheme, formFactor = 'desktop' } = props;
+  const isMobile = formFactor === 'mobile';
+
   if (!meetingAdapter) {
     throw 'Meeting adapter is undefined';
   }
@@ -138,18 +143,114 @@ const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
   const isInLobbyOrConnecting = currentPage === 'lobby';
   const hasJoinedCall = !!(currentPage && hasJoinedCallFn(currentPage, currentMeetingState ?? 'None'));
 
-  return (
+  const callComposite = (
+    <CallComposite
+      {...props}
+      formFactor={formFactor}
+      options={{ callControls: false }}
+      adapter={callAdapter}
+      fluentTheme={fluentTheme}
+    />
+  );
+
+  const strings = useMeetingCompositeStrings();
+  const theme = useTheme();
+
+  return isMobile ? (
+    showPeople || showChat ? (
+      <MobilePane>
+        <Stack horizontal grow style={{ height: '3rem' }}>
+          <DefaultButton
+            onClick={closePane}
+            styles={{ root: { border: 'none', minWidth: '1rem', height: '100%', background: 'none' } }}
+          >
+            <ChevronLeft28Regular />
+          </DefaultButton>
+          <DefaultButton
+            onClick={() => {
+              setShowChat(true);
+              setShowPeople(false);
+            }}
+            styles={{
+              root: {
+                border: 'none',
+                borderBottom: '0.125rem solid transparent',
+                width: '6.75rem',
+                borderRadius: 'none',
+                height: '100%',
+                background: 'none'
+              },
+              rootChecked: { borderBottom: `0.125rem solid ${theme.palette.themePrimary}`, background: 'none' },
+              rootCheckedHovered: { background: 'none' }
+            }}
+            checked={showChat}
+          >
+            {strings.chatButtonLabel}
+          </DefaultButton>
+          <DefaultButton
+            onClick={() => {
+              setShowPeople(true);
+              setShowChat(false);
+            }}
+            styles={{
+              root: {
+                border: 'none',
+                borderBottom: '0.125rem solid transparent',
+                width: '6.75rem',
+                borderRadius: 'none',
+                height: '100%',
+                background: 'none'
+              },
+              rootChecked: { borderBottom: `0.125rem solid ${theme.palette.themePrimary}` },
+              rootCheckedHovered: { background: 'none' }
+            }}
+            checked={showPeople}
+          >
+            {strings.peopleButtonLabel}
+          </DefaultButton>
+        </Stack>
+        {callAdapter && chatProps.adapter && hasJoinedCall && showPeople && (
+          <CallAdapterProvider adapter={callAdapter}>
+            <ParticipantPane
+              chatAdapter={chatProps.adapter}
+              callAdapter={callAdapter}
+              onFetchAvatarPersonaData={props.onFetchAvatarPersonaData}
+            ></ParticipantPane>
+          </CallAdapterProvider>
+        )}
+        {chatProps.adapter && hasJoinedCall && showChat && (
+          <ChatComposite
+            adapter={chatProps.adapter}
+            fluentTheme={props.fluentTheme}
+            options={{ topic: false, /* @conditional-compile-remove-from(stable) */ participantPane: false }}
+            onFetchAvatarPersonaData={props.onFetchAvatarPersonaData}
+          />
+        )}
+      </MobilePane>
+    ) : (
+      <Stack verticalFill grow>
+        {callComposite}
+        {(isInLobbyOrConnecting || hasJoinedCall) && (
+          <ChatAdapterProvider adapter={chatProps.adapter}>
+            <MeetingCallControlBar
+              callAdapter={callAdapter}
+              chatAdapter={chatProps.adapter}
+              chatButtonChecked={showChat}
+              onChatButtonClicked={toggleChat}
+              peopleButtonChecked={showPeople}
+              onPeopleButtonClicked={togglePeople}
+              mobileView={props.formFactor === 'mobile'}
+              disableButtonsForLobbyPage={isInLobbyOrConnecting}
+              callControls={props.callControls}
+            />
+          </ChatAdapterProvider>
+        )}
+      </Stack>
+    )
+  ) : (
     <Stack verticalFill grow styles={compositeOuterContainerStyles}>
       <Stack horizontal grow>
-        <Stack.Item grow>
-          <CallComposite
-            {...props}
-            formFactor={formFactor}
-            options={{ callControls: false }}
-            adapter={callAdapter}
-            fluentTheme={fluentTheme}
-          />
-        </Stack.Item>
+        <Stack.Item grow>{callComposite}</Stack.Item>
         {chatProps.adapter && hasJoinedCall && (
           <EmbeddedChatPane
             chatCompositeProps={chatProps}
