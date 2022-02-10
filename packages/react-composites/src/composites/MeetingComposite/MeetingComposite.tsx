@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { CallState } from '@azure/communication-calling';
-import { PartialTheme, Stack, Theme } from '@fluentui/react';
+import { mergeStyles, PartialTheme, Stack, Theme } from '@fluentui/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CallAdapter, CallComposite, CallControlOptions } from '../CallComposite';
 import { CallAdapterProvider } from '../CallComposite/adapter/CallAdapterProvider';
@@ -18,7 +18,7 @@ import { MeetingCallControlBar } from './MeetingCallControlBar';
 import { MobilePane } from './MobilePane';
 import { EmbeddedChatPane, EmbeddedPeoplePane } from './SidePane';
 import { hasJoinedCall as hasJoinedCallFn, MeetingCompositePage } from './state/MeetingCompositePage';
-import { compositeOuterContainerStyles } from './styles/MeetingCompositeStyles';
+import { compositeOuterContainerStyles, coverAllHiddenStyle, coverAllStyle } from './styles/MeetingCompositeStyles';
 
 /**
  * Props required for the {@link MeetingComposite}
@@ -150,17 +150,21 @@ const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
     />
   );
 
+  const showMobilePane = showChat || showPeople;
+
   return isMobile ? (
-    showPeople || showChat ? (
-      <MobilePane
-        closePane={closePane}
-        onFetchAvatarPersonaData={props.onFetchAvatarPersonaData}
-        chatAdapter={chatProps.adapter}
-        callAdapter={callAdapter}
-        activeTab={showChat ? 'chat' : 'people'}
-      />
-    ) : (
-      <Stack verticalFill grow>
+    <Stack className={coverAllStyle}>
+      {callAdapter && chatProps.adapter && hasJoinedCall && (
+        <MobilePane
+          closePane={closePane}
+          onFetchAvatarPersonaData={props.onFetchAvatarPersonaData}
+          chatAdapter={chatProps.adapter}
+          callAdapter={callAdapter}
+          activeTab={showChat ? 'chat' : 'people'}
+          hidden={!showMobilePane}
+        />
+      )}
+      <Stack verticalFill grow className={showMobilePane ? coverAllHiddenStyle : coverAllStyle}>
         {callComposite}
         {(isInLobbyOrConnecting || hasJoinedCall) && (
           <ChatAdapterProvider adapter={chatProps.adapter}>
@@ -178,7 +182,7 @@ const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
           </ChatAdapterProvider>
         )}
       </Stack>
-    )
+    </Stack>
   ) : (
     <Stack verticalFill grow styles={compositeOuterContainerStyles}>
       <Stack horizontal grow>

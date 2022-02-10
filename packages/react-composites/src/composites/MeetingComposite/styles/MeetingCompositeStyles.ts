@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { IStackStyles } from '@fluentui/react';
+import { IStackStyles, mergeStyles } from '@fluentui/react';
 
 /**
  * @private
@@ -29,3 +29,7 @@ export const ChatButtonContainerStyles: IStackStyles = {
     position: 'relative'
   }
 };
+
+export const coverAllStyle = mergeStyles({ width: '100%', height: '100%' });
+
+export const coverAllHiddenStyle = mergeStyles({ width: '100%', height: '100%', display: 'none' });
