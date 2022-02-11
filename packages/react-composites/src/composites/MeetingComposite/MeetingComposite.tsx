@@ -1,24 +1,25 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { CallState } from '@azure/communication-calling';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { PartialTheme, Stack, Theme } from '@fluentui/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CallAdapter, CallComposite, CallControlOptions } from '../CallComposite';
+import { CallComposite, CallControlOptions } from '../CallComposite';
 import { CallAdapterProvider } from '../CallComposite/adapter/CallAdapterProvider';
-import { ChatCompositeProps } from '../ChatComposite';
-import { ChatAdapterProvider } from '../ChatComposite/adapter/ChatAdapterProvider';
-import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
-import { BaseComposite, BaseCompositeProps } from '../common/BaseComposite';
-import { CallCompositeIcons, ChatCompositeIcons } from '../common/icons';
+import { EmbeddedChatPane, EmbeddedPeoplePane } from './SidePane';
+import { MeetingCallControlBar } from './MeetingCallControlBar';
+import { CallState } from '@azure/communication-calling';
+import { compositeOuterContainerStyles, hiddenStyle, allHeightAndWidthStyle } from './styles/MeetingCompositeStyles';
 import { MeetingAdapter } from './adapter/MeetingAdapter';
 import { MeetingBackedCallAdapter } from './adapter/MeetingBackedCallAdapter';
 import { MeetingBackedChatAdapter } from './adapter/MeetingBackedChatAdapter';
-import { MeetingCallControlBar } from './MeetingCallControlBar';
-import { ChatAndPeoplePane } from './ChatAndPeoplePane';
-import { EmbeddedChatPane, EmbeddedPeoplePane } from './SidePane';
 import { hasJoinedCall as hasJoinedCallFn, MeetingCompositePage } from './state/MeetingCompositePage';
-import { compositeOuterContainerStyles, hiddenStyle, allHeightAndWidthStyle } from './styles/MeetingCompositeStyles';
+import { CallAdapter } from '../CallComposite';
+import { ChatCompositeProps } from '../ChatComposite';
+import { BaseComposite, BaseCompositeProps } from '../common/BaseComposite';
+import { CallCompositeIcons, ChatCompositeIcons } from '../common/icons';
+import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
+import { ChatAdapterProvider } from '../ChatComposite/adapter/ChatAdapterProvider';
+import { ChatAndPeoplePane } from './ChatAndPeoplePane';
 
 /**
  * Props required for the {@link MeetingComposite}
