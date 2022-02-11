@@ -140,14 +140,17 @@ const MeetingScreen = (props: MeetingScreenProps): JSX.Element => {
   const isInLobbyOrConnecting = currentPage === 'lobby';
   const hasJoinedCall = !!(currentPage && hasJoinedCallFn(currentPage, currentMeetingState ?? 'None'));
 
-  const callComposite = (
-    <CallComposite
-      {...props}
-      formFactor={formFactor}
-      options={{ callControls: false }}
-      adapter={callAdapter}
-      fluentTheme={fluentTheme}
-    />
+  const callComposite = useMemo(
+    () => (
+      <CallComposite
+        {...props}
+        formFactor={formFactor}
+        options={{ callControls: false }}
+        adapter={callAdapter}
+        fluentTheme={fluentTheme}
+      />
+    ),
+    [formFactor, callAdapter, fluentTheme]
   );
 
   return isMobile ? (
