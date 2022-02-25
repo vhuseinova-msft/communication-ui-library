@@ -49,8 +49,6 @@ import { VideoTile } from './VideoTile';
 import { useId } from '@fluentui/react-hooks';
 /* @conditional-compile-remove-from(stable) Local_Camera_switcher */
 import { LocalVideoCameraCycleButton, LocalVideoCameraCycleButtonProps } from './LocalVideoCameraButton';
-/* @conditional-compile-remove-from(stable) Local_Camera_switcher */
-import { localVideoTileWithControlsContainerStyle } from './styles/VideoGallery.styles';
 
 // Currently the Calling JS SDK supports up to 4 remote video streams
 const DEFAULT_MAX_REMOTE_VIDEO_STREAMS = 4;
@@ -251,7 +249,8 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
       return onRenderLocalVideoTile(localParticipant);
     }
 
-    const localVideoTileStyles = shouldFloatLocalVideo ? floatingLocalVideoTileStyle : {};
+    const localVideoTileStyles =
+      shouldFloatLocalVideo || showCameraSwitcherInLocalPreview ? floatingLocalVideoTileStyle : {};
 
     const localVideoTileStylesThemed = concatStyleSets(
       localVideoTileStyles,
@@ -403,7 +402,11 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
       {
         /* @conditional-compile-remove-from(stable) meeting/calling-composite <Local-Camera-Switcher> */
         showCameraSwitcherInLocalPreview && localParticipant && (
-          <Stack className={mergeStyles(localVideoTileWithControlsContainerStyle(theme, isNarrow))}>
+          <Stack
+            className={mergeStyles(localVideoTileContainerStyle(theme, isNarrow), {
+              boxShadow: theme.effects.elevation4
+            })}
+          >
             {localVideoTile}
           </Stack>
         )
