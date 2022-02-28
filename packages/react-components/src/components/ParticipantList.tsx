@@ -11,6 +11,7 @@ import {
   Stack
 } from '@fluentui/react';
 import React, { useMemo } from 'react';
+import { ParticipantItemProps } from '.';
 import { useIdentifiers } from '../identifiers';
 import { useLocale } from '../localization';
 import {
@@ -77,8 +78,9 @@ export type ParticipantListProps = {
   onRemoveParticipant?: (userId: string) => void;
   /** Optional callback to render custom menu items for each participant. */
   onFetchParticipantMenuItems?: ParticipantMenuItemsCallback;
-  /** Optional callback when rendered ParticipantItem is clicked */
-  onParticipantClick?: (participant?: ParticipantListParticipant) => void;
+  /** Optional callback when rendered ParticipantItem is clicked. If this is defined then contextual menu for ParticipantItem components
+   * will not show when clicked. */
+  onParticipantItemClick?: (participantItem?: ParticipantItemProps) => void;
   /** Styles for the {@link ParticipantList} */
   styles?: ParticipantListStyles;
 };
@@ -90,7 +92,7 @@ const onRenderParticipantDefault = (
   onRenderAvatar?: OnRenderAvatarCallback,
   createParticipantMenuItems?: (participant: ParticipantListParticipant) => IContextualMenuItem[],
   styles?: ParticipantListItemStyles,
-  onParticipantClick?: (participant?: ParticipantListParticipant) => void
+  onParticipantItemClick?: (participantItemProps?: ParticipantItemProps) => void
 ): JSX.Element | null => {
   const callingParticipant = participant as CallParticipantListParticipant;
 
@@ -135,7 +137,7 @@ const onRenderParticipantDefault = (
         presence={presence}
         onRenderIcon={onRenderIcon}
         onRenderAvatar={onRenderAvatar}
-        onClick={() => onParticipantClick?.(participant)}
+        onClick={onParticipantItemClick}
       />
     );
   }
@@ -223,7 +225,7 @@ export const ParticipantList = (props: ParticipantListProps): JSX.Element => {
               onRenderAvatar,
               createParticipantMenuItems,
               participantItemStyles,
-              props.onParticipantClick
+              props.onParticipantItemClick
             )
       )}
     </Stack>

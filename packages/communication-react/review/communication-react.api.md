@@ -1940,7 +1940,7 @@ export type ParticipantListProps = {
     onRenderAvatar?: OnRenderAvatarCallback;
     onRemoveParticipant?: (userId: string) => void;
     onFetchParticipantMenuItems?: ParticipantMenuItemsCallback;
-    onParticipantClick?: (participant?: ParticipantListParticipant) => void;
+    onParticipantItemClick?: (participantItem?: ParticipantItemProps) => void;
     styles?: ParticipantListStyles;
 };
 
