@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { IconButton } from '@fluentui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { OptionsDevice } from './DevicesButton';
 import { localVideoCameraCycleButtonStyles } from './styles/VideoGallery.styles';
 
@@ -26,20 +26,27 @@ export interface LocalVideoCameraCycleButtonProps {
  */
 export const LocalVideoCameraCycleButton = (props: LocalVideoCameraCycleButtonProps): JSX.Element => {
   const { cameras, selectedCamera, onSelectCamera, label } = props;
+  const [waitForCamera, setWaitForCamera] = useState<boolean>(false);
 
   return (
     <IconButton
+      disabled={waitForCamera}
       data-ui-id={'local-camera-switcher-button'}
       styles={localVideoCameraCycleButtonStyles}
       iconProps={{ iconName: 'LocalCameraSwitch' }}
       ariaLabel={label}
       aria-live={'polite'}
-      onClick={() => {
-        if (cameras && cameras.length > 1 && selectedCamera !== undefined) {
+      onClick={async () => {
+        if (cameras && cameras.length > 1 && selectedCamera !== undefined && !waitForCamera) {
           const index = cameras.findIndex((camera) => selectedCamera.id === camera.id);
           const newCamera = cameras[(index + 1) % cameras.length];
           if (onSelectCamera !== undefined) {
-            onSelectCamera(newCamera);
+            setWaitForCamera(true);
+            try {
+              await onSelectCamera(newCamera);
+            } finally {
+              setWaitForCamera(false);
+            }
           }
         }
       }}
