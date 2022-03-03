@@ -37,6 +37,7 @@ import {
   AzureCommunicationFileUploadAdapter,
   convertFileUploadsUiStateToMessageMetadata
 } from './AzureCommunicationFileUploadAdapter';
+import { chatAdapterLogger } from '../../common/adapterLogger';
 
 /**
  * Context of Chat, which is a centralized context for all state updates
@@ -347,6 +348,7 @@ export class AzureCommunicationChatAdapter implements ChatAdapter {
     try {
       return await f();
     } catch (error) {
+      chatAdapterLogger.error('Call Adapter Error! \n' + error);
       if (isChatError(error)) {
         this.emitter.emit('error', error as AdapterError);
       }

@@ -11,5 +11,6 @@ export type { CallbackType, FunctionWithKey } from './memoizeFnAll';
 export type { AreEqual, AreParamEqual, AreTypeEqual } from './areEqual';
 export type { MessageStatus } from './MessageStatus';
 export type { _IObjectMap } from './localizationUtils';
+export * from './AzureCommunicationLogConnector';
 
 export { _MAX_EVENT_LISTENERS } from './constants';

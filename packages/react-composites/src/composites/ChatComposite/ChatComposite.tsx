@@ -11,6 +11,14 @@ import { chatScreenContainerStyle } from './styles/Chat.styles';
 import { ChatScreen } from './ChatScreen';
 /* @conditional-compile-remove-from(stable): FILE_SHARING */
 import { FileSharingOptions } from './ChatScreen';
+import { AzureCommunicationErrorBoundary } from '../common/AzureCommunicationErrorBoundary';
+import { connectAzureCommunicationLog, createAppInsightsConnector } from '@internal/acs-ui-common';
+
+const connector = createAppInsightsConnector(
+  'InstrumentationKey=5421e61b-2e74-45af-9ffa-83ef178185e7;IngestionEndpoint=https://westus2-0.in.applicationinsights.azure.com/'
+);
+
+connectAzureCommunicationLog(connector);
 
 /**
  * Props for {@link ChatComposite}.
@@ -109,19 +117,21 @@ export const ChatComposite = (props: ChatCompositeProps): JSX.Element => {
   };
 
   return (
-    <div className={chatScreenContainerStyle}>
-      <BaseProvider {...props}>
-        <ChatAdapterProvider adapter={adapter}>
-          <ChatScreen
-            options={options}
-            onFetchAvatarPersonaData={onFetchAvatarPersonaData}
-            onRenderTypingIndicator={onRenderTypingIndicator}
-            onRenderMessage={onRenderMessage}
-            onFetchParticipantMenuItems={onFetchParticipantMenuItems}
-            {...fileSharingOptions()}
-          />
-        </ChatAdapterProvider>
-      </BaseProvider>
-    </div>
+    <AzureCommunicationErrorBoundary fallbackElement={undefined}>
+      <div className={chatScreenContainerStyle}>
+        <BaseProvider {...props}>
+          <ChatAdapterProvider adapter={adapter}>
+            <ChatScreen
+              options={options}
+              onFetchAvatarPersonaData={onFetchAvatarPersonaData}
+              onRenderTypingIndicator={onRenderTypingIndicator}
+              onRenderMessage={onRenderMessage}
+              onFetchParticipantMenuItems={onFetchParticipantMenuItems}
+              {...fileSharingOptions()}
+            />
+          </ChatAdapterProvider>
+        </BaseProvider>
+      </div>
+    </AzureCommunicationErrorBoundary>
   );
 };

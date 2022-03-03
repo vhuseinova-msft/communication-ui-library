@@ -112,6 +112,10 @@ export const ChatScreen = (props: ChatScreenProps): JSX.Element => {
 
   const adapter = useAdapter();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // const obj = {} as any;
+  // console.log(obj.undefinedAttribute.unfoundMethod);
+
   useEffect(() => {
     adapter.fetchInitialData();
   }, [adapter]);

@@ -17,6 +17,17 @@ export type AreParamEqual<A extends (props: any) => JSX.Element | undefined, B e
 // @public
 export type AreTypeEqual<A, B> = A extends B ? (B extends A ? true : false) : false;
 
+// @public (undocumented)
+export const azureCommunicationDefaultFilter: (message: string) => boolean;
+
+// @public (undocumented)
+export interface AzureCommunicationLogConnector {
+    // (undocumented)
+    filter: (...args: any[]) => boolean;
+    // (undocumented)
+    log: (...args: any[]) => void;
+}
+
 // @public
 export type CallbackType<KeyT, ArgsT extends unknown[], FnRetT> = (memoizedFn: FunctionWithKey<KeyT, ArgsT, FnRetT>) => FnRetT[];
 
@@ -27,6 +38,12 @@ export type Common<A, B> = Pick<A, CommonProperties<A, B>>;
 export type CommonProperties<A, B> = {
     [P in keyof A & keyof B]: A[P] extends B[P] ? P : never;
 }[keyof A & keyof B];
+
+// @public (undocumented)
+export const connectAzureCommunicationLog: (connector: AzureCommunicationLogConnector) => void;
+
+// @public (undocumented)
+export const createAppInsightsConnector: (connectionString: string, filter?: (...args: any[]) => boolean) => AzureCommunicationLogConnector;
 
 // @internal
 export const _formatString: (str: string, vars: _IObjectMap<string>) => string;

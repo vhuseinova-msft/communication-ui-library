@@ -48,6 +48,7 @@ import { CommunicationTokenCredential, CommunicationUserIdentifier } from '@azur
 import { ParticipantSubscriber } from './ParticipantSubcriber';
 import { AdapterError } from '../../common/adapters';
 import { DiagnosticsForwarder } from './DiagnosticsForwarder';
+import { callAdapterLogger } from '../../common/adapterLogger';
 
 /** Context of call, which is a centralized context for all state updates */
 class CallContext {
@@ -523,6 +524,7 @@ export class AzureCommunicationCallAdapter implements CallAdapter {
     try {
       return await f();
     } catch (error) {
+      callAdapterLogger.error('Call Adapter Error! \n' + error);
       if (isCallError(error)) {
         this.emitter.emit('error', error as AdapterError);
       }
