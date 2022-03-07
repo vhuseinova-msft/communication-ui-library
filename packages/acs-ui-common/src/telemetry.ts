@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import * as telemetryVersion from './telemetryVersion';
+// import * as telemetryVersion from './telemetryVersion';
 
 /**
  * @private
@@ -22,6 +22,6 @@ export const sanitize = (version: string): string => {
  * @internal
  */
 export const _getApplicationId = (): string => {
-  const version = telemetryVersion['default'];
+  const version = 'TEST'; //telemetryVersion['default'];
   return sanitize(`acr/${version}`);
 };

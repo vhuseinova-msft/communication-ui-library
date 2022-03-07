@@ -1,7 +1,8 @@
 {
   "extends": "../../common/config/tsc/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist/dist-esm"
+    "outDir": "./dist/dist-esm",
+    "types": ["vite/client", "vite-plugin-svgr/client"]
   },
   "typeRoots": ["./node_modules/@types"],
   "include": ["src/**/*"],

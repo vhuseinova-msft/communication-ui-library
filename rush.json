@@ -109,6 +109,11 @@
       "reviewCategory": "tools"
     },
     {
+      "packageName": "@internal/e2e-tests",
+      "projectFolder": "tools/e2e-tests",
+      "reviewCategory": "tools"
+    },
+    {
       "packageName": "@internal/check-treeshaking",
       "projectFolder": "tools/check-treeshaking",
       "reviewCategory": "tools"

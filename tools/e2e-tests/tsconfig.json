@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": false,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react",
+    "paths": {
+      "@azure/communication-react": ["../../packages/communication-react/src"],
+      "@internal/chat-component-bindings": ["../../packages/chat-component-bindings/src"],
+      "@internal/calling-component-bindings": ["../../packages/calling-component-bindings/src"],
+      "@internal/acs-ui-common": ["../../packages/acs-ui-common/src"],
+      "@internal/calling-stateful-client": ["../../packages/calling-stateful-client/src"],
+      "@internal/chat-stateful-client": ["../../packages/chat-stateful-client/src"],
+      "@internal/react-components": ["../../packages/react-components/src"],
+      "@internal/react-composites": ["../../packages/react-composites/src"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
