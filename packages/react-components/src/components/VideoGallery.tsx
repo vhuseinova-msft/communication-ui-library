@@ -372,6 +372,23 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
 
   const horizontalGalleryPresent = horizontalGalleryTiles && horizontalGalleryTiles.length > 0;
   const layerHostId = useId('layerhost');
+  // const pipFloatingTile = document.querySelector('data-u-id=PIP-Floating');
+  const onPiPKeyboard = useCallback((ev: React.KeyboardEvent) => {
+    switch (ev.key) {
+      case 'arrowUp':
+        console.log('testUp');
+        break;
+      case 'arrowDown':
+        console.log('testDown');
+        break;
+      case 'arrowLeft':
+        console.log('testLeft');
+        break;
+      case 'arrowRight':
+        console.log('testRight');
+        break;
+    }
+  }, []);
 
   return (
     <div
@@ -386,15 +403,17 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
         (horizontalGalleryPresent ? (
           <Stack className={mergeStyles(localVideoTileContainerStyle(theme, isNarrow))}>{localVideoTile}</Stack>
         ) : (
-          <Modal
-            isOpen={true}
-            isModeless={true}
-            dragOptions={DRAG_OPTIONS}
-            styles={floatingLocalVideoModalStyle(theme, isNarrow)}
-            layerProps={{ hostId: layerHostId }}
-          >
-            {localVideoTile}
-          </Modal>
+          <Stack onKeyDown={onPiPKeyboard}>
+            <Modal
+              isOpen={true}
+              isModeless={true}
+              dragOptions={DRAG_OPTIONS}
+              styles={floatingLocalVideoModalStyle(theme, isNarrow)}
+              layerProps={{ hostId: layerHostId }}
+            >
+              {localVideoTile}
+            </Modal>
+          </Stack>
         ))}
       {
         /* @conditional-compile-remove(call-with-chat-composite) @conditional-compile-remove(local-camera-switcher) */
