@@ -13,15 +13,16 @@ export interface FileDownloadErrorBarProps {
   /** Error message to render */
   fileDownloadErrorMessage: string;
 }
-
+const messageBarIconProps = { iconName: 'ProtectedDocument' };
 /**
  * @private
  */
 export const FileDownloadErrorBar = (props: FileDownloadErrorBarProps): JSX.Element => {
   const { fileDownloadErrorMessage, onDismissDownloadErrorMessage } = props;
-  const messageBarIconProps = { iconName: 'ProtectedDocument' };
 
-  if (fileDownloadErrorMessage !== '') {
+  if (fileDownloadErrorMessage === '') {
+    return <></>;
+  } else {
     return (
       <Stack horizontal horizontalAlign="space-between" verticalAlign="center">
         <MessageBar
@@ -35,7 +36,5 @@ export const FileDownloadErrorBar = (props: FileDownloadErrorBarProps): JSX.Elem
         </MessageBar>
       </Stack>
     );
-  } else {
-    return <></>;
   }
 };
