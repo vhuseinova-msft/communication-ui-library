@@ -59,6 +59,7 @@ export class CallSubscriber {
   }
 
   private subscribe = (): void => {
+    console.log('test1: subscribe!');
     this._call.on('stateChanged', this.stateChanged);
     this._call.on('idChanged', this.idChanged);
     this._call.on('isScreenSharingOnChanged', this.isScreenSharingOnChanged);

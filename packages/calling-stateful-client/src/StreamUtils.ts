@@ -63,11 +63,14 @@ async function createViewRemoteVideo(
 
   let view;
   try {
+    console.log('test1: start creating view');
     view = await renderer.createView(options);
   } catch (e) {
     internalContext.setRemoteRenderInfo(callId, participantKey, streamId, renderInfo.stream, 'NotRendered', undefined);
     throw e;
   }
+
+  console.log('test1: successfully pass the createView');
 
   const refreshedRenderInfo = internalContext.getRemoteRenderInfoForParticipant(callId, participantKey, streamId);
   if (!refreshedRenderInfo) {
@@ -75,6 +78,7 @@ async function createViewRemoteVideo(
     // and clean up state.
     renderer.dispose();
     context.setRemoteVideoStreamRendererView(callId, participantKey, streamId, undefined);
+    console.log('test1: no render info');
     return;
   }
 
@@ -91,8 +95,11 @@ async function createViewRemoteVideo(
       undefined
     );
     context.setRemoteVideoStreamRendererView(callId, participantKey, streamId, undefined);
+    console.log('test1: render stopping');
     return;
   }
+
+  console.log('test1: setting view');
 
   // Else the stream still exists and status is not telling us to stop rendering. Complete the render process by
   // updating the state.
@@ -110,6 +117,8 @@ async function createViewRemoteVideo(
     streamId,
     convertFromSDKToDeclarativeVideoStreamRendererView(view)
   );
+
+  console.log('test1: view set!');
 }
 
 async function createViewLocalVideo(
@@ -123,11 +132,13 @@ async function createViewLocalVideo(
 
   if (!renderInfo) {
     console.warn('LocalVideoStream not found in state');
+    console.log('test1: LocalVideoStream is already rendered');
     return;
   }
 
   if (renderInfo.status === 'Rendered') {
     console.warn('LocalVideoStream is already rendered');
+    console.log('test1: LocalVideoStream is already rendered');
     return;
   }
 
@@ -139,6 +150,7 @@ async function createViewLocalVideo(
 
   if (renderInfo.status === 'Stopping') {
     console.warn('LocalVideoStream is in the middle of stopping');
+    console.log('test1: LocalVideoStream is already rendered');
     return;
   }
 
@@ -423,8 +435,8 @@ export function disposeAllViewsFromCall(
  * @private
  */
 export function disposeAllViews(context: CallContext, internalContext: InternalCallContext): void {
-  const remoteStreamAndRenderers = internalContext.getRemoteRenderInfos();
-  for (const [callId] of remoteStreamAndRenderers.entries()) {
+  const callIds = internalContext.getAllCallIds();
+  for (const callId of callIds) {
     disposeAllViewsFromCall(context, internalContext, callId);
   }
 }

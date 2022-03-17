@@ -47,12 +47,24 @@ export class InternalCallContext {
   // <CallId, LocalRenderInfo>.
   private _localRenderInfos = new Map<string, LocalRenderInfo>();
 
+  // A map that links previous callId with new one, when a new callId event happens <OldCallId, NewCallId>
+  // This is to ensure previous callId always available to be found by async calls in steamUtils.
+  private _callIdHistory = new Map<string, string>();
+
   // Used for keeping track of rendered LocalVideoStreams that are not part of a Call.
   // The key is the stream ID. We assume each stream ID to only have one owning render info
   private _unparentedRenderInfos = new Map<string, LocalRenderInfo>();
 
   public setCallId(newCallId: string, oldCallId: string): void {
     const remoteRenderInfos = this._remoteRenderInfos.get(oldCallId);
+    if (oldCallId !== newCallId) {
+      // delete new callId to avoid loop hole
+      this._callIdHistory.delete(newCallId);
+      this._callIdHistory.set(oldCallId, newCallId);
+    }
+
+    console.log('test1: setCall ID!');
+
     if (remoteRenderInfos) {
       this._remoteRenderInfos.delete(oldCallId);
       this._remoteRenderInfos.set(newCallId, remoteRenderInfos);
@@ -65,12 +77,13 @@ export class InternalCallContext {
     }
   }
 
-  public getRemoteRenderInfos(): Map<string, Map<string, Map<number, RemoteRenderInfo>>> {
-    return this._remoteRenderInfos;
+  public getAllCallIds(): Array<string> {
+    return new Array(...this._remoteRenderInfos.keys());
   }
 
   public getRemoteRenderInfoForCall(callId: string): Map<string, Map<number, RemoteRenderInfo>> | undefined {
-    return this._remoteRenderInfos.get(callId);
+    const currentCallId = this.findCurrentCallId(callId);
+    return this._remoteRenderInfos.get(currentCallId);
   }
 
   public getRemoteRenderInfoForParticipant(
@@ -78,7 +91,7 @@ export class InternalCallContext {
     participantKey: string,
     streamId: number
   ): RemoteRenderInfo | undefined {
-    const callRenderInfos = this._remoteRenderInfos.get(callId);
+    const callRenderInfos = this.getRemoteRenderInfoForCall(callId);
     if (!callRenderInfos) {
       return undefined;
     }
@@ -97,10 +110,11 @@ export class InternalCallContext {
     status: RenderStatus,
     renderer: VideoStreamRenderer | undefined
   ): void {
-    let callRenderInfos = this._remoteRenderInfos.get(callId);
+    const currentCallId = this.findCurrentCallId(callId);
+    let callRenderInfos = this._remoteRenderInfos.get(currentCallId);
     if (!callRenderInfos) {
       callRenderInfos = new Map<string, Map<number, RemoteRenderInfo>>();
-      this._remoteRenderInfos.set(callId, callRenderInfos);
+      this._remoteRenderInfos.set(currentCallId, callRenderInfos);
     }
 
     let participantRenderInfos = callRenderInfos.get(participantKey);
@@ -132,15 +146,18 @@ export class InternalCallContext {
     status: RenderStatus,
     renderer: VideoStreamRenderer | undefined
   ): void {
-    this._localRenderInfos.set(callId, { stream, status, renderer });
+    const currentCallId = this.findCurrentCallId(callId);
+    this._localRenderInfos.set(currentCallId, { stream, status, renderer });
   }
 
   public getLocalRenderInfo(callId: string): LocalRenderInfo | undefined {
-    return this._localRenderInfos.get(callId);
+    const currentCallId = this.findCurrentCallId(callId);
+    return this._localRenderInfos.get(currentCallId);
   }
 
   public deleteLocalRenderInfo(callId: string): void {
-    this._localRenderInfos.delete(callId);
+    const currentCallId = this.findCurrentCallId(callId);
+    this._localRenderInfos.delete(currentCallId);
   }
 
   public getUnparentedRenderInfo(localVideoStream: LocalVideoStreamState): LocalRenderInfo | undefined {
@@ -164,5 +181,13 @@ export class InternalCallContext {
   public clearCallRelatedState(): void {
     this._remoteRenderInfos.clear();
     this._localRenderInfos.clear();
+  }
+
+  private findCurrentCallId(previousCallId: string): string {
+    let resultCallId = previousCallId;
+    while (this._callIdHistory.has(resultCallId)) {
+      resultCallId = this._callIdHistory.get(resultCallId) || '';
+    }
+    return resultCallId;
   }
 }
