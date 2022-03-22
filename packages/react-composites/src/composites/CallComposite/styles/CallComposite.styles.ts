@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { IStyle, mergeStyles } from '@fluentui/react';
+import { IStackStyles, IStyle, mergeStyles } from '@fluentui/react';
 
 const mainScreenContainerStyle: IStyle = {
   height: '100%',
@@ -25,3 +25,19 @@ export const mainScreenContainerStyleMobile = mergeStyles({
   minWidth: '19.5rem', // max of min-width of composite pages (Call page)
   minHeight: '19rem' // max height of min-height of composite pages (Configuration page)
 });
+
+/**
+ * @private
+ */
+export const drawerContainerStyles: IStackStyles = {
+  root: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    // Any zIndex > 0 will work because this is the only absolutely
+    // positioned element in the container.
+    zIndex: 100
+  }
+};

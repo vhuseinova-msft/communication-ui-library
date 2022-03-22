@@ -2,8 +2,13 @@
 // Licensed under the MIT license.
 
 import { _isInCall } from '@internal/calling-component-bindings';
-import { OnRenderAvatarCallback, ParticipantMenuItemsCallback } from '@internal/react-components';
-import React, { useEffect, useMemo } from 'react';
+import {
+  OnRenderAvatarCallback,
+  ParticipantMenuItemsCallback,
+  useTheme,
+  _DrawerSurface
+} from '@internal/react-components';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
 import { BaseProvider, BaseCompositeProps } from '../common/BaseComposite';
 import { CallCompositeIcons } from '../common/icons';
@@ -16,8 +21,15 @@ import { NoticePage } from './pages/NoticePage';
 import { useSelector } from './hooks/useSelector';
 import { getPage } from './selectors/baseSelectors';
 import { LobbyPage } from './pages/LobbyPage';
-import { mainScreenContainerStyleDesktop, mainScreenContainerStyleMobile } from './styles/CallComposite.styles';
+import {
+  drawerContainerStyles,
+  mainScreenContainerStyleDesktop,
+  mainScreenContainerStyleMobile
+} from './styles/CallComposite.styles';
 import { CallControlOptions } from './types/CallControlOptions';
+import { PrimaryButton, Stack } from '@fluentui/react';
+import { MicOn48Filled } from '@fluentui/react-icons';
+import { devicePermissionSelector } from './selectors/devicePermissionSelector';
 
 /**
  * Props for {@link CallComposite}.
@@ -165,20 +177,36 @@ export const CallComposite = (props: CallCompositeProps): JSX.Element => {
     options,
     formFactor = 'desktop'
   } = props;
+  // const { audio: microphonePermissionGranted, video: cameraPermissionGranted } = useSelector(devicePermissionSelector);
+
   useEffect(() => {
     (async () => {
-      await adapter.askDevicePermission({ video: true, audio: true });
       adapter.queryCameras();
       adapter.queryMicrophones();
       adapter.querySpeakers();
     })();
   }, [adapter]);
 
+  const [showDrawer, setShowDrawer] = useState(true);
+
   const mobileView = formFactor === 'mobile';
 
   const mainScreenContainerClassName = useMemo(() => {
     return mobileView ? mainScreenContainerStyleMobile : mainScreenContainerStyleDesktop;
   }, [mobileView]);
+
+  const theme = useTheme();
+
+  const allowButtonStyles = {
+    root: {
+      minHeight: mobileView ? '3rem' : '2.5rem',
+      borderRadius: mobileView ? theme.effects.roundedCorner6 : theme.effects.roundedCorner4,
+      height: '2.5rem',
+      width: '100%'
+    }
+  };
+
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   return (
     <div className={mainScreenContainerClassName}>
@@ -191,6 +219,60 @@ export const CallComposite = (props: CallCompositeProps): JSX.Element => {
             mobileView={mobileView}
             options={options}
           />
+          {showDrawer && mobileView && (
+            <Stack styles={drawerContainerStyles}>
+              <_DrawerSurface onLightDismiss={() => setShowDrawer(false)}>
+                <Stack horizontalAlign="center" tokens={{ childrenGap: '1.5rem' }}>
+                  <Stack
+                    styles={{
+                      root: {
+                        height: '5.75rem',
+                        width: '5.75rem',
+                        borderRadius: '50%',
+                        background: theme.palette.blueLight
+                      }
+                    }}
+                    horizontalAlign="center"
+                    verticalAlign="center"
+                  >
+                    <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
+                  </Stack>
+                  <Stack
+                    horizontalAlign="center"
+                    styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+                    tokens={{ childrenGap: '0.5rem' }}
+                  >
+                    <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+                      Allow access to mic
+                    </Stack>
+                    <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+                      So you're seen and heard on the video call. This is required before joining
+                    </Stack>
+                  </Stack>
+                  <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
+                    <PrimaryButton
+                      onClick={() => {
+                        adapter.askDevicePermission({ video: true, audio: true });
+                        setShowDrawer(false);
+                      }}
+                      styles={allowButtonStyles}
+                    >
+                      Allow (Required)
+                    </PrimaryButton>
+                  </Stack>
+                  {isSafari && (
+                    <PrimaryButton
+                      onClick={() => {
+                        window.location.href = 'prefs:root=Settings';
+                      }}
+                    >
+                      Settings
+                    </PrimaryButton>
+                  )}
+                </Stack>
+              </_DrawerSurface>
+            </Stack>
+          )}
         </CallAdapterProvider>
       </BaseProvider>
     </div>
