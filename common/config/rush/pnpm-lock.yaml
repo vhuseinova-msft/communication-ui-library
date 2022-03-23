@@ -2346,6 +2346,10 @@ packages:
       react: '>=0.14.0'
     resolution:
       integrity: sha512-V1klUed202XahrWJLLOT3EXNeCpFHCcJntdFGI15ntCwau+jfT386w7OFTMaCqOgXUH1fa0w/I1oZs+i/Rfr0A==
+  /@iconify/react/3.2.0:
+    dev: false
+    resolution:
+      integrity: sha512-nHmPeBGn4KKS8DwDjGrZ9SLpoMmZ+dKZ53s2msBftg6srESMWBUOMW/XBMRjnUjzwQQchguVEhhh59LSSAia/g==
   /@istanbuljs/load-nyc-config/1.1.0:
     dependencies:
       camelcase: 5.3.1
@@ -19325,6 +19329,7 @@ packages:
       '@fluentui/react-icons': 1.1.137
       '@fluentui/react-northstar': 0.61.0_f09bd12f717275b09a3c137857e6b9f2
       '@fluentui/react-window-provider': 2.2.0_796713c4bb4631ac40b03d54b6277837
+      '@iconify/react': 3.2.0
       '@microsoft/api-documenter': 7.12.22
       '@microsoft/api-extractor': 7.18.5
       '@rollup/plugin-json': 4.1.0_rollup@2.42.4
@@ -19394,7 +19399,7 @@ packages:
     dev: false
     name: '@rush-temp/communication-react'
     resolution:
-      integrity: sha512-KTee+Sy7AuTbX6kzeIGLy+XOBea3Van6zmEz9m2BZAJ6wDeY5Ed6TfZGwbzhydi8P8rkpT94nscZ7vi8CmbD3g==
+      integrity: sha512-EA3xu7XxGeR2mSrfOXRtJkZCWlyduZPh8H8L0Ged/B8BmomQttQo6YMM93SrVHgAIpLD0ysXyD6mLyLLJZkxUA==
       tarball: file:projects/communication-react.tgz
     version: 0.0.0
   file:projects/component-examples.tgz:
@@ -19593,6 +19598,7 @@ packages:
       '@fluentui/react-file-type-icons': 8.5.8_796713c4bb4631ac40b03d54b6277837
       '@fluentui/react-hooks': 8.3.8_796713c4bb4631ac40b03d54b6277837
       '@fluentui/react-icons': 1.1.137
+      '@iconify/react': 3.2.0
       '@mdx-js/react': 1.6.22_react@16.14.0
       '@microsoft/api-documenter': 7.12.22
       '@microsoft/api-extractor': 7.18.5
@@ -19681,7 +19687,7 @@ packages:
     dev: false
     name: '@rush-temp/react-composites'
     resolution:
-      integrity: sha512-QuKocQ7a3yLkImFQuj94C2a0LEYFwtN7PzN45Zc+/LTdpeum+tMSu8UFuGHm41MiztSUpoPVxlViaeDw4WhHAA==
+      integrity: sha512-H0zC6NLmX/sP+JYAATLs/Ip639+2JnvQR5CgXDCZ+f5NtRyPUDvTQ43hGpRs4Q92R/uRzUK2S8/lIGbIsmOUOg==
       tarball: file:projects/react-composites.tgz
     version: 0.0.0
   file:projects/sample-automation-tests.tgz:

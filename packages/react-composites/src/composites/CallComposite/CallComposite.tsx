@@ -13,7 +13,7 @@ import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
 import { BaseProvider, BaseCompositeProps } from '../common/BaseComposite';
 import { CallCompositeIcons } from '../common/icons';
 import { useLocale } from '../localization';
-import { CallAdapter } from './adapter/CallAdapter';
+import { CallAdapter, CallAdapterState } from './adapter/CallAdapter';
 import { CallAdapterProvider, useAdapter } from './adapter/CallAdapterProvider';
 import { CallPage } from './pages/CallPage';
 import { ConfigurationPage } from './pages/ConfigurationPage';
@@ -28,7 +28,8 @@ import {
 } from './styles/CallComposite.styles';
 import { CallControlOptions } from './types/CallControlOptions';
 import { PrimaryButton, Stack } from '@fluentui/react';
-import { MicOn48Filled } from '@fluentui/react-icons';
+import { Video48Filled, MicOn48Filled } from '@fluentui/react-icons';
+import { Icon } from '@iconify/react';
 import { devicePermissionSelector } from './selectors/devicePermissionSelector';
 
 /**
@@ -177,36 +178,36 @@ export const CallComposite = (props: CallCompositeProps): JSX.Element => {
     options,
     formFactor = 'desktop'
   } = props;
-  // const { audio: microphonePermissionGranted, video: cameraPermissionGranted } = useSelector(devicePermissionSelector);
+
+  const [showDrawer, setShowDrawer] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      adapter.queryCameras();
-      adapter.queryMicrophones();
-      adapter.querySpeakers();
-    })();
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      if (devices.every((device) => device.label === '')) {
+        setShowDrawer(true);
+      } else {
+        adapter.askDevicePermission({ video: true, audio: true });
+        adapter.queryCameras();
+        adapter.queryMicrophones();
+        adapter.querySpeakers();
+      }
+    });
+    const update = (newState: CallAdapterState): void => {
+      if (newState.devices.deviceAccess?.audio && newState.devices.deviceAccess?.video) {
+        setShowDrawer(false);
+      }
+    };
+    adapter.onStateChange(update);
+    return () => {
+      adapter.offStateChange(update);
+    };
   }, [adapter]);
-
-  const [showDrawer, setShowDrawer] = useState(true);
 
   const mobileView = formFactor === 'mobile';
 
   const mainScreenContainerClassName = useMemo(() => {
     return mobileView ? mainScreenContainerStyleMobile : mainScreenContainerStyleDesktop;
   }, [mobileView]);
-
-  const theme = useTheme();
-
-  const allowButtonStyles = {
-    root: {
-      minHeight: mobileView ? '3rem' : '2.5rem',
-      borderRadius: mobileView ? theme.effects.roundedCorner6 : theme.effects.roundedCorner4,
-      height: '2.5rem',
-      width: '100%'
-    }
-  };
-
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   return (
     <div className={mainScreenContainerClassName}>
@@ -220,61 +221,90 @@ export const CallComposite = (props: CallCompositeProps): JSX.Element => {
             options={options}
           />
           {showDrawer && mobileView && (
-            <Stack styles={drawerContainerStyles}>
-              <_DrawerSurface onLightDismiss={() => setShowDrawer(false)}>
-                <Stack horizontalAlign="center" tokens={{ childrenGap: '1.5rem' }}>
-                  <Stack
-                    styles={{
-                      root: {
-                        height: '5.75rem',
-                        width: '5.75rem',
-                        borderRadius: '50%',
-                        background: theme.palette.blueLight
-                      }
-                    }}
-                    horizontalAlign="center"
-                    verticalAlign="center"
-                  >
-                    <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
-                  </Stack>
-                  <Stack
-                    horizontalAlign="center"
-                    styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
-                    tokens={{ childrenGap: '0.5rem' }}
-                  >
-                    <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
-                      Allow access to mic
-                    </Stack>
-                    <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-                      So you're seen and heard on the video call. This is required before joining
-                    </Stack>
-                  </Stack>
-                  <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
-                    <PrimaryButton
-                      onClick={() => {
-                        adapter.askDevicePermission({ video: true, audio: true });
-                        setShowDrawer(false);
-                      }}
-                      styles={allowButtonStyles}
-                    >
-                      Allow (Required)
-                    </PrimaryButton>
-                  </Stack>
-                  {isSafari && (
-                    <PrimaryButton
-                      onClick={() => {
-                        window.location.href = 'prefs:root=Settings';
-                      }}
-                    >
-                      Settings
-                    </PrimaryButton>
-                  )}
-                </Stack>
-              </_DrawerSurface>
-            </Stack>
+            <PermissionsPrompt adapter={adapter} onLightDismiss={() => setShowDrawer(false)} />
           )}
         </CallAdapterProvider>
       </BaseProvider>
     </div>
+  );
+};
+
+const PermissionsPrompt = (props: { adapter: CallAdapter; onLightDismiss: () => void }): JSX.Element | null => {
+  const { adapter, onLightDismiss } = props;
+
+  const theme = useTheme();
+
+  const allowButtonStyles = {
+    root: {
+      minHeight: '3rem',
+      borderRadius: theme.effects.roundedCorner6,
+      height: '2.5rem',
+      width: '100%'
+    }
+  };
+
+  return (
+    <Stack styles={drawerContainerStyles}>
+      <_DrawerSurface
+        onLightDismiss={onLightDismiss}
+        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+      >
+        <Stack horizontalAlign="center" tokens={{ childrenGap: '1.5rem' }}>
+          <Stack horizontal verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+            <Stack
+              styles={{
+                root: {
+                  height: '5.75rem',
+                  width: '5.75rem',
+                  borderRadius: '50%',
+                  background: theme.palette.blueLight
+                }
+              }}
+              horizontalAlign="center"
+              verticalAlign="center"
+            >
+              <Video48Filled style={{ color: theme.palette.themePrimary }} />
+            </Stack>
+            <Icon icon="fluent:sparkle-48-filled" />
+            <Stack
+              styles={{
+                root: {
+                  height: '5.75rem',
+                  width: '5.75rem',
+                  borderRadius: '50%',
+                  background: theme.palette.blueLight
+                }
+              }}
+              horizontalAlign="center"
+              verticalAlign="center"
+            >
+              <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
+            </Stack>
+          </Stack>
+          <Stack
+            horizontalAlign="center"
+            styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+            tokens={{ childrenGap: '0.5rem' }}
+          >
+            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+              {'Allow access to camera & microphone'}
+            </Stack>
+            <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+              {'Enabling these permissions allows other participants to see and hear you.'}
+            </Stack>
+          </Stack>
+          <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
+            <PrimaryButton
+              onClick={() => {
+                adapter.askDevicePermission({ video: true, audio: true });
+              }}
+              styles={allowButtonStyles}
+            >
+              Allow (Required)
+            </PrimaryButton>
+          </Stack>
+        </Stack>
+      </_DrawerSurface>
+    </Stack>
   );
 };
