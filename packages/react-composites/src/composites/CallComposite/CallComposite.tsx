@@ -358,10 +358,10 @@ const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JS
           </Stack>
           <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
             <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
-              {'Allow access to camera & microphone'}
+              {'Refresh and allow microphone access'}
             </Stack>
             <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-              {'So others can see you on the call.'}
+              {'Enable permissions to access your camera, so participants can hear you.'}
             </Stack>
           </Stack>
         </Stack>
