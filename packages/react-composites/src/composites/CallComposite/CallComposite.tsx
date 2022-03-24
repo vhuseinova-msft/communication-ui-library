@@ -82,6 +82,7 @@ export type CallCompositeOptions = {
 
 type MainScreenProps = {
   mobileView: boolean;
+  videoPermissionsDeniedOnClick(): void;
   onRenderAvatar?: OnRenderAvatarCallback;
   callInvitationUrl?: string;
   onFetchAvatarPersonaData?: AvatarPersonaDataCallback;
@@ -104,6 +105,7 @@ const MainScreen = (props: MainScreenProps): JSX.Element => {
           startCallHandler={(): void => {
             adapter.joinCall();
           }}
+          videoPermissionsDeniedOnClick={props.videoPermissionsDeniedOnClick}
         />
       );
     case 'accessDeniedTeamsMeeting':
@@ -170,38 +172,7 @@ const MainScreen = (props: MainScreenProps): JSX.Element => {
  * @public
  */
 export const CallComposite = (props: CallCompositeProps): JSX.Element => {
-  const {
-    adapter,
-    callInvitationUrl,
-    onFetchAvatarPersonaData,
-    onFetchParticipantMenuItems,
-    options,
-    formFactor = 'desktop'
-  } = props;
-
-  const [showDrawer, setShowDrawer] = useState(false);
-
-  useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-      if (devices.every((device) => device.label === '')) {
-        setShowDrawer(true);
-      } else {
-        adapter.askDevicePermission({ video: true, audio: true });
-        adapter.queryCameras();
-        adapter.queryMicrophones();
-        adapter.querySpeakers();
-      }
-    });
-    const update = (newState: CallAdapterState): void => {
-      if (newState.devices.deviceAccess?.audio && newState.devices.deviceAccess?.video) {
-        setShowDrawer(false);
-      }
-    };
-    adapter.onStateChange(update);
-    return () => {
-      adapter.offStateChange(update);
-    };
-  }, [adapter]);
+  const { adapter, formFactor = 'desktop' } = props;
 
   const mobileView = formFactor === 'mobile';
 
@@ -213,23 +184,85 @@ export const CallComposite = (props: CallCompositeProps): JSX.Element => {
     <div className={mainScreenContainerClassName}>
       <BaseProvider {...props}>
         <CallAdapterProvider adapter={adapter}>
-          <MainScreen
-            callInvitationUrl={callInvitationUrl}
-            onFetchAvatarPersonaData={onFetchAvatarPersonaData}
-            onFetchParticipantMenuItems={onFetchParticipantMenuItems}
-            mobileView={mobileView}
-            options={options}
-          />
-          {showDrawer && mobileView && (
-            <PermissionsPrompt adapter={adapter} onLightDismiss={() => setShowDrawer(false)} />
-          )}
+          <MainScreenPreparation {...props} />
         </CallAdapterProvider>
       </BaseProvider>
     </div>
   );
 };
 
-const PermissionsPrompt = (props: { adapter: CallAdapter; onLightDismiss: () => void }): JSX.Element | null => {
+const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
+  const {
+    adapter,
+    callInvitationUrl,
+    onFetchAvatarPersonaData,
+    onFetchParticipantMenuItems,
+    options,
+    formFactor = 'desktop'
+  } = props;
+
+  const [permissionsState, setPermissionsState] = useState<
+    'microphonePermissionsNeeded' | 'microphonePermissionsDenied' | 'noPermissionsNeeded' | 'videoPermissionDenied'
+  >('noPermissionsNeeded');
+
+  useEffect(() => {
+    navigator.permissions.query({ name: 'microphone' }).then(function (result) {
+      console.log('microphone result.state ', result.state);
+      if (result.state === 'granted') {
+        adapter.askDevicePermission({ video: false, audio: true });
+        adapter.queryMicrophones();
+        adapter.querySpeakers();
+      } else if (result.state === 'prompt') {
+        setPermissionsState('microphonePermissionsNeeded');
+      } else if (result.state === 'denied') {
+        setPermissionsState('microphonePermissionsDenied');
+      }
+    });
+    navigator.permissions.query({ name: 'camera' }).then(function (result) {
+      console.log('camera result.state ', result.state);
+      if (result.state === 'granted') {
+        adapter.askDevicePermission({ video: true, audio: false });
+        adapter.queryCameras();
+      }
+    });
+    const update = (newState: CallAdapterState): void => {
+      if (newState.devices.deviceAccess?.audio) {
+        setPermissionsState('noPermissionsNeeded');
+      } else if (newState.devices.deviceAccess?.audio === false) {
+        setPermissionsState('microphonePermissionsDenied');
+      } else if (newState.devices.deviceAccess?.video) {
+        setPermissionsState('noPermissionsNeeded');
+      }
+    };
+    adapter.onStateChange(update);
+    return () => {
+      adapter.offStateChange(update);
+    };
+  }, [adapter]);
+
+  const mobileView = formFactor === 'mobile';
+
+  return (
+    <Stack styles={{ root: { width: '100%', height: '100%' } }}>
+      <MainScreen
+        callInvitationUrl={callInvitationUrl}
+        onFetchAvatarPersonaData={onFetchAvatarPersonaData}
+        onFetchParticipantMenuItems={onFetchParticipantMenuItems}
+        mobileView={mobileView}
+        options={options}
+        videoPermissionsDeniedOnClick={() => setPermissionsState('videoPermissionDenied')}
+      />
+      {permissionsState === 'microphonePermissionsNeeded' && <MicrophonePermissionPrompt adapter={adapter} />}
+      {permissionsState === 'microphonePermissionsDenied' && <MicrophonePermissionBlocker />}
+      {permissionsState === 'videoPermissionDenied' && <VideoPermissionPrompt adapter={adapter} />}
+    </Stack>
+  );
+};
+
+const MicrophonePermissionPrompt = (props: {
+  adapter: CallAdapter;
+  onLightDismiss?: () => void;
+}): JSX.Element | null => {
   const { adapter, onLightDismiss } = props;
 
   const theme = useTheme();
@@ -246,40 +279,37 @@ const PermissionsPrompt = (props: { adapter: CallAdapter; onLightDismiss: () => 
   return (
     <Stack styles={drawerContainerStyles}>
       <_DrawerSurface
-        onLightDismiss={onLightDismiss}
+        onLightDismiss={() => onLightDismiss?.()}
         styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
       >
         <Stack horizontalAlign="center" tokens={{ childrenGap: '1.5rem' }}>
-          <Stack horizontal verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+          <Stack
+            styles={{
+              root: {
+                height: '5.75rem',
+                width: '5.75rem',
+                position: 'relative'
+              }
+            }}
+            horizontalAlign="center"
+            verticalAlign="center"
+          >
+            <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
             <Stack
               styles={{
                 root: {
-                  height: '5.75rem',
-                  width: '5.75rem',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  zIndex: -1,
+                  height: '100%',
+                  width: '100%',
                   borderRadius: '50%',
-                  background: theme.palette.blueLight
+                  background: theme.palette.themePrimary,
+                  opacity: 0.1
                 }
               }}
-              horizontalAlign="center"
-              verticalAlign="center"
-            >
-              <Video48Filled style={{ color: theme.palette.themePrimary }} />
-            </Stack>
-            <Icon icon="fluent:sparkle-48-filled" />
-            <Stack
-              styles={{
-                root: {
-                  height: '5.75rem',
-                  width: '5.75rem',
-                  borderRadius: '50%',
-                  background: theme.palette.blueLight
-                }
-              }}
-              horizontalAlign="center"
-              verticalAlign="center"
-            >
-              <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
-            </Stack>
+            />
           </Stack>
           <Stack
             horizontalAlign="center"
@@ -287,21 +317,136 @@ const PermissionsPrompt = (props: { adapter: CallAdapter; onLightDismiss: () => 
             tokens={{ childrenGap: '0.5rem' }}
           >
             <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
-              {'Allow access to camera & microphone'}
+              {'Allow access to microphone'}
             </Stack>
             <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-              {'Enabling these permissions allows other participants to see and hear you.'}
+              {'Enable permissions to access your microphone, so participants can hear you.'}
             </Stack>
           </Stack>
           <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
             <PrimaryButton
               onClick={() => {
-                adapter.askDevicePermission({ video: true, audio: true });
+                adapter.askDevicePermission({ video: false, audio: true });
               }}
               styles={allowButtonStyles}
             >
-              Allow (Required)
+              {'Allow access'}
             </PrimaryButton>
+          </Stack>
+          <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+            {'You will see a popup asking for permissions. Tap "Allow".'}
+          </Stack>
+        </Stack>
+      </_DrawerSurface>
+    </Stack>
+  );
+};
+
+const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Element | null => {
+  const { onLightDismiss } = props;
+
+  const theme = useTheme();
+
+  return (
+    <Stack styles={drawerContainerStyles}>
+      <_DrawerSurface
+        onLightDismiss={() => onLightDismiss?.()}
+        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+      >
+        <Stack
+          horizontalAlign="center"
+          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+          tokens={{ childrenGap: '0.5rem' }}
+        >
+          <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+              {'Allow access to camera & microphone'}
+            </Stack>
+            <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+              {'So others can see you on the call.'}
+            </Stack>
+          </Stack>
+        </Stack>
+      </_DrawerSurface>
+    </Stack>
+  );
+};
+
+const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: () => void }): JSX.Element | null => {
+  const { adapter, onLightDismiss } = props;
+
+  const theme = useTheme();
+
+  const allowButtonStyles = {
+    root: {
+      minHeight: '3rem',
+      borderRadius: theme.effects.roundedCorner6,
+      height: '2.5rem',
+      width: '100%'
+    }
+  };
+
+  return (
+    <Stack styles={drawerContainerStyles}>
+      <_DrawerSurface
+        onLightDismiss={() => onLightDismiss?.()}
+        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+      >
+        <Stack
+          horizontalAlign="center"
+          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+          tokens={{ childrenGap: '0.5rem' }}
+        >
+          <Stack
+            styles={{
+              root: {
+                height: '5.75rem',
+                width: '5.75rem',
+                position: 'relative'
+              }
+            }}
+            horizontalAlign="center"
+            verticalAlign="center"
+          >
+            <Video48Filled style={{ color: theme.palette.themePrimary }} />
+            <Stack
+              styles={{
+                root: {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  zIndex: -1,
+                  height: '100%',
+                  width: '100%',
+                  borderRadius: '50%',
+                  background: theme.palette.themePrimary,
+                  opacity: 0.1
+                }
+              }}
+            />
+          </Stack>
+          <Stack horizontalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+              {'Allow access to camera'}
+            </Stack>
+            <Stack
+              styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize, color: theme.palette.neutralSecondary } }}
+            >
+              {'Please allow access to your camera, so it can be turned on for others to see you.'}
+            </Stack>
+          </Stack>
+          <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
+            <PrimaryButton
+              onClick={() => {
+                adapter.askDevicePermission({ video: true, audio: false });
+              }}
+              styles={allowButtonStyles}
+            >
+              {'Allow access'}
+            </PrimaryButton>
+          </Stack>
+          <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+            {'You will see a popup asking for permissions. Tap "Allow".'}
           </Stack>
         </Stack>
       </_DrawerSurface>

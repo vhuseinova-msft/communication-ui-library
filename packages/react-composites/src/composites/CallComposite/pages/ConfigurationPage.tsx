@@ -35,6 +35,7 @@ import { useLocale } from '../../localization';
 export interface ConfigurationPageProps {
   mobileView: boolean;
   startCallHandler(): void;
+  videoPermissionsDeniedOnClick(): void;
 }
 
 /**
@@ -74,7 +75,11 @@ export const ConfigurationPage = (props: ConfigurationPageProps): JSX.Element =>
           {callDescription}
         </Stack.Item>
       )}
-      <LocalPreview mobileView={mobileView} showDevicesButton={mobileView} />
+      <LocalPreview
+        mobileView={mobileView}
+        showDevicesButton={mobileView}
+        videoPermissionsDeniedOnClick={props.videoPermissionsDeniedOnClick}
+      />
       <Stack className={mobileView ? undefined : selectionContainerStyle}>
         {!mobileView && (
           <>

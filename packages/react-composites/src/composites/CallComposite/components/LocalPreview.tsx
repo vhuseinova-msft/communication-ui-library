@@ -34,6 +34,7 @@ import {
 export interface LocalPreviewProps {
   mobileView: boolean;
   showDevicesButton: boolean;
+  videoPermissionsDeniedOnClick(): void;
 }
 
 /**
@@ -110,14 +111,21 @@ export const LocalPreview = (props: LocalPreviewProps): JSX.Element => {
             data-ui-id="call-composite-local-device-settings-camera-button"
             {...cameraButtonProps}
             showLabel={true}
-            disabled={!cameraPermissionGranted}
+            onToggleCamera={async () => {
+              if (cameraPermissionGranted) {
+                cameraButtonProps.onToggleCamera();
+              } else {
+                props.videoPermissionsDeniedOnClick();
+              }
+            }}
+            disabled={undefined}
           />
           {props.showDevicesButton && (
             <DevicesButton
               data-ui-id="call-composite-local-device-settings-options-button"
               {...devicesButtonProps}
               // disable button whilst all other buttons are disabled
-              disabled={!microphonePermissionGranted || !cameraPermissionGranted}
+              disabled={!microphonePermissionGranted}
               showLabel={true}
               styles={devicesButtonStyles}
             />
