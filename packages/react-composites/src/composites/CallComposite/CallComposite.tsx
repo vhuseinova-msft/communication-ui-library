@@ -202,7 +202,11 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
   } = props;
 
   const [permissionsState, setPermissionsState] = useState<
-    'microphonePermissionsNeeded' | 'microphonePermissionsDenied' | 'noPermissionsNeeded' | 'videoPermissionDenied'
+    | 'microphonePermissionsNeeded'
+    | 'microphonePermissionsDenied'
+    | 'noPermissionsNeeded'
+    | 'videoPermissionNeeded'
+    | 'videoPermissionDenied'
   >('noPermissionsNeeded');
 
   useEffect(() => {
@@ -230,8 +234,11 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         setPermissionsState('noPermissionsNeeded');
       } else if (newState.devices.deviceAccess?.audio === false) {
         setPermissionsState('microphonePermissionsDenied');
-      } else if (newState.devices.deviceAccess?.video) {
+      }
+      if (newState.devices.deviceAccess?.video) {
         setPermissionsState('noPermissionsNeeded');
+      } else if (newState.devices.deviceAccess?.video === false) {
+        setPermissionsState('videoPermissionDenied');
       }
     };
     adapter.onStateChange(update);
@@ -250,11 +257,16 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         onFetchParticipantMenuItems={onFetchParticipantMenuItems}
         mobileView={mobileView}
         options={options}
-        videoPermissionsDeniedOnClick={() => setPermissionsState('videoPermissionDenied')}
+        videoPermissionsDeniedOnClick={() => setPermissionsState('videoPermissionNeeded')}
       />
       {permissionsState === 'microphonePermissionsNeeded' && <MicrophonePermissionPrompt adapter={adapter} />}
       {permissionsState === 'microphonePermissionsDenied' && <MicrophonePermissionBlocker />}
-      {permissionsState === 'videoPermissionDenied' && <VideoPermissionPrompt adapter={adapter} />}
+      {permissionsState === 'videoPermissionNeeded' && (
+        <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setPermissionsState('noPermissionsNeeded')} />
+      )}
+      {permissionsState === 'videoPermissionDenied' && (
+        <VideoPermissionBlocker onLightDismiss={() => setPermissionsState('noPermissionsNeeded')} />
+      )}
     </Stack>
   );
 };
@@ -282,40 +294,17 @@ const MicrophonePermissionPrompt = (props: {
         onLightDismiss={() => onLightDismiss?.()}
         styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
       >
-        <Stack horizontalAlign="center" tokens={{ childrenGap: '1.5rem' }}>
-          <Stack
-            styles={{
-              root: {
-                height: '5.75rem',
-                width: '5.75rem',
-                position: 'relative'
-              }
-            }}
-            horizontalAlign="center"
-            verticalAlign="center"
-          >
-            <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
-            <Stack
-              styles={{
-                root: {
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: -1,
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: '50%',
-                  background: theme.palette.themePrimary,
-                  opacity: 0.1
-                }
-              }}
-            />
+        <Stack
+          horizontalAlign="center"
+          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+          tokens={{ childrenGap: '1.5rem' }}
+        >
+          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+            <CircleBackground backgroundColor={theme.palette.themePrimary}>
+              <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
+            </CircleBackground>
           </Stack>
-          <Stack
-            horizontalAlign="center"
-            styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
-            tokens={{ childrenGap: '0.5rem' }}
-          >
+          <Stack horizontalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
             <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
               {'Allow access to microphone'}
             </Stack>
@@ -358,6 +347,11 @@ const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JS
           styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
           tokens={{ childrenGap: '0.5rem' }}
         >
+          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+            <CircleBackground backgroundColor={theme.palette.themePrimary}>
+              <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
+            </CircleBackground>
+          </Stack>
           <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
             <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
               {'Allow access to camera & microphone'}
@@ -397,33 +391,10 @@ const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: (
           styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
           tokens={{ childrenGap: '0.5rem' }}
         >
-          <Stack
-            styles={{
-              root: {
-                height: '5.75rem',
-                width: '5.75rem',
-                position: 'relative'
-              }
-            }}
-            horizontalAlign="center"
-            verticalAlign="center"
-          >
-            <Video48Filled style={{ color: theme.palette.themePrimary }} />
-            <Stack
-              styles={{
-                root: {
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: -1,
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: '50%',
-                  background: theme.palette.themePrimary,
-                  opacity: 0.1
-                }
-              }}
-            />
+          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+            <CircleBackground backgroundColor={theme.palette.themePrimary}>
+              <Video48Filled style={{ color: theme.palette.themePrimary }} />
+            </CircleBackground>
           </Stack>
           <Stack horizontalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
             <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
@@ -450,6 +421,74 @@ const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: (
           </Stack>
         </Stack>
       </_DrawerSurface>
+    </Stack>
+  );
+};
+
+const VideoPermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Element | null => {
+  const { onLightDismiss } = props;
+
+  const theme = useTheme();
+
+  return (
+    <Stack styles={drawerContainerStyles}>
+      <_DrawerSurface
+        onLightDismiss={() => onLightDismiss?.()}
+        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+      >
+        <Stack
+          horizontalAlign="center"
+          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+          tokens={{ childrenGap: '0.5rem' }}
+        >
+          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+            <CircleBackground backgroundColor={theme.palette.themePrimary}>
+              <Video48Filled style={{ color: theme.palette.themePrimary }} />
+            </CircleBackground>
+          </Stack>
+          <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+              {'Refresh and allow camera access'}
+            </Stack>
+            <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+              {'Enable permissions to access your camera, so participants can see you.'}
+            </Stack>
+          </Stack>
+        </Stack>
+      </_DrawerSurface>
+    </Stack>
+  );
+};
+
+const CircleBackground = (props: { children: React.ReactNode; backgroundColor: string }): JSX.Element => {
+  return (
+    <Stack
+      styles={{
+        root: {
+          height: '5.75rem',
+          width: '5.75rem',
+          position: 'relative'
+        }
+      }}
+      horizontalAlign="center"
+      verticalAlign="center"
+    >
+      {props.children}
+      <Stack
+        styles={{
+          root: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: -1,
+            height: '100%',
+            width: '100%',
+            borderRadius: '50%',
+            background: props.backgroundColor,
+            opacity: 0.1
+          }
+        }}
+      />
     </Stack>
   );
 };
