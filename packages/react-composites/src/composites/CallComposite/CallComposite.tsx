@@ -201,13 +201,13 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     formFactor = 'desktop'
   } = props;
 
-  const [permissionsState, setPermissionsState] = useState<
-    | 'microphonePermissionsNeeded'
-    | 'microphonePermissionsDenied'
-    | 'noPermissionsNeeded'
-    | 'videoPermissionNeeded'
-    | 'videoPermissionDenied'
-  >('noPermissionsNeeded');
+  const [microphonePermissionState, setMicrophonePermissionsState] = useState<
+    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
+  >('noPermissionNeeded');
+
+  const [videoPermissionState, setVideoPermissionState] = useState<
+    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
+  >('noPermissionNeeded');
 
   useEffect(() => {
     navigator.permissions.query({ name: 'microphone' }).then(function (result) {
@@ -217,9 +217,9 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         adapter.queryMicrophones();
         adapter.querySpeakers();
       } else if (result.state === 'prompt') {
-        setPermissionsState('microphonePermissionsNeeded');
+        setMicrophonePermissionsState('permissionNeeded');
       } else if (result.state === 'denied') {
-        setPermissionsState('microphonePermissionsDenied');
+        setMicrophonePermissionsState('permissionDenied');
       }
     });
     navigator.permissions.query({ name: 'camera' }).then(function (result) {
@@ -231,14 +231,12 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     });
     const update = (newState: CallAdapterState): void => {
       if (newState.devices.deviceAccess?.audio) {
-        setPermissionsState('noPermissionsNeeded');
+        setMicrophonePermissionsState('noPermissionNeeded');
       } else if (newState.devices.deviceAccess?.audio === false) {
-        setPermissionsState('microphonePermissionsDenied');
+        setMicrophonePermissionsState('permissionDenied');
       }
       if (newState.devices.deviceAccess?.video) {
-        setPermissionsState('noPermissionsNeeded');
-      } else if (newState.devices.deviceAccess?.video === false) {
-        setPermissionsState('videoPermissionDenied');
+        setVideoPermissionState('noPermissionNeeded');
       }
     };
     adapter.onStateChange(update);
@@ -249,6 +247,19 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
 
   const mobileView = formFactor === 'mobile';
 
+  let drawer: JSX.Element | null = null;
+  if (microphonePermissionState === 'permissionNeeded') {
+    drawer = <MicrophonePermissionPrompt adapter={adapter} />;
+  } else if (microphonePermissionState === 'permissionDenied') {
+    drawer = <MicrophonePermissionBlocker />;
+  } else if (videoPermissionState === 'permissionNeeded') {
+    drawer = (
+      <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />
+    );
+  } else if (videoPermissionState === 'permissionDenied') {
+    drawer = <VideoPermissionBlocker onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />;
+  }
+
   return (
     <Stack styles={{ root: { width: '100%', height: '100%' } }}>
       <MainScreen
@@ -257,16 +268,9 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         onFetchParticipantMenuItems={onFetchParticipantMenuItems}
         mobileView={mobileView}
         options={options}
-        videoPermissionsDeniedOnClick={() => setPermissionsState('videoPermissionNeeded')}
+        videoPermissionsDeniedOnClick={() => setVideoPermissionState('permissionNeeded')}
       />
-      {permissionsState === 'microphonePermissionsNeeded' && <MicrophonePermissionPrompt adapter={adapter} />}
-      {permissionsState === 'microphonePermissionsDenied' && <MicrophonePermissionBlocker />}
-      {permissionsState === 'videoPermissionNeeded' && (
-        <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setPermissionsState('noPermissionsNeeded')} />
-      )}
-      {permissionsState === 'videoPermissionDenied' && (
-        <VideoPermissionBlocker onLightDismiss={() => setPermissionsState('noPermissionsNeeded')} />
-      )}
+      {drawer}
     </Stack>
   );
 };
