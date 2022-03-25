@@ -205,13 +205,12 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
-  const [videoPermissionState, setVideoPermissionState] = useState<
+  const [cameraPermissionState, setCameraPermissionState] = useState<
     'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
   useEffect(() => {
     navigator.permissions.query({ name: 'microphone' }).then(function (result) {
-      console.log('microphone result.state ', result.state);
       if (result.state === 'granted') {
         adapter.askDevicePermission({ video: false, audio: true });
         adapter.queryMicrophones();
@@ -223,7 +222,6 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
       }
     });
     navigator.permissions.query({ name: 'camera' }).then(function (result) {
-      console.log('camera result.state ', result.state);
       if (result.state === 'granted') {
         adapter.askDevicePermission({ video: true, audio: false });
         adapter.queryCameras();
@@ -236,7 +234,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         setMicrophonePermissionsState('permissionDenied');
       }
       if (newState.devices.deviceAccess?.video !== undefined) {
-        setVideoPermissionState('noPermissionNeeded');
+        setCameraPermissionState('noPermissionNeeded');
       }
     };
     adapter.onStateChange(update);
@@ -252,24 +250,23 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     drawer = <MicrophonePermissionPrompt adapter={adapter} />;
   } else if (microphonePermissionState === 'permissionDenied') {
     drawer = <MicrophonePermissionBlocker />;
-  } else if (videoPermissionState === 'permissionNeeded') {
+  } else if (cameraPermissionState === 'permissionNeeded') {
     drawer = (
-      <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />
+      <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')} />
     );
-  } else if (videoPermissionState === 'permissionDenied') {
-    drawer = <VideoPermissionBlocker onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />;
+  } else if (cameraPermissionState === 'permissionDenied') {
+    drawer = <VideoPermissionBlocker onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')} />;
   }
 
   const videoPermissionsDeniedOnClick = useCallback(() => {
     navigator.permissions.query({ name: 'camera' }).then(function (result) {
-      console.log('camera result.state ', result.state);
       if (result.state === 'prompt') {
-        setVideoPermissionState('permissionNeeded');
+        setCameraPermissionState('permissionNeeded');
       } else if (result.state === 'denied') {
-        setVideoPermissionState('permissionDenied');
+        setCameraPermissionState('permissionDenied');
       }
     });
-  }, [setVideoPermissionState]);
+  }, [setCameraPermissionState]);
 
   return (
     <Stack styles={{ root: { width: '100%', height: '100%' } }}>
@@ -290,8 +287,6 @@ const MicrophonePermissionPrompt = (props: {
   adapter: CallAdapter;
   onLightDismiss?: () => void;
 }): JSX.Element | null => {
-  const { adapter, onLightDismiss } = props;
-
   const theme = useTheme();
 
   const allowButtonStyles = {
@@ -304,86 +299,72 @@ const MicrophonePermissionPrompt = (props: {
   };
 
   return (
-    <Stack styles={drawerContainerStyles}>
-      <_DrawerSurface
-        onLightDismiss={() => onLightDismiss?.()}
-        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+    <Sheet {...props}>
+      <Stack
+        horizontalAlign="center"
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        tokens={{ childrenGap: '1.5rem' }}
       >
-        <Stack
-          horizontalAlign="center"
-          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
-          tokens={{ childrenGap: '1.5rem' }}
-        >
-          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
-            <CircleBackground backgroundColor={theme.palette.themePrimary}>
-              <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
-            </CircleBackground>
-          </Stack>
-          <Stack horizontalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
-            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
-              {'Allow access to microphone'}
-            </Stack>
-            <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-              {'Enable permissions to access your microphone, so participants can hear you.'}
-            </Stack>
-          </Stack>
-          <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
-            <PrimaryButton
-              onClick={() => {
-                adapter.askDevicePermission({ video: false, audio: true });
-              }}
-              styles={allowButtonStyles}
-            >
-              {'Allow access'}
-            </PrimaryButton>
+        <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+          <CircleBackground backgroundColor={theme.palette.themePrimary}>
+            <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
+          </CircleBackground>
+        </Stack>
+        <Stack horizontalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+          <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+            {'Allow access to microphone'}
           </Stack>
           <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-            {'You will see a popup asking for permissions. Tap "Allow".'}
+            {'Enable permissions to access your microphone, so participants can hear you.'}
           </Stack>
         </Stack>
-      </_DrawerSurface>
-    </Stack>
+        <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
+          <PrimaryButton
+            onClick={() => {
+              props.adapter.askDevicePermission({ video: false, audio: true });
+            }}
+            styles={allowButtonStyles}
+          >
+            {'Allow access'}
+          </PrimaryButton>
+        </Stack>
+        <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+          {'You will see a popup asking for permissions. Tap "Allow".'}
+        </Stack>
+      </Stack>
+    </Sheet>
   );
 };
 
 const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Element | null => {
-  const { onLightDismiss } = props;
-
   const theme = useTheme();
 
   return (
-    <Stack styles={drawerContainerStyles}>
-      <_DrawerSurface
-        onLightDismiss={() => onLightDismiss?.()}
-        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+    <Sheet {...props}>
+      <Stack
+        horizontalAlign="center"
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        tokens={{ childrenGap: '0.5rem' }}
       >
-        <Stack
-          horizontalAlign="center"
-          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
-          tokens={{ childrenGap: '0.5rem' }}
-        >
-          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
-            <CircleBackground backgroundColor={theme.palette.themePrimary}>
-              <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
-            </CircleBackground>
+        <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+          <CircleBackground backgroundColor={theme.palette.themePrimary}>
+            <MicOn48Filled style={{ color: theme.palette.themePrimary }} />
+          </CircleBackground>
+        </Stack>
+        <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+          <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+            {'Refresh and allow microphone access'}
           </Stack>
-          <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
-            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
-              {'Refresh and allow microphone access'}
-            </Stack>
-            <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-              {'Enable permissions to access your camera, so participants can hear you.'}
-            </Stack>
+          <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+            {'Enable permissions to access your camera, so participants can hear you.'}
           </Stack>
         </Stack>
-      </_DrawerSurface>
-    </Stack>
+      </Stack>
+    </Sheet>
   );
 };
 
 const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: () => void }): JSX.Element | null => {
-  const { adapter, onLightDismiss } = props;
-
   const theme = useTheme();
 
   const allowButtonStyles = {
@@ -396,80 +377,81 @@ const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: (
   };
 
   return (
-    <Stack styles={drawerContainerStyles}>
-      <_DrawerSurface
-        onLightDismiss={() => onLightDismiss?.()}
-        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+    <Sheet {...props}>
+      <Stack
+        horizontalAlign="center"
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        tokens={{ childrenGap: '0.5rem' }}
       >
-        <Stack
-          horizontalAlign="center"
-          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
-          tokens={{ childrenGap: '0.5rem' }}
-        >
-          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
-            <CircleBackground backgroundColor={theme.palette.themePrimary}>
-              <Video48Filled style={{ color: theme.palette.themePrimary }} />
-            </CircleBackground>
+        <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+          <CircleBackground backgroundColor={theme.palette.themePrimary}>
+            <Video48Filled style={{ color: theme.palette.themePrimary }} />
+          </CircleBackground>
+        </Stack>
+        <Stack horizontalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+          <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+            {'Allow access to camera'}
           </Stack>
-          <Stack horizontalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
-            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
-              {'Allow access to camera'}
-            </Stack>
-            <Stack
-              styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize, color: theme.palette.neutralSecondary } }}
-            >
-              {'Please allow access to your camera, so it can be turned on for others to see you.'}
-            </Stack>
-          </Stack>
-          <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
-            <PrimaryButton
-              onClick={() => {
-                adapter.askDevicePermission({ video: true, audio: false });
-              }}
-              styles={allowButtonStyles}
-            >
-              {'Allow access'}
-            </PrimaryButton>
-          </Stack>
-          <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-            {'You will see a popup asking for permissions. Tap "Allow".'}
+          <Stack
+            styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize, color: theme.palette.neutralSecondary } }}
+          >
+            {'Please allow access to your camera, so it can be turned on for others to see you.'}
           </Stack>
         </Stack>
-      </_DrawerSurface>
-    </Stack>
+        <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
+          <PrimaryButton
+            onClick={() => {
+              props.adapter.askDevicePermission({ video: true, audio: false });
+            }}
+            styles={allowButtonStyles}
+          >
+            {'Allow access'}
+          </PrimaryButton>
+        </Stack>
+        <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+          {'You will see a popup asking for permissions. Tap "Allow".'}
+        </Stack>
+      </Stack>
+    </Sheet>
   );
 };
 
 const VideoPermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Element | null => {
-  const { onLightDismiss } = props;
-
   const theme = useTheme();
 
   return (
-    <Stack styles={drawerContainerStyles}>
-      <_DrawerSurface
-        onLightDismiss={() => onLightDismiss?.()}
-        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+    <Sheet {...props}>
+      <Stack
+        horizontalAlign="center"
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        tokens={{ childrenGap: '0.5rem' }}
       >
-        <Stack
-          horizontalAlign="center"
-          styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
-          tokens={{ childrenGap: '0.5rem' }}
-        >
-          <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
-            <CircleBackground backgroundColor={theme.palette.themePrimary}>
-              <Video48Filled style={{ color: theme.palette.themePrimary }} />
-            </CircleBackground>
+        <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+          <CircleBackground backgroundColor={theme.palette.themePrimary}>
+            <Video48Filled style={{ color: theme.palette.themePrimary }} />
+          </CircleBackground>
+        </Stack>
+        <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+          <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+            {'Refresh and allow camera access'}
           </Stack>
-          <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
-            <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
-              {'Refresh and allow camera access'}
-            </Stack>
-            <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
-              {'Enable permissions to access your camera, so participants can see you.'}
-            </Stack>
+          <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+            {'Enable permissions to access your camera, so participants can see you.'}
           </Stack>
         </Stack>
+      </Stack>
+    </Sheet>
+  );
+};
+
+const Sheet = (props: { children: React.ReactNode; onLightDismiss?: () => void }): JSX.Element => {
+  return (
+    <Stack styles={drawerContainerStyles}>
+      <_DrawerSurface
+        onLightDismiss={() => props.onLightDismiss?.()}
+        styles={{ drawerContentContainer: { root: { padding: '2rem 1rem' } } }}
+      >
+        {props.children}
       </_DrawerSurface>
     </Stack>
   );
