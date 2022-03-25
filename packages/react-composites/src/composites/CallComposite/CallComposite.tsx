@@ -28,7 +28,7 @@ import {
 } from './styles/CallComposite.styles';
 import { CallControlOptions } from './types/CallControlOptions';
 import { PrimaryButton, Stack } from '@fluentui/react';
-import { Video48Filled, MicOn48Filled } from '@fluentui/react-icons';
+import { Video48Filled, MicOn48Filled, Settings28Filled } from '@fluentui/react-icons';
 import { Icon } from '@iconify/react';
 import { devicePermissionSelector } from './selectors/devicePermissionSelector';
 
@@ -202,16 +202,19 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
   } = props;
 
   const [microphonePermissionState, setMicrophonePermissionsState] = useState<
-    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
+    'permissionNeeded' | 'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
   const [cameraPermissionState, setCameraPermissionState] = useState<
-    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
+    'permissionNeeded' | 'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
   useEffect(() => {
     navigator.permissions.query({ name: 'microphone' }).then(function (result) {
       if (result.state === 'granted') {
+        navigator.mediaDevices.getUserMedia({ audio: true }).catch((e) => {
+          setMicrophonePermissionsState('permissionDeniedBySystem');
+        });
         adapter.askDevicePermission({ video: false, audio: true });
         adapter.queryMicrophones();
         adapter.querySpeakers();
@@ -230,8 +233,17 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     const update = (newState: CallAdapterState): void => {
       if (newState.devices.deviceAccess?.audio) {
         setMicrophonePermissionsState('noPermissionNeeded');
-      } else if (newState.devices.deviceAccess?.audio === false) {
-        setMicrophonePermissionsState('permissionDenied');
+      } else if (
+        newState.devices.deviceAccess?.audio === false &&
+        microphonePermissionState !== 'permissionDeniedBySystem'
+      ) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).catch((e) => {
+          if (e.message.includes('system')) {
+            setMicrophonePermissionsState('permissionDeniedBySystem');
+          } else {
+            setMicrophonePermissionsState('permissionDenied');
+          }
+        });
       }
       if (newState.devices.deviceAccess?.video !== undefined) {
         setCameraPermissionState('noPermissionNeeded');
@@ -250,6 +262,8 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     drawer = <MicrophonePermissionPrompt adapter={adapter} />;
   } else if (microphonePermissionState === 'permissionDenied') {
     drawer = <MicrophonePermissionBlocker />;
+  } else if (microphonePermissionState === 'permissionDeniedBySystem') {
+    drawer = <MicrophonePermissionSystemBlocker />;
   } else if (cameraPermissionState === 'permissionNeeded') {
     drawer = (
       <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')} />
@@ -357,6 +371,34 @@ const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JS
           </Stack>
           <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
             {'Enable permissions to access your camera, so participants can hear you.'}
+          </Stack>
+        </Stack>
+      </Stack>
+    </Sheet>
+  );
+};
+
+const MicrophonePermissionSystemBlocker = (props: { onLightDismiss?: () => void }): JSX.Element | null => {
+  const theme = useTheme();
+
+  return (
+    <Sheet {...props}>
+      <Stack
+        horizontalAlign="center"
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        tokens={{ childrenGap: '0.5rem' }}
+      >
+        <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
+          <CircleBackground backgroundColor={theme.palette.themePrimary}>
+            <Settings28Filled style={{ color: theme.palette.themePrimary }} />
+          </CircleBackground>
+        </Stack>
+        <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+          <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
+            {'Allow microphone access to continue'}
+          </Stack>
+          <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
+            {'So other participants can hear you.'}
           </Stack>
         </Stack>
       </Stack>
