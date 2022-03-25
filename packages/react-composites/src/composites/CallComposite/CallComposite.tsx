@@ -351,6 +351,15 @@ const MicrophonePermissionPrompt = (props: {
 const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Element | null => {
   const theme = useTheme();
 
+  const buttonStyles = {
+    root: {
+      minHeight: '3rem',
+      borderRadius: theme.effects.roundedCorner6,
+      height: '2.5rem',
+      width: '100%'
+    }
+  };
+
   return (
     <Sheet {...props}>
       <Stack
@@ -370,6 +379,16 @@ const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JS
           <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
             {'Enable permissions to access your camera, so participants can hear you.'}
           </Stack>
+        </Stack>
+        <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
+          <PrimaryButton
+            onClick={() => {
+              window.location.reload();
+            }}
+            styles={buttonStyles}
+          >
+            {'Refresh page'}
+          </PrimaryButton>
         </Stack>
       </Stack>
     </Sheet>
@@ -398,6 +417,11 @@ const MicrophonePermissionSystemBlocker = (props: { onLightDismiss?: () => void 
           <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
             {'So other participants can hear you.'}
           </Stack>
+        </Stack>
+        <Stack tokens={{ childrenGap: '0.25rem' }}>
+          <Stack>{'1. Go to the Settings app'}</Stack>
+          <Stack>{'2. Scroll down to settings for this browser'}</Stack>
+          <Stack>{'3. Turn on Microphone (Camera optional)'}</Stack>
         </Stack>
       </Stack>
     </Sheet>
@@ -459,6 +483,15 @@ const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: (
 const VideoPermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Element | null => {
   const theme = useTheme();
 
+  const buttonStyles = {
+    root: {
+      minHeight: '3rem',
+      borderRadius: theme.effects.roundedCorner6,
+      height: '2.5rem',
+      width: '100%'
+    }
+  };
+
   return (
     <Sheet {...props}>
       <Stack
@@ -478,6 +511,16 @@ const VideoPermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Ele
           <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
             {'Enable permissions to access your camera, so participants can see you.'}
           </Stack>
+        </Stack>
+        <Stack horizontalAlign="center" styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
+          <PrimaryButton
+            onClick={() => {
+              window.location.reload();
+            }}
+            styles={buttonStyles}
+          >
+            {'Refresh page'}
+          </PrimaryButton>
         </Stack>
       </Stack>
     </Sheet>
