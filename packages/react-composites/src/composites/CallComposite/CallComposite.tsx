@@ -231,20 +231,18 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
       }
     });
     const update = (newState: CallAdapterState): void => {
-      if (newState.devices.deviceAccess?.audio) {
-        setMicrophonePermissionsState('noPermissionNeeded');
-      } else if (
-        newState.devices.deviceAccess?.audio === false &&
-        microphonePermissionState !== 'permissionDeniedBySystem'
-      ) {
-        navigator.mediaDevices.getUserMedia({ audio: true }).catch((e) => {
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(() => {
+          setMicrophonePermissionsState('noPermissionNeeded');
+        })
+        .catch((e) => {
           if (e.message.includes('system')) {
             setMicrophonePermissionsState('permissionDeniedBySystem');
           } else {
             setMicrophonePermissionsState('permissionDenied');
           }
         });
-      }
       if (newState.devices.deviceAccess?.video !== undefined) {
         setCameraPermissionState('noPermissionNeeded');
       }
