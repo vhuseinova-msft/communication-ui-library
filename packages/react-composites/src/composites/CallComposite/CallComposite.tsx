@@ -206,7 +206,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
   >('noPermissionNeeded');
 
   const [videoPermissionState, setVideoPermissionState] = useState<
-    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded' | 'permissionDeniedAndNeeded'
+    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
   useEffect(() => {
@@ -235,10 +235,8 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
       } else if (newState.devices.deviceAccess?.audio === false) {
         setMicrophonePermissionsState('permissionDenied');
       }
-      if (newState.devices.deviceAccess?.video) {
+      if (newState.devices.deviceAccess?.video !== undefined) {
         setVideoPermissionState('noPermissionNeeded');
-      } else if (newState.devices.deviceAccess?.video === false) {
-        setVideoPermissionState('permissionDenied');
       }
     };
     adapter.onStateChange(update);
@@ -258,7 +256,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     drawer = (
       <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />
     );
-  } else if (videoPermissionState === 'permissionDeniedAndNeeded') {
+  } else if (videoPermissionState === 'permissionDenied') {
     drawer = <VideoPermissionBlocker onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />;
   }
 
@@ -268,7 +266,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
       if (result.state === 'prompt') {
         setVideoPermissionState('permissionNeeded');
       } else if (result.state === 'denied') {
-        setVideoPermissionState('permissionDeniedAndNeeded');
+        setVideoPermissionState('permissionDenied');
       }
     });
   }, [setVideoPermissionState]);
