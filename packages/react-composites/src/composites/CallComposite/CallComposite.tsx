@@ -8,7 +8,7 @@ import {
   useTheme,
   _DrawerSurface
 } from '@internal/react-components';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AvatarPersonaDataCallback } from '../common/AvatarPersona';
 import { BaseProvider, BaseCompositeProps } from '../common/BaseComposite';
 import { CallCompositeIcons } from '../common/icons';
@@ -206,7 +206,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
   >('noPermissionNeeded');
 
   const [videoPermissionState, setVideoPermissionState] = useState<
-    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded'
+    'permissionNeeded' | 'permissionDenied' | 'noPermissionNeeded' | 'permissionDeniedAndNeeded'
   >('noPermissionNeeded');
 
   useEffect(() => {
@@ -237,6 +237,8 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
       }
       if (newState.devices.deviceAccess?.video) {
         setVideoPermissionState('noPermissionNeeded');
+      } else if (newState.devices.deviceAccess?.video === false) {
+        setVideoPermissionState('permissionDenied');
       }
     };
     adapter.onStateChange(update);
@@ -256,9 +258,20 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     drawer = (
       <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />
     );
-  } else if (videoPermissionState === 'permissionDenied') {
+  } else if (videoPermissionState === 'permissionDeniedAndNeeded') {
     drawer = <VideoPermissionBlocker onLightDismiss={() => setVideoPermissionState('noPermissionNeeded')} />;
   }
+
+  const videoPermissionsDeniedOnClick = useCallback(() => {
+    navigator.permissions.query({ name: 'camera' }).then(function (result) {
+      console.log('camera result.state ', result.state);
+      if (result.state === 'prompt') {
+        setVideoPermissionState('permissionNeeded');
+      } else if (result.state === 'denied') {
+        setVideoPermissionState('permissionDeniedAndNeeded');
+      }
+    });
+  }, [setVideoPermissionState]);
 
   return (
     <Stack styles={{ root: { width: '100%', height: '100%' } }}>
@@ -268,7 +281,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         onFetchParticipantMenuItems={onFetchParticipantMenuItems}
         mobileView={mobileView}
         options={options}
-        videoPermissionsDeniedOnClick={() => setVideoPermissionState('permissionNeeded')}
+        videoPermissionsDeniedOnClick={videoPermissionsDeniedOnClick}
       />
       {drawer}
     </Stack>
