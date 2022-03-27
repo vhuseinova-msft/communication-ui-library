@@ -241,16 +241,20 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
   const mobileView = formFactor === 'mobile';
 
   const microphonePromptOnClick = useCallback(() => {
-    adapter.askDevicePermission({ audio: true, video: false });
-    adapter.queryMicrophones();
-    adapter.querySpeakers();
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then(() => {
+        adapter.askDevicePermission({ audio: true, video: false });
+        adapter.queryMicrophones();
+        adapter.querySpeakers();
         setMicrophonePermissionsState('noPermissionNeeded');
       })
       .catch((e) => {
-        setMicrophonePermissionsState('permissionDeniedBySystem');
+        if (isSafari()) {
+          setMicrophonePermissionsState('permissionNeeded');
+        } else {
+          setMicrophonePermissionsState('permissionDenied');
+        }
       });
   }, [adapter.getState().devices?.deviceAccess?.audio]);
 
@@ -268,15 +272,19 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
           adapter={adapter}
           onLightDismiss={() => setCameraPrompted(false)}
           onClick={() => {
-            props.adapter.askDevicePermission({ video: true, audio: false });
-            props.adapter.queryCameras();
             navigator.mediaDevices
               .getUserMedia({ video: true })
               .then(() => {
+                props.adapter.askDevicePermission({ video: true, audio: false });
+                props.adapter.queryCameras();
                 setCameraPermissionState('noPermissionNeeded');
               })
               .catch((e) => {
-                setCameraPermissionState('permissionDenied');
+                if (isSafari()) {
+                  setCameraPermissionState('noPermissionNeeded');
+                } else {
+                  setCameraPermissionState('permissionDenied');
+                }
               })
               .finally(() => {
                 setCameraPrompted(false);
@@ -591,4 +599,8 @@ const CircleBackground = (props: { children: React.ReactNode; backgroundColor: s
       />
     </Stack>
   );
+};
+
+const isSafari = () => {
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 };
