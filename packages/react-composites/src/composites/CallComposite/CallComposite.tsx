@@ -205,80 +205,150 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     'permissionNeeded' | 'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
+  const [microphonePrompted, setMicrophonePrompted] = useState(false);
+
   const [cameraPermissionState, setCameraPermissionState] = useState<
     'permissionNeeded' | 'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
+  const [cameraPrompted, setCameraPrompted] = useState(false);
+
   useEffect(() => {
-    navigator.permissions.query({ name: 'microphone' }).then(function (result) {
-      if (result.state === 'granted') {
-        navigator.mediaDevices.getUserMedia({ audio: true }).catch((e) => {
-          setMicrophonePermissionsState('permissionDeniedBySystem');
-        });
-        adapter.askDevicePermission({ video: false, audio: true });
-        adapter.queryMicrophones();
-        adapter.querySpeakers();
-      } else if (result.state === 'prompt') {
-        setMicrophonePermissionsState('permissionNeeded');
-      } else if (result.state === 'denied') {
-        setMicrophonePermissionsState('permissionDenied');
-      }
-    });
-    navigator.permissions.query({ name: 'camera' }).then(function (result) {
-      if (result.state === 'granted') {
-        adapter.askDevicePermission({ video: true, audio: false });
-        adapter.queryCameras();
-      }
-    });
-    const update = (newState: CallAdapterState): void => {
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then(() => {
-          setMicrophonePermissionsState('noPermissionNeeded');
-        })
-        .catch((e) => {
-          if (e.message.includes('system')) {
-            setMicrophonePermissionsState('permissionDeniedBySystem');
-          } else {
-            setMicrophonePermissionsState('permissionDenied');
+    navigator.mediaDevices
+      .enumerateDevices()
+      .then(function (devices) {
+        // devices.forEach(function (device) {
+        //   alert(device.kind + ': ' + device.label + ' id = ' + device.deviceId);
+        // });
+        let noAudioDevices = true;
+        devices.forEach((device) => {
+          if (device.kind.includes('audio') && device.deviceId !== '') {
+            noAudioDevices = false;
           }
         });
-      if (newState.devices.deviceAccess?.video !== undefined) {
-        setCameraPermissionState('noPermissionNeeded');
-      }
+        if (noAudioDevices) {
+          setMicrophonePermissionsState('permissionNeeded');
+        } else {
+          if (adapter.getState().devices?.deviceAccess?.audio) {
+            setMicrophonePermissionsState('noPermissionNeeded');
+          } else {
+            if (microphonePrompted) {
+              setMicrophonePermissionsState('permissionDeniedBySystem');
+            } else {
+              setMicrophonePermissionsState('permissionNeeded');
+            }
+          }
+        }
+      })
+      .catch(function (err) {
+        alert('enumerateDevices err');
+      });
+    const update = (newState: CallAdapterState): void => {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then(function (devices) {
+          // devices.forEach(function (device) {
+          //   alert(device.kind + ': ' + device.label + ' id = ' + device.deviceId);
+          // });
+          let noAudioDevices = true;
+          devices.forEach((device) => {
+            if (device.kind.includes('audio') && device.deviceId !== '') {
+              noAudioDevices = false;
+            }
+          });
+          let noVideoDevices = true;
+          devices.forEach((device) => {
+            if (device.kind.includes('video') && device.deviceId !== '') {
+              noVideoDevices = false;
+            }
+          });
+          if (noAudioDevices) {
+            if (microphonePrompted) {
+              setMicrophonePermissionsState('permissionDeniedBySystem');
+            } else {
+              setMicrophonePermissionsState('permissionNeeded');
+            }
+          } else {
+            if (newState.devices?.deviceAccess?.audio) {
+              setMicrophonePermissionsState('noPermissionNeeded');
+            } else {
+              if (microphonePrompted) {
+                setMicrophonePermissionsState('permissionDeniedBySystem');
+              } else {
+                setMicrophonePermissionsState('permissionNeeded');
+              }
+            }
+          }
+          if (cameraPermissionState === 'permissionNeeded') {
+            if (noVideoDevices) {
+              setCameraPermissionState('permissionNeeded');
+            } else {
+              if (newState.devices?.deviceAccess?.video) {
+                setCameraPermissionState('noPermissionNeeded');
+              } else if (cameraPrompted) {
+                setCameraPermissionState('permissionDeniedBySystem');
+              }
+            }
+          }
+        })
+        .catch(function (err) {
+          alert('enumerateDevices err onUpdate');
+        });
     };
     adapter.onStateChange(update);
     return () => {
       adapter.offStateChange(update);
     };
   }, [adapter]);
-
   const mobileView = formFactor === 'mobile';
+
+  const microphonePromptOnClick = useCallback(() => {
+    setMicrophonePrompted(true);
+    adapter.askDevicePermission({ audio: true, video: false });
+    adapter.queryMicrophones();
+    adapter.querySpeakers();
+    // navigator.mediaDevices
+    //   .getUserMedia({ audio: true })
+    //   .then(() => {
+    //     if (adapter.getState().devices?.deviceAccess?.audio) {
+    //       alert('3.1');
+    //       setMicrophonePermissionsState('noPermissionNeeded');
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     alert('4');
+    //     setMicrophonePermissionsState('permissionDeniedBySystem');
+    //   });
+  }, [adapter.getState().devices?.deviceAccess?.audio]);
 
   let drawer: JSX.Element | null = null;
   if (microphonePermissionState === 'permissionNeeded') {
-    drawer = <MicrophonePermissionPrompt adapter={adapter} />;
+    drawer = <MicrophonePermissionPrompt adapter={adapter} onClick={microphonePromptOnClick} />;
   } else if (microphonePermissionState === 'permissionDenied') {
     drawer = <MicrophonePermissionBlocker />;
   } else if (microphonePermissionState === 'permissionDeniedBySystem') {
     drawer = <MicrophonePermissionSystemBlocker />;
   } else if (cameraPermissionState === 'permissionNeeded') {
     drawer = (
-      <VideoPermissionPrompt adapter={adapter} onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')} />
+      <VideoPermissionPrompt
+        adapter={adapter}
+        onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')}
+        onClick={() => {
+          setCameraPrompted(true);
+          props.adapter.askDevicePermission({ video: true, audio: false });
+          props.adapter.queryCameras();
+        }}
+      />
     );
-  } else if (cameraPermissionState === 'permissionDenied') {
-    drawer = <VideoPermissionBlocker onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')} />;
+  } else if (cameraPermissionState === 'permissionDeniedBySystem') {
+    drawer = (
+      <VideoPermissionBlocker
+        onLightDismiss={() => {
+          setCameraPermissionState('noPermissionNeeded');
+        }}
+      />
+    );
   }
-
-  const videoPermissionsDeniedOnClick = useCallback(() => {
-    navigator.permissions.query({ name: 'camera' }).then(function (result) {
-      if (result.state === 'prompt') {
-        setCameraPermissionState('permissionNeeded');
-      } else if (result.state === 'denied') {
-        setCameraPermissionState('permissionDenied');
-      }
-    });
-  }, [setCameraPermissionState]);
 
   return (
     <Stack styles={{ root: { width: '100%', height: '100%' } }}>
@@ -288,7 +358,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         onFetchParticipantMenuItems={onFetchParticipantMenuItems}
         mobileView={mobileView}
         options={options}
-        videoPermissionsDeniedOnClick={videoPermissionsDeniedOnClick}
+        videoPermissionsDeniedOnClick={() => setCameraPermissionState('permissionNeeded')}
       />
       {drawer}
     </Stack>
@@ -297,6 +367,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
 
 const MicrophonePermissionPrompt = (props: {
   adapter: CallAdapter;
+  onClick: () => void;
   onLightDismiss?: () => void;
 }): JSX.Element | null => {
   const theme = useTheme();
@@ -331,12 +402,7 @@ const MicrophonePermissionPrompt = (props: {
           </Stack>
         </Stack>
         <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
-          <PrimaryButton
-            onClick={() => {
-              props.adapter.askDevicePermission({ video: false, audio: true });
-            }}
-            styles={allowButtonStyles}
-          >
+          <PrimaryButton onClick={props.onClick} styles={allowButtonStyles}>
             {'Allow access'}
           </PrimaryButton>
         </Stack>
@@ -428,7 +494,11 @@ const MicrophonePermissionSystemBlocker = (props: { onLightDismiss?: () => void 
   );
 };
 
-const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: () => void }): JSX.Element | null => {
+const VideoPermissionPrompt = (props: {
+  adapter: CallAdapter;
+  onClick: () => void;
+  onLightDismiss?: () => void;
+}): JSX.Element | null => {
   const theme = useTheme();
 
   const allowButtonStyles = {
@@ -463,12 +533,7 @@ const VideoPermissionPrompt = (props: { adapter: CallAdapter; onLightDismiss?: (
           </Stack>
         </Stack>
         <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
-          <PrimaryButton
-            onClick={() => {
-              props.adapter.askDevicePermission({ video: true, audio: false });
-            }}
-            styles={allowButtonStyles}
-          >
+          <PrimaryButton onClick={props.onClick} styles={allowButtonStyles}>
             {'Allow access'}
           </PrimaryButton>
         </Stack>
