@@ -206,7 +206,7 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
   >('noPermissionNeeded');
 
   const [cameraPermissionState, setCameraPermissionState] = useState<
-    'permissionNeeded' | 'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
+    'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
   const [cameraPrompted, setCameraPrompted] = useState(false);
@@ -228,6 +228,10 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
           if (microphonePermissionState !== 'permissionDeniedBySystem') {
             setMicrophonePermissionsState('permissionNeeded');
           }
+        } else {
+          adapter.askDevicePermission({ audio: true, video: false });
+          adapter.queryMicrophones();
+          adapter.querySpeakers();
         }
       })
       .catch(function (err) {
@@ -257,33 +261,46 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     drawer = <MicrophonePermissionBlocker />;
   } else if (microphonePermissionState === 'permissionDeniedBySystem') {
     drawer = <MicrophonePermissionSystemBlocker />;
-  } else if (cameraPermissionState === 'permissionNeeded') {
-    drawer = (
-      <VideoPermissionPrompt
-        adapter={adapter}
-        onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')}
-        onClick={() => {
-          props.adapter.askDevicePermission({ video: true, audio: false });
-          props.adapter.queryCameras();
-          navigator.mediaDevices
-            .getUserMedia({ video: true })
-            .then(() => {
-              setCameraPermissionState('noPermissionNeeded');
-            })
-            .catch((e) => {
-              setCameraPermissionState('permissionDeniedBySystem');
-            });
-        }}
-      />
-    );
-  } else if (cameraPermissionState === 'permissionDeniedBySystem') {
-    drawer = (
-      <VideoPermissionBlocker
-        onLightDismiss={() => {
-          setCameraPermissionState('noPermissionNeeded');
-        }}
-      />
-    );
+  } else if (cameraPrompted) {
+    if (cameraPermissionState === 'noPermissionNeeded') {
+      drawer = (
+        <VideoPermissionPrompt
+          adapter={adapter}
+          onLightDismiss={() => setCameraPrompted(false)}
+          onClick={() => {
+            props.adapter.askDevicePermission({ video: true, audio: false });
+            props.adapter.queryCameras();
+            navigator.mediaDevices
+              .getUserMedia({ video: true })
+              .then(() => {
+                setCameraPermissionState('noPermissionNeeded');
+              })
+              .catch((e) => {
+                setCameraPermissionState('permissionDenied');
+              })
+              .finally(() => {
+                setCameraPrompted(false);
+              });
+          }}
+        />
+      );
+    } else if (cameraPermissionState === 'permissionDenied') {
+      drawer = (
+        <VideoPermissionBlocker
+          onLightDismiss={() => {
+            setCameraPrompted(false);
+          }}
+        />
+      );
+    } else if (cameraPermissionState === 'permissionDeniedBySystem') {
+      drawer = (
+        <VideoPermissionBlocker
+          onLightDismiss={() => {
+            setCameraPrompted(false);
+          }}
+        />
+      );
+    }
   }
 
   return (
@@ -294,7 +311,9 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         onFetchParticipantMenuItems={onFetchParticipantMenuItems}
         mobileView={mobileView}
         options={options}
-        videoPermissionsDeniedOnClick={() => setCameraPermissionState('permissionNeeded')}
+        videoPermissionsDeniedOnClick={() => {
+          setCameraPrompted(true);
+        }}
       />
       {drawer}
     </Stack>
