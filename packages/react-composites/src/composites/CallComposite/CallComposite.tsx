@@ -205,8 +205,6 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
     'permissionNeeded' | 'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
   >('noPermissionNeeded');
 
-  const [microphonePrompted, setMicrophonePrompted] = useState(false);
-
   const [cameraPermissionState, setCameraPermissionState] = useState<
     'permissionNeeded' | 'permissionDenied' | 'permissionDeniedBySystem' | 'noPermissionNeeded'
   >('noPermissionNeeded');
@@ -227,98 +225,29 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
           }
         });
         if (noAudioDevices) {
-          setMicrophonePermissionsState('permissionNeeded');
-        } else {
-          if (adapter.getState().devices?.deviceAccess?.audio) {
-            setMicrophonePermissionsState('noPermissionNeeded');
-          } else {
-            if (microphonePrompted) {
-              setMicrophonePermissionsState('permissionDeniedBySystem');
-            } else {
-              setMicrophonePermissionsState('permissionNeeded');
-            }
+          if (microphonePermissionState !== 'permissionDeniedBySystem') {
+            setMicrophonePermissionsState('permissionNeeded');
           }
         }
       })
       .catch(function (err) {
         alert('enumerateDevices err');
       });
-    const update = (newState: CallAdapterState): void => {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then(function (devices) {
-          // devices.forEach(function (device) {
-          //   alert(device.kind + ': ' + device.label + ' id = ' + device.deviceId);
-          // });
-          let noAudioDevices = true;
-          devices.forEach((device) => {
-            if (device.kind.includes('audio') && device.deviceId !== '') {
-              noAudioDevices = false;
-            }
-          });
-          let noVideoDevices = true;
-          devices.forEach((device) => {
-            if (device.kind.includes('video') && device.deviceId !== '') {
-              noVideoDevices = false;
-            }
-          });
-          if (noAudioDevices) {
-            if (microphonePrompted) {
-              setMicrophonePermissionsState('permissionDeniedBySystem');
-            } else {
-              setMicrophonePermissionsState('permissionNeeded');
-            }
-          } else {
-            if (newState.devices?.deviceAccess?.audio) {
-              setMicrophonePermissionsState('noPermissionNeeded');
-            } else {
-              if (microphonePrompted) {
-                setMicrophonePermissionsState('permissionDeniedBySystem');
-              } else {
-                setMicrophonePermissionsState('permissionNeeded');
-              }
-            }
-          }
-          if (cameraPermissionState === 'permissionNeeded') {
-            if (noVideoDevices) {
-              setCameraPermissionState('permissionNeeded');
-            } else {
-              if (newState.devices?.deviceAccess?.video) {
-                setCameraPermissionState('noPermissionNeeded');
-              } else if (cameraPrompted) {
-                setCameraPermissionState('permissionDeniedBySystem');
-              }
-            }
-          }
-        })
-        .catch(function (err) {
-          alert('enumerateDevices err onUpdate');
-        });
-    };
-    adapter.onStateChange(update);
-    return () => {
-      adapter.offStateChange(update);
-    };
-  }, [adapter]);
+  }, [adapter, microphonePermissionState, cameraPermissionState]);
   const mobileView = formFactor === 'mobile';
 
   const microphonePromptOnClick = useCallback(() => {
-    setMicrophonePrompted(true);
     adapter.askDevicePermission({ audio: true, video: false });
     adapter.queryMicrophones();
     adapter.querySpeakers();
-    // navigator.mediaDevices
-    //   .getUserMedia({ audio: true })
-    //   .then(() => {
-    //     if (adapter.getState().devices?.deviceAccess?.audio) {
-    //       alert('3.1');
-    //       setMicrophonePermissionsState('noPermissionNeeded');
-    //     }
-    //   })
-    //   .catch((e) => {
-    //     alert('4');
-    //     setMicrophonePermissionsState('permissionDeniedBySystem');
-    //   });
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(() => {
+        setMicrophonePermissionsState('noPermissionNeeded');
+      })
+      .catch((e) => {
+        setMicrophonePermissionsState('permissionDeniedBySystem');
+      });
   }, [adapter.getState().devices?.deviceAccess?.audio]);
 
   let drawer: JSX.Element | null = null;
@@ -334,9 +263,16 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
         adapter={adapter}
         onLightDismiss={() => setCameraPermissionState('noPermissionNeeded')}
         onClick={() => {
-          setCameraPrompted(true);
           props.adapter.askDevicePermission({ video: true, audio: false });
           props.adapter.queryCameras();
+          navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then(() => {
+              setCameraPermissionState('noPermissionNeeded');
+            })
+            .catch((e) => {
+              setCameraPermissionState('permissionDeniedBySystem');
+            });
         }}
       />
     );
