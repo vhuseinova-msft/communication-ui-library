@@ -228,10 +228,6 @@ const MainScreenPreparation = (props: CallCompositeProps): JSX.Element => {
           if (microphonePermissionState !== 'permissionDeniedBySystem') {
             setMicrophonePermissionsState('permissionNeeded');
           }
-        } else {
-          adapter.askDevicePermission({ audio: true, video: false });
-          adapter.queryMicrophones();
-          adapter.querySpeakers();
         }
       })
       .catch(function (err) {
@@ -348,7 +344,7 @@ const MicrophonePermissionPrompt = (props: {
     <Sheet {...props}>
       <Stack
         horizontalAlign="center"
-        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem', textAlign: 'center' } }}
         tokens={{ childrenGap: '1.5rem' }}
       >
         <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
@@ -366,7 +362,7 @@ const MicrophonePermissionPrompt = (props: {
         </Stack>
         <Stack styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}>
           <PrimaryButton onClick={props.onClick} styles={allowButtonStyles}>
-            {'Allow access'}
+            {'Allow access (Required)'}
           </PrimaryButton>
         </Stack>
         <Stack styles={{ root: { fontSize: theme.fonts.mediumPlus.fontSize } }}>
@@ -393,7 +389,7 @@ const MicrophonePermissionBlocker = (props: { onLightDismiss?: () => void }): JS
     <Sheet {...props}>
       <Stack
         horizontalAlign="center"
-        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem', textAlign: 'center' } }}
         tokens={{ childrenGap: '0.5rem' }}
       >
         <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
@@ -431,7 +427,7 @@ const MicrophonePermissionSystemBlocker = (props: { onLightDismiss?: () => void 
     <Sheet {...props}>
       <Stack
         horizontalAlign="center"
-        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem', textAlign: 'center' } }}
         tokens={{ childrenGap: '0.5rem' }}
       >
         <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
@@ -439,7 +435,7 @@ const MicrophonePermissionSystemBlocker = (props: { onLightDismiss?: () => void 
             <Settings28Filled style={{ color: theme.palette.themePrimary }} />
           </CircleBackground>
         </Stack>
-        <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }}>
+        <Stack verticalAlign="center" tokens={{ childrenGap: '0.5rem' }} styles={{ root: { textAlign: 'center' } }}>
           <Stack styles={{ root: { fontSize: theme.fonts.xxLarge.fontSize, fontWeight: '600' } }}>
             {'Allow microphone access to continue'}
           </Stack>
@@ -477,7 +473,7 @@ const VideoPermissionPrompt = (props: {
     <Sheet {...props}>
       <Stack
         horizontalAlign="center"
-        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem', textAlign: 'center' } }}
         tokens={{ childrenGap: '0.5rem' }}
       >
         <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
@@ -524,7 +520,7 @@ const VideoPermissionBlocker = (props: { onLightDismiss?: () => void }): JSX.Ele
     <Sheet {...props}>
       <Stack
         horizontalAlign="center"
-        styles={{ root: { width: '100%', padding: '0.5rem 1rem' } }}
+        styles={{ root: { width: '100%', padding: '0.5rem 1rem', textAlign: 'center' } }}
         tokens={{ childrenGap: '0.5rem' }}
       >
         <Stack horizontalAlign="center" styles={{ root: { width: '100%' } }}>
