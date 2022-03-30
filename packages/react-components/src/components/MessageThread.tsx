@@ -301,18 +301,11 @@ const memoizeAllMessages = memoizeFnAll(
     onRenderMessageStatus:
       | ((messageStatusIndicatorProps: MessageStatusIndicatorProps) => JSX.Element | null)
       | undefined,
-    defaultStatusRenderer: (
-      message: ChatMessage,
-      status: MessageStatus,
-      readReceiptsBySenderId: ReadReceiptsBySenderId,
-      participantCount: number
-    ) => JSX.Element,
+    MessageStatusIndicatorMemo: (status: MessageStatus, message: ChatMessage) => JSX.Element,
     defaultChatMessageRenderer: (message: MessageProps) => JSX.Element,
     strings: MessageThreadStrings,
     _attached?: boolean | string,
     statusToRender?: MessageStatus,
-    participantCount?: number,
-    readReceiptsBySenderId?: ReadReceiptsBySenderId,
     onRenderMessage?: (message: MessageProps, defaultOnRender?: MessageRenderer) => JSX.Element,
     onUpdateMessage?: (messageId: string, content: string) => Promise<void>,
     onDeleteMessage?: (messageId: string) => Promise<void>,
@@ -354,6 +347,12 @@ const memoizeAllMessages = memoizeFnAll(
         const chatGutterStyles =
           message.attached === 'top' || message.attached === false ? gutterWithAvatar : gutterWithHiddenAvatar;
 
+        // const getReadCount = (setReadCount: (readCount: number) => void):void => {
+        //   if (readReceiptsBySenderId) {
+        //     setReadCount(getParticipantsWhoHaveReadMessage(message, readReceiptsBySenderId).length);
+        //   }
+        // };
+
         return {
           gutter: {
             styles: chatGutterStyles,
@@ -381,12 +380,7 @@ const memoizeAllMessages = memoizeFnAll(
                     onRenderMessageStatus ? (
                       onRenderMessageStatus({ status: statusToRender })
                     ) : (
-                      defaultStatusRenderer(
-                        message,
-                        statusToRender,
-                        readReceiptsBySenderId ?? {},
-                        participantCount ? participantCount : 0
-                      )
+                      MessageStatusIndicatorMemo(statusToRender, message)
                     )
                   ) : (
                     <div className={mergeStyles(noMessageStatusStyle)} />
@@ -955,35 +949,53 @@ export const MessageThread = (props: MessageThreadProps): JSX.Element => {
   const localeStrings = useLocale().strings.messageThread;
   const strings = useMemo(() => ({ ...localeStrings, ...props.strings }), [localeStrings, props.strings]);
 
-  const defaultStatusRenderer: (
-    message: ChatMessage,
-    status: MessageStatus,
-    readReceiptsBySenderId: ReadReceiptsBySenderId,
-    participantCount: number
-  ) => JSX.Element = useCallback(
-    (
-      message: ChatMessage,
-      status: MessageStatus,
-      readReceiptsBySenderId: ReadReceiptsBySenderId,
-      participantCount: number
-    ) => {
-      let readBy: { id: string; displayName: string }[] = [];
+  const MessageStatusIndicatorMemo = useCallback(
+    (status: MessageStatus, message: ChatMessage) => {
+      const [readCount, setReadCount] = useState<number | undefined>();
 
-      if (status === 'seen') {
-        readBy = getParticipantsWhoHaveReadMessage(message, readReceiptsBySenderId);
-      }
+      const [partcipantCount, setPartcipantCount] = useState<number | undefined>();
 
-      return (
-        <MessageStatusIndicator
-          status={status}
-          readCount={readBy ? readBy.length : 0}
-          // -1 because participant count does not include myself
-          remoteParticipantsCount={participantCount ? participantCount - 1 : 0}
-        />
-      );
+      const onToggleTooltip = (toggled) => {
+        if (toggled && readReceiptsBySenderId) {
+          setReadCount(getParticipantsWhoHaveReadMessage(message, readReceiptsBySenderId).length);
+          setPartcipantCount(partcipantCount);
+        } else {
+          setReadCount(undefined);
+          setPartcipantCount(undefined);
+        }
+
+        return (
+          <MessageStatusIndicator
+            status={status}
+            onToggleTooltip={onToggleTooltip}
+            readCount={readCount}
+            remoteParticipantsCount={participantCount ? participantCount - 1 : 0}
+          />
+        );
+      };
     },
-    []
+    [participantCount, readReceiptsBySenderId]
   );
+
+  // const defaultStatusRenderer: (
+  //   status: MessageStatus,
+  //   participantCount: number,
+  //   getReadCount?: (setReadCount: (readCount: number) => void) => void
+  // ) => JSX.Element = useCallback(
+  //   (
+  //     status: MessageStatus,
+  //     participantCount: number,
+  //     getReadCount?: (setReadCount: (readCount: number) => void) => void
+  //   ) => (
+  //     <MessageStatusIndicator
+  //       status={status}
+  //       getReadCount={getReadCount}
+  //       // -1 because participant count does not include myself
+  //       remoteParticipantsCount={participantCount ? participantCount - 1 : 0}
+  //     />
+  //   ),
+  //   []
+  // );
 
   const messagesToDisplay = useMemo(
     () =>
@@ -1026,15 +1038,13 @@ export const MessageThread = (props: MessageThreadProps): JSX.Element => {
             isNarrow,
             styles,
             onRenderMessageStatus,
-            defaultStatusRenderer,
+            MessageStatusIndicatorMemo,
             defaultChatMessageRenderer,
             strings,
             // Temporary solution to make sure we re-render if attach attribute is changed.
             // The proper fix should be in selector.
             message.messageType === 'chat' ? message.attached : undefined,
             statusToRender,
-            participantCount,
-            readReceiptsBySenderId,
             onRenderMessage,
             onUpdateMessage,
             onDeleteMessage,
@@ -1050,7 +1060,7 @@ export const MessageThread = (props: MessageThreadProps): JSX.Element => {
       isNarrow,
       styles,
       onRenderMessageStatus,
-      defaultStatusRenderer,
+      MessageStatusIndicatorMemo,
       readReceiptsBySenderId,
       defaultChatMessageRenderer,
       lastSeenChatMessage,

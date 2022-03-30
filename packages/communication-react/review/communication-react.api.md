@@ -1876,7 +1876,7 @@ export const MessageStatusIndicator: (props: MessageStatusIndicatorProps) => JSX
 
 // @public
 export interface MessageStatusIndicatorProps {
-    readCount?: number;
+    getReadCount?: (setReadCount: (readCount: number) => void) => void;
     remoteParticipantsCount?: number;
     status?: MessageStatus;
     strings?: MessageStatusIndicatorStrings;
