@@ -1,7 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { IStackStyles, IStackTokens, ITheme, Stack } from '@fluentui/react';
-import { ParticipantMenuItemsCallback, useTheme, _DrawerMenu, _DrawerMenuItemProps } from '@internal/react-components';
+import {
+  ErrorBar,
+  ParticipantMenuItemsCallback,
+  useTheme,
+  _DrawerMenu,
+  _DrawerMenuItemProps,
+  _ICoordinates
+} from '@internal/react-components';
 import React, { useMemo, useState } from 'react';
 import { CallAdapter } from '../CallComposite';
 import { CallAdapterProvider } from '../CallComposite/adapter/CallAdapterProvider';
@@ -20,8 +27,11 @@ import { drawerContainerStyles } from './styles/CallWithChatCompositeStyles';
 import { TabHeader } from './TabHeader';
 /* @conditional-compile-remove(file-sharing) */
 import { FileSharingOptions } from '../ChatComposite';
-import { _ICoordinates } from '@internal/react-components';
 import { _pxToRem } from '@internal/acs-ui-common';
+import { usePropsFor } from '../CallComposite/hooks/usePropsFor';
+import { ComplianceBanner } from '../CallComposite/components/ComplianceBanner';
+import { useSelector } from '../CallComposite/hooks/useSelector';
+import { complianceBannerSelector } from '../CallComposite/selectors/complianceBannerSelector';
 
 /**
  * Pane that is used to store chat and people for CallWithChat composite
@@ -40,6 +50,7 @@ export const CallWithChatPane = (props: {
   activePane: CallWithChatPaneOption;
   mobileView?: boolean;
   inviteLink?: string;
+  errorBar?: boolean;
   /* @conditional-compile-remove(file-sharing) */
   fileSharing?: FileSharingOptions;
   rtl?: boolean;
@@ -103,6 +114,16 @@ export const CallWithChatPane = (props: {
   return (
     <Stack verticalFill grow styles={paneStyles} data-ui-id={dataUiId} tokens={props.mobileView ? {} : sidePaneTokens}>
       {header}
+      {props.mobileView && (
+        <CallAdapterProvider adapter={props.callAdapter}>
+          <ComplianceBannerHooked />
+        </CallAdapterProvider>
+      )}
+      {props.mobileView && props.errorBar && (
+        <CallAdapterProvider adapter={props.callAdapter}>
+          <ErrorBarHooked />
+        </CallAdapterProvider>
+      )}
       <Stack.Item verticalFill grow styles={paneBodyContainer}>
         <Stack horizontal styles={scrollableContainer}>
           <Stack.Item verticalFill styles={scrollableContainerContents}>
@@ -138,6 +159,16 @@ export const CallWithChatPane = (props: {
       )}
     </Stack>
   );
+};
+
+const ComplianceBannerHooked = () => {
+  const complianceBannerProps = useSelector(complianceBannerSelector);
+  return <ComplianceBanner {...complianceBannerProps} />;
+};
+
+const ErrorBarHooked = () => {
+  const errorBarProps = usePropsFor(ErrorBar);
+  return <ErrorBar {...errorBarProps} />;
 };
 
 /**

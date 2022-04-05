@@ -71,6 +71,12 @@ export type CallWithChatCompositeOptions = {
    * If using the boolean values, true will cause default behavior across the whole control bar. False hides the whole control bar.
    */
   callControls?: boolean | CallWithChatControlOptions;
+  /**
+   * Surface Azure Communication Services backend errors in the UI with {@link @azure/communication-react#ErrorBar}.
+   * Hide or show the error bar.
+   * @defaultValue true
+   */
+  errorBar?: boolean;
   /* @conditional-compile-remove(file-sharing) */
   /**
    * Properties for configuring the File Sharing feature.
@@ -136,13 +142,14 @@ type CallWithChatScreenProps = {
   callControls?: boolean | CallWithChatControlOptions;
   onFetchAvatarPersonaData?: AvatarPersonaDataCallback;
   onFetchParticipantMenuItems?: ParticipantMenuItemsCallback;
+  errorBar?: boolean;
   /* @conditional-compile-remove(file-sharing) */
   fileSharing?: FileSharingOptions;
   rtl?: boolean;
 };
 
 const CallWithChatScreen = (props: CallWithChatScreenProps): JSX.Element => {
-  const { callWithChatAdapter, fluentTheme, formFactor = 'desktop' } = props;
+  const { callWithChatAdapter, fluentTheme, formFactor = 'desktop', errorBar = true } = props;
   const mobileView = formFactor === 'mobile';
 
   if (!callWithChatAdapter) {
@@ -242,19 +249,18 @@ const CallWithChatScreen = (props: CallWithChatScreenProps): JSX.Element => {
   return (
     <Stack verticalFill grow styles={compositeOuterContainerStyles} id={compositeParentDivId}>
       <Stack horizontal grow>
-        {!isMobileWithActivePane && (
-          <Stack.Item grow styles={callCompositeContainerStyles}>
-            <CallComposite
-              {...props}
-              formFactor={formFactor}
-              options={{ callControls: false }}
-              adapter={callAdapter}
-              fluentTheme={fluentTheme}
-            />
-          </Stack.Item>
-        )}
+        <Stack.Item grow styles={isMobileWithActivePane ? { root: { display: 'none' } } : callCompositeContainerStyles}>
+          <CallComposite
+            {...props}
+            formFactor={formFactor}
+            options={{ callControls: false }}
+            adapter={callAdapter}
+            fluentTheme={fluentTheme}
+          />
+        </Stack.Item>
         {chatProps.adapter && callAdapter && hasJoinedCall && (
           <CallWithChatPane
+            errorBar={errorBar}
             chatCompositeProps={chatProps}
             inviteLink={props.joinInvitationURL}
             onClose={closePane}
