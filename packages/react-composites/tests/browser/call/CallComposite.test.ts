@@ -16,6 +16,7 @@ import { test } from './fixture';
 import { expect, Page } from '@playwright/test';
 import { v1 as generateGUID } from 'uuid';
 import { IDS } from '../common/constants';
+import { checkA11y, injectAxe } from 'axe-playwright';
 
 /**
  * Since we are providing a .y4m video to act as a fake video stream, chrome
@@ -114,6 +115,11 @@ test.describe('Call Composite E2E CallPage Tests', () => {
     }
 
     await loadCallPageWithParticipantVideos(pages);
+  });
+
+  test.only('a11y test', async ({ pages }) => {
+    await injectAxe(pages[0]);
+    await checkA11y(pages[0]);
   });
 
   test('video gallery renders for all pages', async ({ pages }) => {
