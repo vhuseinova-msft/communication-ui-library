@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { mergeStyles, Stack } from '@fluentui/react';
+import { Icon, mergeStyles, Stack } from '@fluentui/react';
 import {
   CommunicationParticipant,
   ErrorBar,
@@ -196,6 +196,10 @@ export const ChatScreen = (props: ChatScreenProps): JSX.Element => {
     );
   }, [fileSharing?.accept, fileSharing?.multiple, fileSharing?.uploadHandler, fileUploadButtonOnChange]);
 
+  const SendButton = useCallback(() => {
+    return <Icon iconName={'SendBoxSend'} />;
+  }, []);
+
   return (
     <Stack className={chatContainer} grow>
       {options?.topic !== false && <ChatHeader {...headerProps} />}
@@ -243,9 +247,17 @@ export const ChatScreen = (props: ChatScreenProps): JSX.Element => {
                   activeFileUploads={useSelector(fileUploadsSelector).files}
                   /* @conditional-compile-remove(file-sharing) */
                   onCancelFileUpload={adapter.cancelFileUpload}
+                  onRenderIcon={() => null}
                 />
               </Stack>
-              {formFactor !== 'mobile' && <AttachFileButton />}
+              {formFactor !== 'mobile' && (
+                <Stack grow horizontal style={{ padding: '0 0.25rem' }}>
+                  <AttachFileButton />
+                  <Stack style={{ marginLeft: 'auto', marginRight: 0 }}>
+                    <SendButton />
+                  </Stack>
+                </Stack>
+              )}
             </Stack>
           </Stack>
         </Stack>

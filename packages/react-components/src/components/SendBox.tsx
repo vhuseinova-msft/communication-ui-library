@@ -2,14 +2,8 @@
 // Licensed under the MIT license.
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { IStyle, ITextField, mergeStyles, concatStyleSets, Icon, Stack } from '@fluentui/react';
-import {
-  sendBoxStyle,
-  sendButtonStyle,
-  sendIconStyle,
-  sendBoxWrapperStyles,
-  borderAndBoxShadowStyle
-} from './styles/SendBox.styles';
+import { IStyle, ITextField, mergeStyles, concatStyleSets, Stack } from '@fluentui/react';
+import { sendBoxStyle, sendButtonStyle, sendBoxWrapperStyles, borderAndBoxShadowStyle } from './styles/SendBox.styles';
 import { BaseCustomStyles } from '../types';
 import { useTheme } from '../theming';
 import { useLocale } from '../localization';
@@ -22,6 +16,7 @@ import { SendBoxErrors } from './SendBoxErrors';
 /* @conditional-compile-remove(file-sharing) */
 import { _FileUploadCards } from './FileUploadCards';
 import { SendBoxErrorBarError } from './SendBoxErrorBar';
+import { _SendBoxSendButton } from './SendBoxSendButton';
 
 const EMPTY_MESSAGE_REGEX = /^\s*$/;
 const MAXIMUM_LENGTH_OF_MESSAGE = 8000;
@@ -266,26 +261,19 @@ export const SendBox = (props: SendBoxProps): JSX.Element => {
   const mergedStyles = useMemo(() => concatStyleSets(styles), [styles]);
 
   const hasText = !!textValue;
-  const mergedSendIconStyle = useMemo(
-    () =>
-      mergeStyles(
-        sendIconStyle,
-        {
-          color: !!errorMessage || !hasText ? theme.palette.neutralTertiary : theme.palette.themePrimary
-        },
-        styles?.sendMessageIcon
-      ),
-    [errorMessage, hasText, theme, styles?.sendMessageIcon]
-  );
 
   const onRenderSendIcon = useCallback(
-    (isHover: boolean) =>
+    (hovered: boolean) =>
       onRenderIcon ? (
-        onRenderIcon(isHover)
+        onRenderIcon(hovered)
       ) : (
-        <Icon iconName={isHover ? 'SendBoxSendHovered' : 'SendBoxSend'} className={mergedSendIconStyle} />
+        <_SendBoxSendButton
+          disabled={!!errorMessage || !hasText}
+          hovered={hovered}
+          styles={{ icon: styles?.sendMessageIcon }}
+        />
       ),
-    [mergedSendIconStyle, onRenderIcon]
+    [errorMessage, hasText, onRenderIcon, styles?.sendMessageIcon]
   );
 
   /* @conditional-compile-remove(file-sharing) */
