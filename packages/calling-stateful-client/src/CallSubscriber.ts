@@ -17,6 +17,11 @@ import { TranscriptionSubscriber } from './TranscriptionSubscriber';
 import { UserFacingDiagnosticsSubscriber } from './UserFacingDiagnosticsSubscriber';
 
 /**
+ * @Private
+ */
+export const callSubscriberRef: { current: undefined | CallSubscriber } = { current: undefined };
+
+/**
  * Keeps track of the listeners assigned to a particular call because when we get an event from SDK, it doesn't tell us
  * which call it is for. If we keep track of this then we know which call in the state that needs an update and also
  * which property of that call. Also we can use this when unregistering to a call.
@@ -37,6 +42,7 @@ export class CallSubscriber {
     this._callIdRef = { callId: call.id };
     this._context = context;
     this._internalContext = internalContext;
+    callSubscriberRef.current = this;
 
     this._diagnosticsSubscriber = new UserFacingDiagnosticsSubscriber(
       this._callIdRef,
@@ -144,10 +150,14 @@ export class CallSubscriber {
     this._context.setCallState(this._callIdRef.callId, this._call.state);
   };
 
-  private idChanged = (): void => {
+  public idChanged = (): void => {
     this._internalContext.setCallId(this._call.id, this._callIdRef.callId);
     this._context.setCallId(this._call.id, this._callIdRef.callId);
     this._callIdRef.callId = this._call.id;
+  };
+
+  public changeCallId = (): void => {
+    (this._call as any)._id = '1c21a884-a864-4bf4-8503-475a2e147eb2';
   };
 
   private isScreenSharingOnChanged = (): void => {
