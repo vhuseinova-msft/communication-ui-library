@@ -27,6 +27,8 @@ import { updateMessagesWithAttached } from './utils/updateMessagesWithAttached';
 
 /* @conditional-compile-remove(file-sharing) */
 import { FileMetadata } from '@internal/react-components';
+/* @conditional-compile-remove(file-sharing) */
+import { _FILE_SHARING_METADATA_KEY } from '@internal/acs-ui-common';
 
 const memoizedAllConvertChatMessage = memoizeFnAll(
   (
@@ -51,7 +53,7 @@ const memoizedAllConvertChatMessage = memoizeFnAll(
 
 /* @conditional-compile-remove(file-sharing) */
 const extractAttachedFilesMetadata = (metadata: Record<string, string>): FileMetadata[] => {
-  const fileMetadata = metadata['fileSharingMetadata'];
+  const fileMetadata = metadata[_FILE_SHARING_METADATA_KEY];
   if (!fileMetadata) {
     return [];
   }

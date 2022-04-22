@@ -1,5 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+
+import { _FILE_SHARING_METADATA_KEY } from '@internal/acs-ui-common';
+
+// Licensed under the MIT license.
 export * from './FileUpload';
 export * from './FileUploadButton';
 export * from './FileUploadHandler';
@@ -9,5 +13,5 @@ export * from './FileUploadHandler';
  * @internal
  */
 export type FileSharingMetadata = {
-  fileSharingMetadata: string;
+  [_FILE_SHARING_METADATA_KEY]: string;
 };

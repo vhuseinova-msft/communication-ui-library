@@ -28,6 +28,9 @@ export type CommonProperties<A, B> = {
     [P in keyof A & keyof B]: A[P] extends B[P] ? P : never;
 }[keyof A & keyof B];
 
+// @internal (undocumented)
+export const _FILE_SHARING_METADATA_KEY = "fileSharingMetadata";
+
 // @internal
 export const _formatString: (str: string, vars: _IObjectMap<string>) => string;
 

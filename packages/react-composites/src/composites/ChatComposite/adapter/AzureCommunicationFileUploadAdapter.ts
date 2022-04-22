@@ -11,6 +11,7 @@ import { FileSharingMetadata, FileUpload } from '../file-sharing';
 import { ChatContext } from './AzureCommunicationChatAdapter';
 /* @conditional-compile-remove(file-sharing) */
 import { ChatAdapterState } from './ChatAdapter';
+import { _FILE_SHARING_METADATA_KEY } from '@internal/acs-ui-common';
 
 /**
  * A record containing {@link FileUploadState} mapped to unique ids.
@@ -200,7 +201,7 @@ export const convertFileUploadsUiStateToMessageMetadata = (fileUploads?: FileUpl
     });
   }
 
-  return { fileSharingMetadata: JSON.stringify(fileMetadata) };
+  return { [_FILE_SHARING_METADATA_KEY]: JSON.stringify(fileMetadata) };
 };
 
 /* @conditional-compile-remove(file-sharing) */

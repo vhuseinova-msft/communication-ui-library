@@ -6,9 +6,8 @@ import { _formatString } from '@internal/acs-ui-common';
 import React, { useCallback, useState } from 'react';
 import { ChatMessageComponentAsEditBox } from './ChatMessageComponentAsEditBox';
 import { MessageThreadStrings } from '../MessageThread';
-import { ChatMessage, OnRenderAvatarCallback } from '../../types';
+import { ChatMessage, FileDownloadHandler, OnRenderAvatarCallback } from '../../types';
 import { ChatMessageComponentAsMessageBubble } from './ChatMessageComponentAsMessageBubble';
-import { FileDownloadHandler } from '../FileDownloadCards';
 
 type ChatMessageComponentProps = {
   message: ChatMessage;

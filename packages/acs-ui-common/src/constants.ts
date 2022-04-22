@@ -6,3 +6,8 @@
  * @internal
  */
 export const _MAX_EVENT_LISTENERS = 50;
+
+/**
+ * @internal
+ */
+export const _FILE_SHARING_METADATA_KEY = 'fileSharingMetadata';

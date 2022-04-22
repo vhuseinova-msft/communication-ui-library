@@ -43,7 +43,7 @@ import { useLocale } from '../localization/LocalizationProvider';
 import { isNarrowWidth, _useContainerWidth } from './utils/responsive';
 import { getParticipantsWhoHaveReadMessage } from './utils/getParticipantsWhoHaveReadMessage';
 /* @conditional-compile-remove(file-sharing) */
-import { FileDownloadHandler } from './FileDownloadCards';
+import { FileDownloadHandler } from '../types';
 
 const isMessageSame = (first: ChatMessage, second: ChatMessage): boolean => {
   return (

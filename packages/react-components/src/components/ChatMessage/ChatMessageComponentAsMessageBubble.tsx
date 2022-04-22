@@ -18,8 +18,8 @@ import { ChatMessageContent } from './ChatMessageContent';
 import { ChatMessage } from '../../types/ChatMessage';
 import { MessageThreadStrings } from '../MessageThread';
 import { chatMessageActionMenuProps } from './ChatMessageActionMenu';
-import { OnRenderAvatarCallback } from '../../types';
-import { _FileDownloadCards, FileDownloadHandler } from '../FileDownloadCards';
+import { FileDownloadHandler, OnRenderAvatarCallback } from '../../types';
+import { _FileDownloadCards } from '../FileDownloadCards';
 
 type ChatMessageComponentAsMessageBubbleProps = {
   message: ChatMessage;

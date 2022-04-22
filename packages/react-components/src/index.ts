@@ -33,5 +33,8 @@ export type {
   VideoGalleryRemoteParticipant,
   VideoGalleryStream,
   VideoStreamOptions,
-  ReadReceiptsBySenderId
+  ReadReceiptsBySenderId,
+  FileMetadata,
+  FileDownloadError,
+  FileDownloadHandler
 } from './types';
