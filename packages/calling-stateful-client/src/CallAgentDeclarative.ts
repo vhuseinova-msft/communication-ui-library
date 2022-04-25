@@ -11,6 +11,11 @@ import { InternalCallContext } from './InternalCallContext';
 import { disposeAllViewsFromCall, disposeAllViews } from './StreamUtils';
 
 /**
+ * @Private
+ */
+export const callSubscriberRef: { current: undefined | CallSubscriber } = { current: undefined };
+
+/**
  * ProxyCallAgent proxies CallAgent and saves any returned state in the given context. It will subscribe to all state
  * updates in the CallAgent and in the contained Calls and RemoteParticipants. When dispose is called it will
  * unsubscribe from all state updates.
@@ -120,11 +125,12 @@ class ProxyCallAgent implements ProxyHandler<CallAgent> {
 
   private addCall = (call: Call): DeclarativeCall => {
     this._callSubscribers.get(call)?.unsubscribe();
+    callSubscriberRef.current = new CallSubscriber(call, this._context, this._internalContext);
 
     // For API extentions we need to have the call in the state when we are subscribing as we may want to update the
     // state during the subscription process in the subscriber so we add the call to state before subscribing.
     this._context.setCall(convertSdkCallToDeclarativeCall(call));
-    this._callSubscribers.set(call, new CallSubscriber(call, this._context, this._internalContext));
+    this._callSubscribers.set(call, callSubscriberRef.current);
     return this.getOrCreateDeclarativeCall(call);
   };
 

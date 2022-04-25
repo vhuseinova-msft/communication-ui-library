@@ -8,7 +8,7 @@
   "scripts": {
     "build": "rushx _by-flavor \"npm run _build:by-flavor\"",
     "build:esm": "if-env COMMUNICATION_REACT_FLAVOR=stable && rushx preprocess && tsc -project tsconfig.preprocess.json || (if-env COMMUNICATION_REACT_FLAVOR=beta && tsc)",
-    "build:cjs": "rollup -c --silent --failAfterWarnings",
+    "build:cjs": "rollup -c --silent",
     "build:watch": "rushx build",
     "clean": "rimraf dist && rimraf preprocessed",
     "preprocess": "cpx \"./src/**\" ./preprocessed && babel ./src --out-dir ../preprocessed --extensions \".ts,.tsx\" --keep-file-extension --config-file ./.babelrc.js --relative && rimraf ../preprocessed",

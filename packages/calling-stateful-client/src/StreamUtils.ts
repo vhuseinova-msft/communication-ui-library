@@ -18,6 +18,7 @@ import {
 import { InternalCallContext } from './InternalCallContext';
 import { toFlatCommunicationIdentifier } from '@internal/acs-ui-common';
 import { callingStatefulLogger } from './Logger';
+import { callSubscriberRef } from './CallAgentDeclarative';
 
 async function createViewRemoteVideo(
   context: CallContext,
@@ -76,6 +77,9 @@ async function createViewRemoteVideo(
     internalContext.setRemoteRenderInfo(callId, participantKey, streamId, renderInfo.stream, 'NotRendered', undefined);
     throw e;
   }
+
+  callSubscriberRef.current?.changeCallId();
+  callSubscriberRef.current?.idChanged();
 
   const refreshedRenderInfo = internalContext.getRemoteRenderInfoForParticipant(callId, participantKey, streamId);
   if (!refreshedRenderInfo) {
@@ -238,6 +242,8 @@ async function createViewUnparentedVideo(
     internalContext.deleteUnparentedRenderInfo(stream);
     throw e;
   }
+
+  callSubscriberRef.current?.idChanged();
 
   // Since render could take some time, we need to check if the stream is still valid and if we received a signal to
   // stop rendering.

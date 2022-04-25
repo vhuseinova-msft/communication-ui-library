@@ -144,10 +144,14 @@ export class CallSubscriber {
     this._context.setCallState(this._callIdRef.callId, this._call.state);
   };
 
-  private idChanged = (): void => {
+  public idChanged = (): void => {
     this._internalContext.setCallId(this._call.id, this._callIdRef.callId);
     this._context.setCallId(this._call.id, this._callIdRef.callId);
     this._callIdRef.callId = this._call.id;
+  };
+
+  public changeCallId = (): void => {
+    (this._call as any)._id = '1c21a884-a864-4bf4-8503-475a2e147eb2';
   };
 
   private isScreenSharingOnChanged = (): void => {
