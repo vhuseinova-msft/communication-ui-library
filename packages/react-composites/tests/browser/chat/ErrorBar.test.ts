@@ -18,7 +18,7 @@ test.describe('ErrorBar is shown correctly', async () => {
     await chatTestSetup({ pages, users, serverUrl });
   });
 
-  test('not shown when nothing is wrong', async ({ serverUrl, users, page }) => {
+  test.only('not shown when nothing is wrong', async ({ serverUrl, users, page }) => {
     await page.goto(buildUrl(serverUrl, users[0]));
     await waitForChatCompositeToLoad(page);
     await stubMessageTimestamps(page);
