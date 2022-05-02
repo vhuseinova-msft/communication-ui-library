@@ -28,11 +28,6 @@ const VideoGalleryStyles = {
   }
 };
 
-const localVideoViewOptions = {
-  scalingMode: 'Crop',
-  isMirrored: true
-} as VideoStreamOptions;
-
 const remoteVideoViewOptions = {
   scalingMode: 'Crop'
 } as VideoStreamOptions;
@@ -71,6 +66,24 @@ export const MediaGallery = (props: MediaGalleryProps): JSX.Element => {
     props.onFetchAvatarPersonaData
   );
 
+  const [flipScalingMode, setFlipScalingMode] = useState(false);
+
+  useEffect(() => {
+    let i = true;
+    setInterval(() => {
+      setFlipScalingMode(i);
+      i = !i;
+    }, 5000);
+  }, []);
+
+  const localVideoViewOptions: VideoStreamOptions = useMemo(
+    () => ({
+      scalingMode: flipScalingMode ? 'Crop' : 'Fit',
+      isMirrored: true
+    }),
+    [flipScalingMode]
+  );
+
   useLocalVideoStartTrigger(!!props.isVideoStreamOn);
   const VideoGalleryMemoized = useMemo(() => {
     return (
@@ -94,10 +107,10 @@ export const MediaGallery = (props: MediaGalleryProps): JSX.Element => {
     );
   }, [
     videoGalleryProps,
+    remoteParticipants,
+    localVideoViewOptions,
     props.isMobile,
     props.onFetchAvatarPersonaData,
-    remoteParticipants,
-    /* @conditional-compile-remove(call-with-chat-composite) @conditional-compile-remove(local-camera-switcher) */
     cameraSwitcherProps
   ]);
 
