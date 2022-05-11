@@ -14,7 +14,8 @@ import {
   MediaStreamType,
   RemoteParticipantState as RemoteParticipantStatus,
   ScalingMode,
-  VideoDeviceInfo
+  VideoDeviceInfo,
+  VideoStreamRendererView
 } from '@azure/communication-calling';
 import {
   CommunicationUserKind,
@@ -134,6 +135,10 @@ export interface VideoStreamRendererViewState {
    * Proxy of {@link @azure/communication-calling#VideoStreamRendererView.target}.
    */
   target: HTMLElement;
+  /**
+   * Original view object {@link @azure/communication-calling#VideoStreamRendererView}.
+   */
+  origin: VideoStreamRendererView;
 }
 
 /**

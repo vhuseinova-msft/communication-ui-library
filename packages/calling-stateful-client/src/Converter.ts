@@ -126,6 +126,7 @@ export function convertFromSDKToDeclarativeVideoStreamRendererView(
   return {
     scalingMode: view.scalingMode,
     isMirrored: view.isMirrored,
-    target: view.target
+    target: view.target,
+    origin: view
   };
 }
