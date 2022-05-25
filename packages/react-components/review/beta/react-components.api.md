@@ -1217,8 +1217,6 @@ export type VideoGalleryParticipant = {
     displayName?: string;
     videoStream?: VideoGalleryStream;
     isScreenSharingOn?: boolean;
-    state?: string;
-    kind?: 'communicationUser' | 'phoneNumber' | 'microsoftTeamsUser';
 };
 
 // @public
@@ -1247,7 +1245,9 @@ export interface VideoGalleryProps {
 // @public
 export interface VideoGalleryRemoteParticipant extends VideoGalleryParticipant {
     isSpeaking?: boolean;
+    kind?: 'communicationUser' | 'phoneNumber' | 'microsoftTeamsUser';
     screenShareStream?: VideoGalleryStream;
+    state?: string;
 }
 
 // @public
