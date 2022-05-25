@@ -1217,6 +1217,8 @@ export type VideoGalleryParticipant = {
     displayName?: string;
     videoStream?: VideoGalleryStream;
     isScreenSharingOn?: boolean;
+    state?: string;
+    kind?: 'communicationUser' | 'phoneNumber' | 'microsoftTeamsUser';
 };
 
 // @public
