@@ -34,6 +34,8 @@ export const _videoGalleryRemoteParticipantsMemo = (
           participant.isMuted,
           checkIsSpeaking(participant),
           participant.videoStreams,
+          participant.state,
+          participant.identifier.kind,
           participant.displayName
         );
       });
@@ -46,6 +48,8 @@ const memoizedAllConvertRemoteParticipant = memoizeFnAll(
     isMuted: boolean,
     isSpeaking: boolean,
     videoStreams: { [key: number]: RemoteVideoStreamState },
+    state: string,
+    kind: 'communicationUser' | 'phoneNumber' | 'microsoftTeamsUser' | 'unknown' | undefined,
     displayName?: string
   ): VideoGalleryRemoteParticipant => {
     return convertRemoteParticipantToVideoGalleryRemoteParticipant(
@@ -53,6 +57,8 @@ const memoizedAllConvertRemoteParticipant = memoizeFnAll(
       isMuted,
       isSpeaking,
       videoStreams,
+      state,
+      kind,
       displayName
     );
   }
@@ -64,6 +70,8 @@ export const convertRemoteParticipantToVideoGalleryRemoteParticipant = (
   isMuted: boolean,
   isSpeaking: boolean,
   videoStreams: { [key: number]: RemoteVideoStreamState },
+  state: string,
+  kind: 'communicationUser' | 'phoneNumber' | 'microsoftTeamsUser' | 'unknown' | undefined,
   displayName?: string
 ): VideoGalleryRemoteParticipant => {
   const rawVideoStreamsArray = Object.values(videoStreams);
@@ -93,7 +101,9 @@ export const convertRemoteParticipantToVideoGalleryRemoteParticipant = (
     isSpeaking,
     videoStream,
     screenShareStream,
-    isScreenSharingOn: screenShareStream !== undefined && screenShareStream.isAvailable
+    isScreenSharingOn: screenShareStream !== undefined && screenShareStream.isAvailable,
+    state,
+    kind
   };
 };
 

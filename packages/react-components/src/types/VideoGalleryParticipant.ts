@@ -71,5 +71,5 @@ export interface VideoGalleryRemoteParticipant extends VideoGalleryParticipant {
   state?: string;
   /* @conditional-compile-remove(PSTN-calls) */
   /** the type of participant that it is*/
-  kind?: 'communicationUser' | 'phoneNumber' | 'microsoftTeamsUser';
+  kind?: 'communicationUser' | 'phoneNumber' | 'microsoftTeamsUser' | 'unknown';
 }
