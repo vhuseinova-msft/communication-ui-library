@@ -198,6 +198,7 @@ export const VideoTile = (props: VideoTileProps): JSX.Element => {
 
   const ids = useIdentifiers();
 
+  const IReallyShouldNot: (props2: { userId: string; options: any }) => JSX.Element = onRenderPlaceholder as any;
   return (
     <Ref innerRef={videoTileRef}>
       <Stack
@@ -230,8 +231,8 @@ export const VideoTile = (props: VideoTileProps): JSX.Element => {
           </Stack>
         ) : (
           <Stack className={mergeStyles(videoContainerStyles)}>
-            {onRenderPlaceholder ? (
-              onRenderPlaceholder(userId ?? '', placeholderOptions, DefaultPlaceholder)
+            {IReallyShouldNot ? (
+              <IReallyShouldNot userId={userId ?? ''} options={placeholderOptions} />
             ) : (
               <DefaultPlaceholder {...placeholderOptions} />
             )}

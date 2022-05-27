@@ -67,9 +67,9 @@ export const MediaGallery = (props: MediaGalleryProps): JSX.Element => {
   );
 
   const onRenderAvatar = useCallback(
-    (userId, options) => (
+    (props2: { userId: string; options: any }): JSX.Element => (
       <Stack className={mergeStyles({ position: 'absolute', height: '100%', width: '100%' })}>
-        <AvatarPersona userId={userId} {...options} dataProvider={props.onFetchAvatarPersonaData} />
+        <AvatarPersona userId={props2.userId} {...props2.options} dataProvider={props.onFetchAvatarPersonaData} />
       </Stack>
     ),
     [props.onFetchAvatarPersonaData]

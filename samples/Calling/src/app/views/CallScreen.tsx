@@ -8,7 +8,9 @@ import {
   CallAdapterState,
   CallComposite,
   toFlatCommunicationIdentifier,
-  useAzureCommunicationCallAdapter
+  useAzureCommunicationCallAdapter,
+  AvatarPersonaDataCallback,
+  AvatarPersonaData
 } from '@azure/communication-react';
 import { Spinner } from '@fluentui/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -32,6 +34,22 @@ export const CallScreen = (props: CallScreenProps): JSX.Element => {
   const callIdRef = useRef<string>();
   const { currentTheme, currentRtl } = useSwitchableFluentTheme();
   const [isMobileSession, setIsMobileSession] = useState<boolean>(detectMobileSession());
+
+  const [cb, setCB] = useState<{ value: AvatarPersonaDataCallback } | undefined>(undefined);
+  useEffect(() => {
+    const handle = setInterval(() => {
+      // Must define outside the callback so that we don't return a new object on every single render.
+      const data = { text: `Unstable.${Date.now()}` };
+      setCB({
+        value: async (): Promise<AvatarPersonaData> => {
+          return data;
+        }
+      });
+    }, 1000);
+    return () => {
+      clearInterval(handle);
+    };
+  }, []);
 
   // Whenever the sample is changed from desktop -> mobile using the emulator, make sure we update the formFactor.
   useEffect(() => {
@@ -94,6 +112,7 @@ export const CallScreen = (props: CallScreenProps): JSX.Element => {
       rtl={currentRtl}
       callInvitationUrl={window.location.href}
       formFactor={isMobileSession ? 'mobile' : 'desktop'}
+      onFetchAvatarPersonaData={cb?.value}
     />
   );
 };
