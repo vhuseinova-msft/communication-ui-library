@@ -53,35 +53,61 @@ const useVideoStreamLifecycleMaintainer = (props: VideoStreamLifecycleMaintainer
   // that recreates the stream view.
 
   const [streamRendererResult, setStreamRendererResult] = React.useState<CreateVideoStreamViewResult>();
-  const scalingModeRef = useRef(scalingMode);
-  const hasScalingModeChanged = scalingModeRef.current !== scalingMode;
-  const updatingScalingModeDirectly = hasScalingModeChanged && !!streamRendererResult;
+  const scalingModeForDirectUpdateRef = useRef(scalingMode);
+  const hasScalingModeChanged = scalingModeForDirectUpdateRef.current !== scalingMode;
+  const canUpdateScalingModeDirectly = !!streamRendererResult?.view.updateScalingMode;
 
   const [triggerRescale, cancelRescale] = useCancellableTask();
   const [triggerCreateStreamView, cancelCreateStreamView] = useCancellableTask();
 
-  if (isStreamAvailable && renderElementExists && scalingMode && updatingScalingModeDirectly) {
+  React.useEffect(() => {
+    console.log('useVideoStreamLifecycleMaintainer: useEffect');
+    return () => {
+      console.log('useVideoStreamLifecycleMaintainer: useEffect cleanup');
+    };
+  }, []);
+
+  if (
+    isStreamAvailable &&
+    renderElementExists &&
+    scalingMode &&
+    hasScalingModeChanged &&
+    canUpdateScalingModeDirectly
+  ) {
     triggerRescale(async (cancellable: Cancellable) => {
+      console.log(
+        `[jaburnsi] [false] triggering updateScalingMode scalingModeRef.current: ${scalingModeForDirectUpdateRef.current}, scalingMode: ${scalingMode}`
+      );
       streamRendererResult && (await streamRendererResult.view.updateScalingMode(scalingMode));
       if (cancellable.cancelled) {
+        console.log('[jaburnsi] [false] cancelled!');
         return;
       }
-      scalingModeRef.current = scalingMode;
+      scalingModeForDirectUpdateRef.current = scalingMode;
     });
   }
 
   // scalingModeForUseEffect will trigger the useEffect to recreate the stream view only if the scaling mode has changed and
   // we cannot call updateScalingMode on the view object directly. Otherwise it will be null to ensure the useEffect does not trigger
   // when scaling mode changes.
-  const scalingModeForUseEffect = updatingScalingModeDirectly ? null : scalingMode;
+  const scalingModeForCreateStreamViewRef = useRef(scalingMode);
+  const scalingModeForUseEffect = canUpdateScalingModeDirectly
+    ? scalingModeForCreateStreamViewRef.current
+    : scalingMode;
+
+  console.log(
+    `[jaburnsi] [${isScreenSharingOn}] canUpdateScalingModeDirectly: ${canUpdateScalingModeDirectly}, scalingModeProp: ${scalingMode}, scalingModeForDirectUpdateRef: ${scalingModeForDirectUpdateRef.current}, scalingModeForCreateStreamViewRef: ${scalingModeForCreateStreamViewRef.current}, scalingModeForUseEffect: ${scalingModeForUseEffect}, renderElement: ${renderElementExists}`
+  );
 
   useEffect(() => {
     if (isStreamAvailable && !renderElementExists) {
       triggerCreateStreamView(async (cancellable: Cancellable): Promise<void> => {
         const streamViewOptions = {
           isMirrored: isMirrored,
-          scalingMode: scalingModeForUseEffect === null ? scalingModeRef.current : scalingModeForUseEffect
+          scalingMode: scalingModeForUseEffect
         };
+
+        scalingModeForCreateStreamViewRef.current = scalingModeForUseEffect;
 
         const streamRendererResult = await onCreateStreamView?.(streamViewOptions);
         // Avoid race condition where onDisposeStreamView is called before onCreateStreamView
@@ -99,6 +125,7 @@ const useVideoStreamLifecycleMaintainer = (props: VideoStreamLifecycleMaintainer
         cancelCreateStreamView();
         // TODO: Remove `if isScreenSharingOn` when we isolate dispose behavior for screen share
         if (!isScreenSharingOn) {
+          console.log('[jaburnsi] [false] Cleaning up tile in NON dismount event');
           onDisposeStreamView?.();
         }
       }
@@ -125,6 +152,7 @@ const useVideoStreamLifecycleMaintainer = (props: VideoStreamLifecycleMaintainer
       cancelCreateStreamView();
       // TODO: Remove `if isScreenSharingOn` when we isolate dispose behavior for screen share
       if (!isScreenSharingOn) {
+        console.log('[jaburnsi] [false] Cleaning up tile in dismount event');
         onDisposeStreamView?.();
       }
     };
