@@ -5,7 +5,8 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { VideoStreamOptions, CreateVideoStreamViewResult, ViewScalingMode } from '../../types';
 import { Cancellable, useCancellableTask } from '../utils/useCancellableTask';
 
-interface VideoStreamLifecycleMaintainerExtendableProps {
+/** @private */
+export interface VideoStreamLifecycleMaintainerExtendableProps {
   isStreamAvailable?: boolean;
   renderElementExists?: boolean;
   isMirrored?: boolean;
@@ -22,8 +23,11 @@ interface VideoStreamLifecycleMaintainerProps extends VideoStreamLifecycleMainta
  * Helper hook to maintain the video stream lifecycle. This calls onCreateStreamView and onDisposeStreamView
  * appropriately based on react lifecycle events and prop changes.
  * This also handles calls to view.update* appropriately such as view.updateScalingMode().
+ *
+ * @remarks This is just exported for tests. Use useRemoteVideoStreamLifecycleMaintainer or useLocalVideoStreamLifecycleMaintainer instead
+ * @private
  */
-const useVideoStreamLifecycleMaintainer = (props: VideoStreamLifecycleMaintainerProps): void => {
+export const useVideoStreamLifecycleMaintainer = (props: VideoStreamLifecycleMaintainerProps): void => {
   const {
     isMirrored,
     isScreenSharingOn,
@@ -74,6 +78,7 @@ const useVideoStreamLifecycleMaintainer = (props: VideoStreamLifecycleMaintainer
     hasScalingModeChanged &&
     canUpdateScalingModeDirectly
   ) {
+    console.log('trggering rescale');
     triggerRescale(async (cancellable: Cancellable) => {
       console.log(
         `[jaburnsi] [false] triggering updateScalingMode scalingModeRef.current: ${scalingModeForDirectUpdateRef.current}, scalingMode: ${scalingMode}`

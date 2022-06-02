@@ -30,11 +30,13 @@ export class RemoteVideoStreamSubscriber {
 
   private subscribe = (): void => {
     this._remoteVideoStream.on('isAvailableChanged', this.isAvailableChanged);
+    this._remoteVideoStream.on('isReceivingChanged', this.isReceivingChanged);
     this.checkAndUpdateScreenShareState();
   };
 
   public unsubscribe = (): void => {
     this._remoteVideoStream.off('isAvailableChanged', this.isAvailableChanged);
+    this._remoteVideoStream.off('isReceivingChanged', this.isReceivingChanged);
   };
 
   private includesActiveScreenShareStream = (streams: { [key: number]: RemoteVideoStreamState }): boolean => {
@@ -94,6 +96,17 @@ export class RemoteVideoStreamSubscriber {
       this._participantKey,
       this._remoteVideoStream.id,
       this._remoteVideoStream.isAvailable
+    );
+
+    this.checkAndUpdateScreenShareState();
+  };
+
+  private isReceivingChanged = (): void => {
+    this._context.setRemoteVideoStreamIsReceiving(
+      this._callIdRef.callId,
+      this._participantKey,
+      this._remoteVideoStream.id,
+      this._remoteVideoStream.isReceiving
     );
 
     this.checkAndUpdateScreenShareState();

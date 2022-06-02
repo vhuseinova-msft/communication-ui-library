@@ -46,6 +46,7 @@ import { callingStatefulLogger } from './Logger';
  *   - RemoteParticipant 'isSpeakingChanged'
  *   - RemoteParticipant 'videoStreamsUpdated'
  *   - RemoteVideoStream 'isAvailableChanged'
+ *   - RemoteVideoStream 'isReceivingChanged'
  *   - TranscriptionCallFeature 'isTranscriptionActiveChanged'
  *   - RecordingCallFeature 'isRecordingActiveChanged'
  *

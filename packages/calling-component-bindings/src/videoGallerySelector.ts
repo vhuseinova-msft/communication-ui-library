@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { toFlatCommunicationIdentifier } from '@internal/acs-ui-common';
+import { toFlatCommunicationIdentifier, _safeJSONStringify } from '@internal/acs-ui-common';
 import { CallClientState } from '@internal/calling-stateful-client';
 import { VideoGalleryLocalParticipant, VideoGalleryRemoteParticipant } from '@internal/react-components';
 import { createSelector } from 'reselect';
@@ -73,6 +73,9 @@ export const videoGallerySelector: VideoGallerySelector = createSelector(
     const dominantSpeakersMap: Record<string, number> = {};
     dominantSpeakerIds?.forEach((speaker, idx) => (dominantSpeakersMap[speaker] = idx));
 
+    const remotePs = _videoGalleryRemoteParticipantsMemo(remoteParticipants);
+    console.log(`${performance.now()} ${_safeJSONStringify(remotePs.map((p) => p.videoStream))}`);
+
     return {
       screenShareParticipant: screenShareRemoteParticipant
         ? convertRemoteParticipantToVideoGalleryRemoteParticipant(
@@ -94,7 +97,7 @@ export const videoGallerySelector: VideoGallerySelector = createSelector(
           renderElement: localVideoStream?.view?.target
         }
       },
-      remoteParticipants: _videoGalleryRemoteParticipantsMemo(remoteParticipants),
+      remoteParticipants: remotePs,
       dominantSpeakers: dominantSpeakerIds
     };
   }

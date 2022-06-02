@@ -263,6 +263,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
     return (
       <Stack key="local-video-tile-key" tabIndex={0} aria-label={strings.localVideoMovementLabel} role={'dialog'}>
         <_LocalVideoTile
+          key="local-video-tile-key-inner"
           userId={localParticipant.userId}
           onCreateLocalStreamView={onCreateLocalStreamView}
           onDisposeLocalStreamView={onDisposeLocalStreamView}
@@ -308,7 +309,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
       const remoteVideoStream = participant.videoStream;
       return (
         <_RemoteVideoTile
-          key={participant.userId}
+          key={'remote-video-tile-' + participant.userId}
           {...participant}
           onCreateRemoteStreamView={isVideoParticipant ? onCreateRemoteStreamView : undefined}
           onDisposeRemoteStreamView={isVideoParticipant ? onDisposeRemoteStreamView : undefined}
@@ -325,15 +326,11 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
 
   const videoTiles = onRenderRemoteVideoTile
     ? visibleVideoParticipants.current.map((participant) => onRenderRemoteVideoTile(participant))
-    : visibleVideoParticipants.current.map((participant): JSX.Element => {
-        return defaultOnRenderVideoTile(participant, true);
-      });
+    : visibleVideoParticipants.current.map((participant) => defaultOnRenderVideoTile(participant, true));
 
   const audioTiles = onRenderRemoteVideoTile
     ? visibleAudioParticipants.current.map((participant) => onRenderRemoteVideoTile(participant))
-    : visibleAudioParticipants.current.map((participant): JSX.Element => {
-        return defaultOnRenderVideoTile(participant, false);
-      });
+    : visibleAudioParticipants.current.map((participant) => defaultOnRenderVideoTile(participant, false));
 
   const screenShareParticipant = remoteParticipants.find((participant) => participant.screenShareStream?.isAvailable);
   const screenShareActive = screenShareParticipant || localParticipant?.isScreenSharingOn;
@@ -355,7 +352,9 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
     gridTiles.push(localVideoTile);
   }
 
-  const localScreenShareStreamComponent = <LocalScreenShare localParticipant={localParticipant} />;
+  const localScreenShareStreamComponent = (
+    <LocalScreenShare key={'LocalScreenShare-key-' + localParticipant.userId} localParticipant={localParticipant} />
+  );
 
   const remoteScreenShareComponent = screenShareParticipant && (
     <RemoteScreenShare
@@ -363,6 +362,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
       renderElement={screenShareParticipant.screenShareStream?.renderElement}
       onCreateRemoteStreamView={onCreateRemoteStreamView}
       onDisposeRemoteStreamView={onDisposeRemoteStreamView}
+      key={'remoteScreenShareComponent-key-' + screenShareParticipant.userId}
     />
   );
 
@@ -382,6 +382,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
           <Stack className={mergeStyles(localVideoTileContainerStyle(theme, isNarrow))}>{localVideoTile}</Stack>
         ) : (
           <_ModalClone
+            key="local-video-tile-modal"
             isOpen={true}
             isModeless={true}
             dragOptions={DRAG_OPTIONS}

@@ -30,7 +30,7 @@ import { getThread } from './utils/getThread';
 import { getExistingThreadIdFromURL } from './utils/getThreadId';
 import { WEB_APP_TITLE } from './utils/constants';
 
-setLogLevel('warning');
+setLogLevel(undefined);
 initializeIcons();
 
 interface Credentials {

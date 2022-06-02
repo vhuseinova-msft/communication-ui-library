@@ -75,8 +75,19 @@ export const _RemoteVideoTile = React.memo(
       ]
     );
 
+    console.log('remoteVideoStreamProps: ', JSON.stringify(props));
+
+    React.useEffect(() => {
+      console.log('remote video tile mounted');
+      return () => {
+        console.log('remote video tile unmounted');
+      };
+    }, []);
+
     // Handle creating, destroying and updating the video stream as necessary
     useRemoteVideoStreamLifecycleMaintainer(remoteVideoStreamProps);
+
+    console.log(`${Date.now()} Remote video tile has render element: `, !!renderElement);
 
     const renderVideoStreamElement = useMemo(() => {
       // Checking if renderElement is well defined or not as calling SDK has a number of video streams limitation which

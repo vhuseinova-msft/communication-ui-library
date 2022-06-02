@@ -98,6 +98,9 @@ export const convertRemoteParticipantToVideoGalleryRemoteParticipant = (
 };
 
 const convertRemoteVideoStreamToVideoGalleryStream = (stream: RemoteVideoStreamState): VideoGalleryStream => {
+  if (stream.mediaStreamType === 'Video') {
+    console.log('stateful stream details: ', stream);
+  }
   return {
     id: stream.id,
     isAvailable: stream.isAvailable,

@@ -78,6 +78,7 @@ export class CallContext {
   public modifyState(modifier: (draft: CallClientState) => void): void {
     const priorState = this._state;
     this._state = produce(this._state, modifier, (patches: Patch[]) => {
+      console.log(`State change: ${_safeJSONStringify(patches)}`);
       if (getLogLevel() === 'verbose') {
         // Log to `info` because AzureLogger.verbose() doesn't show up in console.
         this._logger.info(`State change: ${_safeJSONStringify(patches)}`);
@@ -195,6 +196,7 @@ export class CallContext {
     addRemoteParticipant: RemoteParticipantState[],
     removeRemoteParticipant: string[]
   ): void {
+    console.log('setCallRemoteParticipants');
     this.modifyState((draft: CallClientState) => {
       const call = draft.calls[this._callIdHistory.latestCallId(callId)];
       if (call) {
@@ -292,6 +294,7 @@ export class CallContext {
   }
 
   public setParticipantState(callId: string, participantKey: string, state: RemoteParticipantStatus): void {
+    console.log('setParticipantState');
     this.modifyState((draft: CallClientState) => {
       const call = draft.calls[this._callIdHistory.latestCallId(callId)];
       if (call) {
@@ -340,6 +343,7 @@ export class CallContext {
   }
 
   public setParticipantVideoStream(callId: string, participantKey: string, stream: RemoteVideoStreamState): void {
+    console.log('setParticipantVideoStream');
     this.modifyState((draft: CallClientState) => {
       const call = draft.calls[this._callIdHistory.latestCallId(callId)];
       if (call) {
@@ -349,7 +353,9 @@ export class CallContext {
           // modify the values that subscriber has access to.
           const existingStream = participant.videoStreams[stream.id];
           if (existingStream) {
+            console.log('existing stream!');
             existingStream.isAvailable = stream.isAvailable;
+            existingStream.isReceiving = stream.isReceiving;
             existingStream.mediaStreamType = stream.mediaStreamType;
           } else {
             participant.videoStreams[stream.id] = stream;
@@ -365,6 +371,7 @@ export class CallContext {
     streamId: number,
     isAvailable: boolean
   ): void {
+    console.log('setRemoteVideoStreamIsAvailable');
     this.modifyState((draft: CallClientState) => {
       const call = draft.calls[this._callIdHistory.latestCallId(callId)];
       if (call) {
@@ -379,12 +386,34 @@ export class CallContext {
     });
   }
 
+  public setRemoteVideoStreamIsReceiving(
+    callId: string,
+    participantKey: string,
+    streamId: number,
+    isReceiving: boolean
+  ): void {
+    console.log('setRemoteVideoStreamIsReceiving');
+    this.modifyState((draft: CallClientState) => {
+      const call = draft.calls[this._callIdHistory.latestCallId(callId)];
+      if (call) {
+        const participant = call.remoteParticipants[participantKey];
+        if (participant) {
+          const stream = participant.videoStreams[streamId];
+          if (stream) {
+            stream.isReceiving = isReceiving;
+          }
+        }
+      }
+    });
+  }
+
   public setRemoteVideoStreams(
     callId: string,
     participantKey: string,
     addRemoteVideoStream: RemoteVideoStreamState[],
     removeRemoteVideoStream: number[]
   ): void {
+    console.log('setRemoteVideoStreams');
     this.modifyState((draft: CallClientState) => {
       const call = draft.calls[this._callIdHistory.latestCallId(callId)];
       if (call) {
@@ -416,6 +445,7 @@ export class CallContext {
     streamId: number,
     view: VideoStreamRendererViewState | undefined
   ): void {
+    console.log('setRemoteVideoStreamRendererView');
     this.modifyState((draft: CallClientState) => {
       const call = draft.calls[this._callIdHistory.latestCallId(callId)];
       if (call) {
@@ -423,6 +453,10 @@ export class CallContext {
         if (participant) {
           const stream = participant.videoStreams[streamId];
           if (stream) {
+            if (stream.view && !view) {
+              // debugger;
+            }
+            console.log(`old stream: ${JSON.stringify(stream)} , new Stream view: ${JSON.stringify(view)}`);
             stream.view = view;
           }
         }
