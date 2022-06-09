@@ -349,6 +349,7 @@ export async function stableScreenshot(
   screenshotOptions?: PageScreenshotOptions
 ): Promise<Buffer> {
   await waitForPageFontsLoaded(page);
+  await hideScrollBars(page);
   if (stubOptions?.stubMessageTimestamps) {
     await stubMessageTimestamps(page);
   }
@@ -387,4 +388,11 @@ const disableTooltips = async (page: Page): Promise<void> => {
  */
 const enableTooltips = async (page: Page): Promise<void> => {
   await page.addStyleTag({ content: '.ms-Tooltip {display: block}' });
+};
+
+/**
+ * Helper function for enabling all the tooltips on the page.
+ */
+const hideScrollBars = async (page: Page): Promise<void> => {
+  await page.addStyleTag({ content: 'body {overflow: hidden}' });
 };
