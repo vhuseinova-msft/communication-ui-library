@@ -187,13 +187,31 @@ export const InputBoxButton = (props: InputBoxButtonProps): JSX.Element => {
         onClick={onClick}
         id={id}
         onMouseEnter={() => {
-          setIsHover(true);
+          (async () => setIsHover(true))();
         }}
         onMouseLeave={() => {
-          setIsHover(false);
+          (async () => setIsHover(false))();
         }}
         onRenderIcon={() => onRenderIcon(isHover)}
       />
     </TooltipHost>
+  );
+};
+
+const G = (props: { onRenderIcon: (isHover: boolean) => JSX.Element }): JSX.Element => {
+  const [isHover, setIsHover] = useState(false);
+  return (
+    <div
+      role={'menuitem'}
+      data-is-focusable={true}
+      onMouseEnter={() => {
+        setIsHover(true);
+      }}
+      onMouseLeave={() => {
+        setIsHover(false);
+      }}
+    >
+      {props.onRenderIcon(isHover)}
+    </div>
   );
 };
