@@ -9,7 +9,7 @@
   },
   "include": [
     "./browser/**/*.test.ts",
-    "browser/chat/fixture.ts",
+    "browser/chat/live-tests/fixture.ts",
     "browser/chat/fake-adapter/fixture.ts",
     "browser/call/fixture.ts"
   ]
