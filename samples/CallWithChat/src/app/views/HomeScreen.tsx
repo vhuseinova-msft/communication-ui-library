@@ -49,6 +49,25 @@ export const HomeScreen = (props: HomeScreenProps): JSX.Element => {
   const teamsCallChosen: boolean = chosenCallOption.key === 'TeamsMeeting';
   const buttonEnabled = displayName && (!teamsCallChosen || teamsLink);
 
+  const [cameraPermission, setCameraPermission] = useState<boolean | undefined>();
+  const [micPermission, setMicPermission] = useState<boolean | undefined>();
+
+  navigator.permissions.query({ name: 'camera' }).then((r) => {
+    if (r.state === 'granted') {
+      setCameraPermission(true);
+    } else {
+      setCameraPermission(false);
+    }
+  });
+
+  navigator.permissions.query({ name: 'microphone' }).then((r) => {
+    if (r.state === 'granted') {
+      setMicPermission(true);
+    } else {
+      setMicPermission(false);
+    }
+  });
+
   return (
     <Stack
       horizontal
@@ -58,6 +77,10 @@ export const HomeScreen = (props: HomeScreenProps): JSX.Element => {
       tokens={containerTokens}
       className={containerStyle}
     >
+      <Stack>
+        {cameraPermission && <>Camera: true</>}
+        {micPermission && <>mic: true</>}
+      </Stack>
       <Image alt="Welcome to the ACS Call with Chat sample app" className={imgStyle} {...imageProps} />
       <Stack className={infoContainerStyle}>
         <Text role={'heading'} aria-level={1} className={headerStyle}>
