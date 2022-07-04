@@ -60,6 +60,7 @@ import { PersonaPresence } from '@fluentui/react';
 import { PersonaSize } from '@fluentui/react';
 import { PhoneNumberIdentifier } from '@azure/communication-common';
 import { PhoneNumberKind } from '@azure/communication-common';
+import { PropertyChangedEvent } from '@azure/communication-calling';
 import { default as React_2 } from 'react';
 import type { RemoteParticipant } from '@azure/communication-calling';
 import { RemoteParticipantState as RemoteParticipantState_2 } from '@azure/communication-calling';
@@ -245,6 +246,8 @@ export interface CallAdapterSubscribers {
     off(event: 'isSpeakingChanged', listener: IsSpeakingChangedListener): void;
     off(event: 'callEnded', listener: CallEndedListener): void;
     off(event: 'diagnosticChanged', listener: DiagnosticChangedEventListner): void;
+    off(event: 'selectedMicrophoneChanged', listener: PropertyChangedEvent): void;
+    off(event: 'selectedSpeakerChanged', listener: PropertyChangedEvent): void;
     off(event: 'error', listener: (e: AdapterError) => void): void;
     on(event: 'participantsJoined', listener: ParticipantsJoinedListener): void;
     on(event: 'participantsLeft', listener: ParticipantsLeftListener): void;
@@ -255,6 +258,8 @@ export interface CallAdapterSubscribers {
     on(event: 'isSpeakingChanged', listener: IsSpeakingChangedListener): void;
     on(event: 'callEnded', listener: CallEndedListener): void;
     on(event: 'diagnosticChanged', listener: DiagnosticChangedEventListner): void;
+    on(event: 'selectedMicrophoneChanged', listener: PropertyChangedEvent): void;
+    on(event: 'selectedSpeakerChanged', listener: PropertyChangedEvent): void;
     on(event: 'error', listener: (e: AdapterError) => void): void;
 }
 
@@ -338,9 +343,11 @@ export type CallCompositeIcons = {
     ErrorBarCallMacOsMicrophoneAccessDenied?: JSX.Element;
     ErrorBarCallMicrophoneAccessDenied?: JSX.Element;
     ErrorBarCallMicrophoneMutedBySystem?: JSX.Element;
+    ErrorBarCallMicrophoneUnmutedBySystem?: JSX.Element;
     ErrorBarCallNetworkQualityLow?: JSX.Element;
     ErrorBarCallNoMicrophoneFound?: JSX.Element;
     ErrorBarCallNoSpeakerFound?: JSX.Element;
+    ErrorBarClear?: JSX.Element;
     HorizontalGalleryLeftButton?: JSX.Element;
     HorizontalGalleryRightButton?: JSX.Element;
     LobbyScreenConnectingToCall?: JSX.Element;
@@ -646,6 +653,10 @@ export interface CallWithChatAdapterSubscriptions {
     // (undocumented)
     off(event: 'callParticipantsLeft', listener: ParticipantsLeftListener): void;
     // (undocumented)
+    off(event: 'selectedMicrophoneChanged', listener: PropertyChangedEvent): void;
+    // (undocumented)
+    off(event: 'selectedSpeakerChanged', listener: PropertyChangedEvent): void;
+    // (undocumented)
     off(event: 'callError', listener: (e: AdapterError) => void): void;
     // (undocumented)
     off(event: 'messageReceived', listener: MessageReceivedListener): void;
@@ -675,6 +686,10 @@ export interface CallWithChatAdapterSubscriptions {
     on(event: 'callParticipantsJoined', listener: ParticipantsJoinedListener): void;
     // (undocumented)
     on(event: 'callParticipantsLeft', listener: ParticipantsLeftListener): void;
+    // (undocumented)
+    on(event: 'selectedMicrophoneChanged', listener: PropertyChangedEvent): void;
+    // (undocumented)
+    on(event: 'selectedSpeakerChanged', listener: PropertyChangedEvent): void;
     // (undocumented)
     on(event: 'callError', listener: (e: AdapterError) => void): void;
     // (undocumented)
@@ -741,9 +756,11 @@ export type CallWithChatCompositeIcons = {
     ErrorBarCallMacOsMicrophoneAccessDenied?: JSX.Element;
     ErrorBarCallMicrophoneAccessDenied?: JSX.Element;
     ErrorBarCallMicrophoneMutedBySystem?: JSX.Element;
+    ErrorBarCallMicrophoneUnmutedBySystem?: JSX.Element;
     ErrorBarCallNetworkQualityLow?: JSX.Element;
     ErrorBarCallNoMicrophoneFound?: JSX.Element;
     ErrorBarCallNoSpeakerFound?: JSX.Element;
+    ErrorBarClear?: JSX.Element;
     HorizontalGalleryLeftButton?: JSX.Element;
     HorizontalGalleryRightButton?: JSX.Element;
     LobbyScreenConnectingToCall?: JSX.Element;
@@ -805,8 +822,8 @@ export interface CallWithChatCompositeStrings {
     chatButtonTooltipOpen: string;
     chatPaneTitle: string;
     copyInviteLinkButtonLabel: string;
-    dismissSidePaneButton: string;
-    moreDrawerAudioDeviceMenuTitle: string;
+    dismissSidePaneButtonLabel?: string;
+    moreDrawerAudioDeviceMenuTitle?: string;
     moreDrawerButtonLabel: string;
     moreDrawerButtonTooltip: string;
     moreDrawerMicrophoneMenuTitle: string;
@@ -818,8 +835,8 @@ export interface CallWithChatCompositeStrings {
     peoplePaneTitle: string;
     pictureInPictureTileAriaLabel: string;
     removeMenuLabel: string;
-    returnToCallButtonAriaDescription: string;
-    returnToCallButtonAriaLabel: string;
+    returnToCallButtonAriaDescription?: string;
+    returnToCallButtonAriaLabel?: string;
 }
 
 // @public
@@ -838,7 +855,7 @@ export interface CallWithChatControlOptions {
 }
 
 // @public
-export type CallWithChatEvent = 'callError' | 'chatError' | 'callEnded' | 'isMutedChanged' | 'callIdChanged' | 'isLocalScreenSharingActiveChanged' | 'displayNameChanged' | 'isSpeakingChanged' | 'callParticipantsJoined' | 'callParticipantsLeft' | 'messageReceived' | 'messageSent' | 'messageRead' | 'chatParticipantsAdded' | 'chatParticipantsRemoved';
+export type CallWithChatEvent = 'callError' | 'chatError' | 'callEnded' | 'isMutedChanged' | 'callIdChanged' | 'isLocalScreenSharingActiveChanged' | 'displayNameChanged' | 'isSpeakingChanged' | 'callParticipantsJoined' | 'callParticipantsLeft' | 'selectedMicrophoneChanged' | 'selectedSpeakerChanged' | 'messageReceived' | 'messageSent' | 'messageRead' | 'chatParticipantsAdded' | 'chatParticipantsRemoved';
 
 // @public
 export const CameraButton: (props: CameraButtonProps) => JSX.Element;
@@ -870,8 +887,8 @@ export type CameraButtonSelector = (state: CallClientState, props: CallingBaseSe
 
 // @public
 export interface CameraButtonStrings {
-    cameraActionTurnedOffAnnouncement: string;
-    cameraActionTurnedOnAnnouncement: string;
+    cameraActionTurnedOffAnnouncement?: string;
+    cameraActionTurnedOnAnnouncement?: string;
     cameraButtonSplitRoleDescription?: string;
     cameraMenuTitle: string;
     cameraMenuTooltip: string;
@@ -1387,7 +1404,7 @@ export type CustomCallControlButtonPlacement = 'primary';
 
 // @beta
 export interface CustomCallControlButtonProps extends CustomControlButtonProps {
-    iconName?: keyof CallCompositeIcons;
+    iconName?: string;
     placement: CustomCallControlButtonPlacement;
 }
 
@@ -1399,7 +1416,7 @@ export type CustomCallWithChatControlButtonPlacement = 'primary' | 'overflow' | 
 
 // @beta
 export interface CustomCallWithChatControlButtonProps extends CustomControlButtonProps {
-    iconName?: keyof CallWithChatCompositeIcons;
+    iconName?: string;
     placement: CustomCallWithChatControlButtonPlacement;
 }
 
@@ -1455,9 +1472,13 @@ export const DEFAULT_COMPONENT_ICONS: {
     ErrorBarCallMacOsMicrophoneAccessDenied: JSX.Element;
     ErrorBarCallMicrophoneAccessDenied: JSX.Element;
     ErrorBarCallMicrophoneMutedBySystem: JSX.Element;
+    ErrorBarCallMicrophoneUnmutedBySystem: JSX.Element;
     ErrorBarCallNetworkQualityLow: JSX.Element;
     ErrorBarCallNoMicrophoneFound: JSX.Element;
     ErrorBarCallNoSpeakerFound: JSX.Element;
+    ErrorBarClear: JSX.Element;
+    ErrorBarCallVideoRecoveredBySystem: JSX.Element;
+    ErrorBarCallVideoStoppedBySystem: JSX.Element;
     HorizontalGalleryLeftButton: JSX.Element;
     HorizontalGalleryRightButton: JSX.Element;
     MessageDelivered: JSX.Element;
@@ -1512,9 +1533,11 @@ export const DEFAULT_COMPOSITE_ICONS: {
     ErrorBarCallMacOsMicrophoneAccessDenied: JSX.Element;
     ErrorBarCallMicrophoneAccessDenied: JSX.Element;
     ErrorBarCallMicrophoneMutedBySystem: JSX.Element;
+    ErrorBarCallMicrophoneUnmutedBySystem: JSX.Element;
     ErrorBarCallNetworkQualityLow: JSX.Element;
     ErrorBarCallNoMicrophoneFound: JSX.Element;
     ErrorBarCallNoSpeakerFound: JSX.Element;
+    ErrorBarClear: JSX.Element;
     HorizontalGalleryLeftButton: JSX.Element;
     HorizontalGalleryRightButton: JSX.Element;
     LobbyScreenConnectingToCall?: JSX.Element | undefined;
@@ -1549,6 +1572,8 @@ export const DEFAULT_COMPOSITE_ICONS: {
     ChatMessageOptions: JSX.Element;
     CancelFileUpload: JSX.Element;
     DownloadFile: JSX.Element;
+    ErrorBarCallVideoRecoveredBySystem: JSX.Element;
+    ErrorBarCallVideoStoppedBySystem: JSX.Element;
     MessageResend: JSX.Element;
     HoldCall: JSX.Element;
     ResumeCall: JSX.Element;
@@ -1721,12 +1746,15 @@ export interface ErrorBarStrings {
     callMacOsScreenShareAccessDenied: string;
     callMicrophoneAccessDenied: string;
     callMicrophoneMutedBySystem: string;
+    callMicrophoneUnmutedBySystem: string;
     callNetworkQualityLow: string;
     callNoMicrophoneFound: string;
     callNoSpeakerFound: string;
-    dismissButtonAriaLabel: string;
-    failedToJoinCallGeneric: string;
-    failedToJoinCallInvalidMeetingLink: string;
+    callVideoRecoveredBySystem: string;
+    callVideoStoppedBySystem: string;
+    dismissButtonAriaLabel?: string;
+    failedToJoinCallGeneric?: string;
+    failedToJoinCallInvalidMeetingLink?: string;
     muteGeneric: string;
     sendMessageGeneric: string;
     sendMessageNotInChatThread: string;
@@ -2100,7 +2128,7 @@ export type MessageThreadSelector = (state: ChatClientState, props: ChatBaseSele
 
 // @public
 export interface MessageThreadStrings {
-    actionMenuMoreOptions: string;
+    actionMenuMoreOptions?: string;
     downloadFile: string;
     editBoxCancelButton: string;
     editBoxPlaceholderText: string;
@@ -2174,9 +2202,9 @@ export type MicrophoneButtonSelector = (state: CallClientState, props: CallingBa
 
 // @public
 export interface MicrophoneButtonStrings {
-    microphoneActionTurnedOffAnnouncement: string;
-    microphoneActionTurnedOnAnnouncement: string;
-    microphoneButtonSplitRoleDescription: string;
+    microphoneActionTurnedOffAnnouncement?: string;
+    microphoneActionTurnedOnAnnouncement?: string;
+    microphoneButtonSplitRoleDescription?: string;
     microphoneMenuTitle?: string;
     microphoneMenuTooltip?: string;
     offLabel: string;
@@ -2230,7 +2258,7 @@ export const ParticipantItem: (props: ParticipantItemProps) => JSX.Element;
 
 // @public
 export interface ParticipantItemProps {
-    displayName: string;
+    displayName?: string;
     me?: boolean;
     menuItems?: IContextualMenuItem[];
     onClick?: (props?: ParticipantItemProps) => void;
@@ -2245,7 +2273,7 @@ export interface ParticipantItemProps {
 
 // @public
 export interface ParticipantItemStrings {
-    displayNamePlaceholder: string;
+    displayNamePlaceholder?: string;
     isMeText: string;
     menuTitle: string;
     mutedIconLabel: string;
