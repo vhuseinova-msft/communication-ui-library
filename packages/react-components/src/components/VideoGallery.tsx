@@ -252,8 +252,9 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
   const visibleCallingPariticpantsSet = new Set(visibleCallingPariticpants.current.map((p) => p.userId));
   visibleAudioParticipants.current = smartDominantSpeakerParticipants({
     participants:
-      (remoteParticipants?.filter((p) => !visibleVideoParticipantsSet.has(p.userId) || !visibleCallingPariticpantsSet.has(p.userId))) ??
-      [],
+      remoteParticipants?.filter(
+        (p) => !visibleVideoParticipantsSet.has(p.userId) || !visibleCallingPariticpantsSet.has(p.userId)
+      ) ?? [],
     dominantSpeakers,
     lastVisibleParticipants: visibleAudioParticipants.current,
     maxDominantSpeakers: MAX_AUDIO_DOMINANT_SPEAKERS
@@ -348,11 +349,11 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
         return defaultOnRenderVideoTile(participant, true);
       });
 
-  const callingTiles = onRenderRemoteVideoTile ?
+  const callingTiles = onRenderRemoteVideoTile
     ? visibleCallingPariticpants.current.map((participant) => onRenderRemoteVideoTile(participant))
     : visibleCallingPariticpants.current.map((participant): JSX.Element => {
-      return defaultOnRenderVideoTile(participant, false);
-    });
+        return defaultOnRenderVideoTile(participant, false);
+      });
 
   const audioTiles = onRenderRemoteVideoTile
     ? visibleAudioParticipants.current.map((participant) => onRenderRemoteVideoTile(participant))
