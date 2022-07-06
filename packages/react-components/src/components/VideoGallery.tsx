@@ -210,7 +210,10 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
   const containerWidth = _useContainerWidth(containerRef);
   const containerHeight = _useContainerHeight(containerRef);
   const isNarrow = containerWidth ? isNarrowWidth(containerWidth) : false;
+
   const visibleVideoParticipants = useRef<VideoGalleryRemoteParticipant[]>([]);
+  // new array of participants being called in
+  const visibleCallingPariticpants = useRef<VideoGalleryRemoteParticipant[]>([]);
   const visibleAudioParticipants = useRef<VideoGalleryRemoteParticipant[]>([]);
 
   const modalWidth = isNarrow ? SMALL_FLOATING_MODAL_SIZE_PX.width : LARGE_FLOATING_MODAL_SIZE_PX.width;
@@ -237,10 +240,20 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
     maxDominantSpeakers: maxRemoteVideoStreams
   }).slice(0, maxRemoteVideoStreams);
 
+  visibleCallingPariticpants.current = smartDominantSpeakerParticipants({
+    participants: remoteParticipants?.filter((p) => p.state === ('connecting' || 'ringing')) ?? [],
+    dominantSpeakers,
+    lastVisibleParticipants: visibleCallingPariticpants.current,
+    maxDominantSpeakers: 0
+  });
+
   // This set will be used to filter out participants already in visibleVideoParticipants
   const visibleVideoParticipantsSet = new Set(visibleVideoParticipants.current.map((p) => p.userId));
+  const visibleCallingPariticpantsSet = new Set(visibleCallingPariticpants.current.map((p) => p.userId));
   visibleAudioParticipants.current = smartDominantSpeakerParticipants({
-    participants: remoteParticipants?.filter((p) => !visibleVideoParticipantsSet.has(p.userId)) ?? [],
+    participants:
+      (remoteParticipants?.filter((p) => !visibleVideoParticipantsSet.has(p.userId) || !visibleCallingPariticpantsSet.has(p.userId))) ??
+      [],
     dominantSpeakers,
     lastVisibleParticipants: visibleAudioParticipants.current,
     maxDominantSpeakers: MAX_AUDIO_DOMINANT_SPEAKERS
@@ -335,6 +348,12 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
         return defaultOnRenderVideoTile(participant, true);
       });
 
+  const callingTiles = onRenderRemoteVideoTile ?
+    ? visibleCallingPariticpants.current.map((participant) => onRenderRemoteVideoTile(participant))
+    : visibleCallingPariticpants.current.map((participant): JSX.Element => {
+      return defaultOnRenderVideoTile(participant, false);
+    });
+
   const audioTiles = onRenderRemoteVideoTile
     ? visibleAudioParticipants.current.map((participant) => onRenderRemoteVideoTile(participant))
     : visibleAudioParticipants.current.map((participant): JSX.Element => {
@@ -349,12 +368,12 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
 
   if (screenShareActive) {
     // If screen sharing is active, assign video and audio participants as horizontal gallery participants
-    horizontalGalleryTiles = videoTiles.concat(audioTiles);
+    horizontalGalleryTiles = videoTiles.concat(callingTiles).concat(audioTiles);
   } else {
     // If screen sharing is not active, then assign all video tiles as grid tiles.
     // If there are no video tiles, then assign audio tiles as grid tiles.
-    gridTiles = videoTiles.length > 0 ? videoTiles : audioTiles;
-    horizontalGalleryTiles = videoTiles.length > 0 ? audioTiles : [];
+    gridTiles = videoTiles.length > 0 ? videoTiles : audioTiles.concat(callingTiles);
+    horizontalGalleryTiles = videoTiles.length > 0 ? callingTiles.concat(audioTiles) : [];
   }
 
   if (!shouldFloatLocalVideo && localParticipant) {
