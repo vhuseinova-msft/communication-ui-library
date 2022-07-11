@@ -9,16 +9,17 @@ import { useTheme } from '../../theming/FluentThemeProvider';
 export type _TileOrientation = 'portrait' | 'landscape';
 
 /** @internal */
-export type _PictureInPictureInPictureTileProps = PropsWithChildren<{
+export type _PictureInPictureInPictureTileProps = {
   orientation: _TileOrientation;
-}>;
+  getTile: () => React.ReactNode;
+};
 
 /** @private */
 export const PictureInPictureInPicturePrimaryTile = (props: _PictureInPictureInPictureTileProps): ReactElement => {
   const boxShadow = useTheme().effects.elevation8;
   return (
     <PictureInPictureInPictureTile styles={primaryTileStyles(props.orientation, boxShadow)}>
-      {props.children}
+      {props.getTile()}
     </PictureInPictureInPictureTile>
   );
 };
@@ -26,7 +27,7 @@ export const PictureInPictureInPicturePrimaryTile = (props: _PictureInPictureInP
 /** @private */
 export const PictureInPictureInPictureSecondaryTile = (props: _PictureInPictureInPictureTileProps): ReactElement => (
   <PictureInPictureInPictureTile styles={secondaryTileStyles(props.orientation)}>
-    {props.children}
+    {props.getTile()}
   </PictureInPictureInPictureTile>
 );
 

@@ -105,11 +105,12 @@ export const LocalAndRemotePIP = (props: LocalAndRemotePIPProps): JSX.Element =>
   // If there are no remote participants, show the local participant as the primary tile
   const primaryTileProps: _PictureInPictureInPictureTileProps = useMemo(
     () => ({
-      children: remoteVideoTileProps ? (
-        <_RemoteVideoTile {...remoteVideoTileProps} />
-      ) : (
-        <_LocalVideoTile {...localVideoTileProps} />
-      ),
+      getTile: () =>
+        remoteVideoTileProps ? (
+          <_RemoteVideoTile {...remoteVideoTileProps} />
+        ) : (
+          <_LocalVideoTile {...localVideoTileProps} />
+        ),
       // TODO: when the calling SDK provides height/width stream information - update this to reflect the stream orientation.
       orientation: 'portrait'
     }),
@@ -121,7 +122,7 @@ export const LocalAndRemotePIP = (props: LocalAndRemotePIPProps): JSX.Element =>
     () =>
       remoteVideoTileProps
         ? {
-            children: <_LocalVideoTile {...localVideoTileProps} personaMinSize={20} />,
+            getTile: () => <_LocalVideoTile {...localVideoTileProps} personaMinSize={20} />,
             // TODO: when the calling SDK provides height/width stream information - update this to reflect the stream orientation.
             orientation: 'portrait'
           }
