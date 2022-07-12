@@ -194,9 +194,13 @@ export const CallComposite = (props: CallCompositeProps): JSX.Element => {
   } = props;
   useEffect(() => {
     (async () => {
-      await adapter.askDevicePermission({ video: true, audio: true });
-      adapter.queryCameras();
-      adapter.queryMicrophones();
+      if (role === 'Consumer') {
+        await adapter.askDevicePermission({ video: false, audio: true });
+      } else {
+        await adapter.askDevicePermission({ video: true, audio: true });
+        adapter.queryCameras();
+        adapter.queryMicrophones();
+      }
       adapter.querySpeakers();
     })();
   }, [adapter]);
