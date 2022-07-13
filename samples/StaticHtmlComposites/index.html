@@ -29,7 +29,8 @@
 
 <body>
   <!-- height need to be set for composite to fit the layout -->
-  <div id="video-call-container" style="height: 55vh"></div>
+  <div>Choose a chat thread:</div>
+  <select name="chat thread" id="chat-thread"></select>
   <div id="chat-container" style="height: 45vh"></div>
   <!-- replace with https://github.com/Azure/communication-ui-library/releases/latest/download/chatComposite.js for development and prototyping -->
   <script src="./chatComposite.js"></script>
@@ -37,46 +38,87 @@
   <script src="./callComposite.js"></script>
   <script src="./service.js"></script>
   <script type="module">
-    const testParams = service.loadConfigFromUrlQuery();
-    const { user, token } = testParams.token
-      ? { token: testParams.token, user: { communicationUserId: testParams.userId } }
-      : { ...(await service.createUserWithToken()) };
-    const groupId = await service.createGUID();
-    // Call composite sample code starts here
-    const displayName = testParams.displayName ?? 'Bob';
+    const loadChat = async function (chatUserDetails, threadId) {
+      const { user, token } = {
+        token: chatUserDetails.userToken,
+        user: { communicationUserId: chatUserDetails.azureUserId }
+      };
 
-    const callAdapter = await callComposite.loadCallComposite(
+      const onFetchAvatarPersonaData = () =>
+        new Promise((resolve) => {
+          return resolve({
+            imageUrl: this.profileImageUrl + this.selectedUserDetails.selectedUserResponse.username
+          });
+        });
+
+      const onRenderMessage = (messageProps, defaultOnRender) => {
+        messageProps.showDate = true;
+        if (messageProps.message.mine) {
+          messageProps.messageContainerStyle = {
+            backgroundColor: '#007994',
+            color: '#FFFFFF !important',
+            borderRadius: '8px !important',
+            right: 0,
+            '& .ui-chat__messageheader': {
+              textAlign: 'right'
+            }
+          };
+        } else {
+          messageProps.messageContainerStyle = {
+            borderRadius: '8px !important',
+            backgroundColor: 'white',
+            left: 0
+          };
+        }
+        return defaultOnRender ? defaultOnRender(messageProps) : '';
+      };
+
+      this.chatAdapter = await chatComposite.loadChatComposite(
+        {
+          displayName: chatUserDetails.fullName,
+          threadId: threadId,
+          endpoint: 'https://web-ui-dev.communication.azure.com',
+          userId: user,
+          token: token
+        },
+        document.getElementById('chat-container'),
+        {
+          options: { topic: false, participantPane: false },
+          key: Date.now(),
+          onFetchAvatarPersonaData: onFetchAvatarPersonaData,
+          onRenderMessage: onRenderMessage
+        }
+      );
+    };
+
+    const threads = [
       {
-        groupId, // Provide any GUID to join a group
-        displayName: displayName,
-        userId: user,
-        token: token
+        userToken: '<userToken>',
+        azureUserId: '<azureUserId>',
+        threadId: '<threadId>'
       },
-      document.getElementById('video-call-container')
-    );
-
-    const threadId = testParams.threadId ?? (await service.createChatThread());
-    testParams.threadId ?? (await service.addChatUser(threadId, user, displayName));
-    const endpoint = testParams.endpointUrl ?? (await service.getEndpointUrl());
-
-    // Chat composite sample code starts here
-    const chatAdapter = await chatComposite.loadChatComposite(
       {
-        displayName: displayName,
-        threadId: threadId,
-        endpoint: endpoint,
-        userId: user,
-        token: token
-      },
-      document.getElementById('chat-container'),
-      {
-        options: { participantPane: true, topic: false },
-        // To prevent stale composite issues we are using a unique value (e.g the date) as a key for this component
-        key: new Date()
+        userToken: '<userToken>',
+        azureUserId: '<azureUserId>',
+        threadId: '<threadId>'
       }
-    );
+    ];
 
-    await chatAdapter.sendMessage('Hello to you! 👋');
+    threads.forEach((t, i) => {
+      const option = document.createElement('option');
+      option.text = t.threadId;
+      option.value = '' + i;
+      document.getElementById('chat-thread').appendChild(option);
+    });
+
+    document.getElementById('chat-thread').onchange = () => {
+      var x = document.getElementById('chat-thread').value;
+      const y = parseInt(x);
+      const thread = threads[y];
+      loadChat(thread, thread.threadId);
+    };
+
+    loadChat(threads[0], threads[0].threadId);
 
     window.onbeforeunload = () => {
       callAdapter.dispose();
