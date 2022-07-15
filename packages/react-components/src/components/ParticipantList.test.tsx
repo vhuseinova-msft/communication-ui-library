@@ -17,6 +17,14 @@ const dummyOnRemoveParticipantCallback = () => {
 };
 
 describe('ParticipantList tests for different roles', () => {
+  beforeEach(() => {
+    registerIcons({
+      icons: {
+        participantitemoptions: <></>
+      }
+    });
+  });
+
   test('ParticipantList should not have disabled remove menu item for Presenter role', async () => {
     const wrapper = mountWithPermissions(
       <ParticipantList
