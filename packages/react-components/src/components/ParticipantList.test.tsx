@@ -7,7 +7,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import { mountWithPermissions } from './utils/testUtils';
 import { ParticipantList } from './ParticipantList';
 import { ParticipantItem } from './ParticipantItem';
-import { IContextualMenuItem } from '@fluentui/react';
+import { IContextualMenuItem, registerIcons } from '@fluentui/react';
 import { _getPermissions } from '../permissions';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -17,7 +17,7 @@ const dummyOnRemoveParticipantCallback = () => {
 };
 
 describe('ParticipantList tests for different roles', () => {
-  test('ParticipantList should have disabled remove menu item for Presenter role', async () => {
+  test('ParticipantList should not have disabled remove menu item for Presenter role', async () => {
     const wrapper = mountWithPermissions(
       <ParticipantList
         participants={[{ displayName: 'User1', userId: '1', isRemovable: true }]}
