@@ -76,6 +76,33 @@ export const MediaGallery = (props: MediaGalleryProps): JSX.Element => {
         showCameraSwitcherInLocalPreview={props.isMobile}
         localVideoCameraCycleButtonProps={cameraSwitcherProps}
         onRenderAvatar={onRenderAvatar}
+        onRenderLayout={(videoTiles) => {
+          return (
+            <Stack
+              horizontal
+              className={mergeStyles({
+                height: 'auto',
+                width: '100%',
+                alignItems: 'center',
+                flexGrow: '1',
+                justifyContent: 'center'
+              })}
+            >
+              {videoTiles[0] ?? <Stack.Item grow>{undefined}</Stack.Item>}
+              <Stack.Item>
+                <iframe
+                  width="560"
+                  height="315"
+                  src="https://www.youtube.com/embed/lJIrF4YjHfQ"
+                  title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              </Stack.Item>
+            </Stack>
+          );
+        }}
       />
     );
   }, [videoGalleryProps, props.isMobile, onRenderAvatar, cameraSwitcherProps]);

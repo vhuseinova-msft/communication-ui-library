@@ -155,6 +155,8 @@ export interface VideoGalleryProps {
    * Camera control information for button to switch cameras.
    */
   localVideoCameraCycleButtonProps?: LocalVideoCameraCycleButtonProps;
+
+  onRenderLayout?: (videoTiles: JSX.Element[], audioTiles: JSX.Element[], localVideoTile: JSX.Element) => JSX.Element;
 }
 
 const DRAG_OPTIONS: IDragOptions = {
@@ -195,7 +197,8 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
     showMuteIndicator,
     maxRemoteVideoStreams = DEFAULT_MAX_REMOTE_VIDEO_STREAMS,
     showCameraSwitcherInLocalPreview,
-    localVideoCameraCycleButtonProps
+    localVideoCameraCycleButtonProps,
+    onRenderLayout
   } = props;
 
   const ids = useIdentifiers();
@@ -375,6 +378,10 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
 
   const horizontalGalleryPresent = horizontalGalleryTiles && horizontalGalleryTiles.length > 0;
   const layerHostId = useId('layerhost');
+
+  if (onRenderLayout) {
+    return onRenderLayout(videoTiles, audioTiles, localVideoTile);
+  }
 
   return (
     <div
