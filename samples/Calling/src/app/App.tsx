@@ -5,10 +5,13 @@ import { GroupCallLocator, TeamsMeetingLinkLocator } from '@azure/communication-
 /* @conditional-compile-remove(rooms) */
 import { RoomLocator } from '@azure/communication-calling';
 import { CommunicationUserIdentifier } from '@azure/communication-common';
-import { CallParticipantsLocator, Role } from '@azure/communication-react';
 import { setLogLevel } from '@azure/logger';
 import { initializeIcons, Spinner } from '@fluentui/react';
 import { CallAdapterLocator } from '@azure/communication-react';
+/* @conditional-compile-remove(rooms) */
+import { Role } from '@azure/communication-react';
+/* @conditional-compile-remove(PSTN-calls) */
+import { CallParticipantsLocator } from '@azure/communication-react';
 import React, { useEffect, useState } from 'react';
 import {
   buildTime,
