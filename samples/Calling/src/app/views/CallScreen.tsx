@@ -10,6 +10,8 @@ import {
   toFlatCommunicationIdentifier,
   useAzureCommunicationCallAdapter
 } from '@azure/communication-react';
+/* @conditional-compile-remove(rooms) */
+import { Role } from '@azure/communication-react';
 import { Spinner } from '@fluentui/react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSwitchableFluentTheme } from '../theming/SwitchableFluentThemeProvider';
@@ -25,6 +27,7 @@ export interface CallScreenProps {
   /* @conditional-compile-remove(PSTN-calls) */
   alternateCallerId?: string;
   onCallEnded: () => void;
+  role: Role;
 }
 
 export const CallScreen = (props: CallScreenProps): JSX.Element => {

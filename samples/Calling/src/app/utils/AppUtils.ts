@@ -2,6 +2,10 @@
 // Licensed under the MIT license.
 
 import { GroupLocator, TeamsMeetingLinkLocator } from '@azure/communication-calling';
+/* @conditional-compile-remove(rooms) */
+import { RoomLocator } from '@azure/communication-calling';
+/* @conditional-compile-remove(rooms) */
+import { Role } from '@azure/communication-react';
 import { v1 as generateGUID } from 'uuid';
 
 /**
@@ -37,6 +41,43 @@ export const getGroupIdFromUrl = (): GroupLocator | undefined => {
 
 export const createGroupId = (): GroupLocator => ({ groupId: generateGUID() });
 
+/* @conditional-compile-remove(rooms) */
+export const createRoomId = async (): Promise<string> => {
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      Host: 'alkwa-fn-test.azurewebsites.net',
+      'Content-Type': 'application/json',
+      'Referrer-Policy': 'no-referrer'
+    }
+  };
+  const response = await fetch('http://localhost:7071/api/Rooms-CreateRoom', requestOptions);
+  if (!response.ok) {
+    throw 'Invalid token response';
+  }
+
+  const body = await response.json();
+  return body['id'];
+};
+
+/**
+ * Joins an ACS room with a given roomId and role
+ */
+/* @conditional-compile-remove(rooms) */
+export const joinRoom = async (userId: string, roomId: string, role: Role): Promise<void> => {
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ acsUserId: userId, roomId: roomId, role: role })
+  };
+  const response = await fetch('http://localhost:7071/api/Rooms-AddParticipants', requestOptions);
+  if (!response.ok) {
+    throw 'Invalid token response';
+  }
+};
+
 /**
  * Get teams meeting link from the url's query params.
  */
@@ -44,6 +85,16 @@ export const getTeamsLinkFromUrl = (): TeamsMeetingLinkLocator | undefined => {
   const urlParams = new URLSearchParams(window.location.search);
   const teamsLink = urlParams.get('teamsLink');
   return teamsLink ? { meetingLink: teamsLink } : undefined;
+};
+
+/**
+ * Get room id from the url's query params.
+ */
+/* @conditional-compile-remove(rooms) */
+export const getRoomIdFromUrl = (): RoomLocator | undefined => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const roomId = urlParams.get('roomId');
+  return roomId ? { roomId } : undefined;
 };
 
 /*
