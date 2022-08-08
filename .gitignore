@@ -100,3 +100,5 @@ release/
 
 # Failed test results
 test-results/
+samples/Calling/AzureCommunicationServicesGetStartedApis.zip
+samples/Calling/AzureCommunicationServicesGetStartedApis/*

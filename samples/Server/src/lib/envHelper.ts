@@ -17,3 +17,8 @@ export const getEndpoint = (): string => {
   const uri = new URL(process.env['EndpointUrl'] || appSettings.EndpointUrl);
   return `${uri.protocol}//${uri.host}`;
 };
+
+export const getBackendUrl = (): string => {
+  const uri = new URL(process.env['ApisUrl'] || appSettings.ApisUrl);
+  return `${uri.protocol}//${uri.host}`;
+};

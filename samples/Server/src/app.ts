@@ -15,6 +15,7 @@ import isValidThread from './routes/isValidThread';
 import userConfig from './routes/userConfig';
 import createThread from './routes/createThread';
 import addUser from './routes/addUser';
+import getBackendUrl from './routes/getBackendUrl';
 
 const app = express();
 
@@ -53,6 +54,12 @@ app.use('/getEndpointUrl', cors(), getEndpointUrl);
  * purpose: Chat,Calling: get ACS token with the given scope
  */
 app.use('/token', cors(), issueToken);
+
+/**
+ * route: /backend
+ * purpose: Chat,Calling: get ACS token with the given scope
+ */
+app.use('/backend', cors(), getBackendUrl);
 
 /**
  * route: /isValidThread

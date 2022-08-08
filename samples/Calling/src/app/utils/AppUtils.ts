@@ -9,7 +9,10 @@ import { v1 as generateGUID } from 'uuid';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const fetchTokenResponse = async (): Promise<any> => {
-  const response = await fetch('/token?scope=voip');
+  const response = await fetch(
+    'https://alkwa-msft-azure-communication-ui-library-5g4rp9g57fp475-7071.githubpreview.dev/api/Identity-CreateUserAndToken',
+    { method: 'POST' }
+  );
   if (response.ok) {
     const responseAsJson = await response.json(); //(await response.json())?.value?.token;
     const token = responseAsJson.token;
