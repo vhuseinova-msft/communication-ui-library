@@ -96,6 +96,7 @@ type MainScreenProps = {
 };
 
 const MainScreen = (props: MainScreenProps): JSX.Element => {
+  console.log('MAINSCREEN props.role: ', props.role);
   const { callInvitationUrl, onRenderAvatar, onFetchAvatarPersonaData, onFetchParticipantMenuItems } = props;
   const page = useSelector(getPage);
 
@@ -213,6 +214,7 @@ export const CallComposite = (props: CallCompositeProps): JSX.Element => {
     /* @conditional-compile-remove(rooms) */
     role
   } = props;
+  console.log('CallComposite props.role: ', props.role);
   useEffect(() => {
     (async () => {
       await adapter.askDevicePermission({ video: true, audio: true });

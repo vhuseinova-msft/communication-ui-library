@@ -109,33 +109,19 @@ const App = (): JSX.Element => {
         <HomeScreen
           joiningExistingCall={joiningExistingCall}
           startCallHandler={async (callDetails) => {
+            console.log('callDetails.role as Role: ', callDetails.role as Role);
             setDisplayName(callDetails.displayName);
             /* @conditional-compile-remove(PSTN-calls) */
             setAlternateCallerId(callDetails.alternateCallerId);
 
-            // There is an API call involved with creating a room so lets only create one if we know we have to
             /* @conditional-compile-remove(rooms) */
-            if (callDetails.option === 'StartRooms') {
-              let roomId = '';
-              try {
-                roomId = await createRoomId();
-              } catch (e) {
-                console.log(e);
-              }
+            setRole(callDetails.role as Role);
 
-              setCallLocator({ roomId: roomId });
-            } else if ('roomId' in callLocator) {
-              if (userId) {
-                setRole(callDetails.role as Role);
-                await joinRoom(userId.communicationUserId, callLocator.roomId, callDetails.role as Role);
-              } else {
-                throw 'Invalid userId!';
-              }
-            }
-
-            const locator = makeLocator({
-              teamsLink: callDetails.teamsLink,
-              /* @conditional-compile-remove(rooms) */ roomLocator: callDetails.roomLocator,
+            const locator = await makeLocator({
+              locator: callDetails.locator,
+              userId,
+              option: callDetails.option,
+              role: callDetails.role,
               /* @conditional-compile-remove(PSTN-calls) */ outboundParticipants: callDetails.outboundParticipants
             });
 
@@ -175,6 +161,9 @@ const App = (): JSX.Element => {
         document.title = `credentials - ${WEB_APP_TITLE}`;
         return <Spinner label={'Getting user credentials from server'} ariaLive="assertive" labelPosition="top" />;
       }
+
+      console.log('role: ', role);
+
       return (
         <CallScreen
           token={token}
@@ -195,29 +184,47 @@ const App = (): JSX.Element => {
   }
 };
 
-function makeLocator(props: {
-  teamsLink?: TeamsMeetingLinkLocator;
+async function makeLocator(props: {
+  locator?: TeamsMeetingLinkLocator | /* @conditional-compile-remove(rooms) */ RoomLocator;
   /* @conditional-compile-remove(rooms) */
-  roomLocator?: RoomLocator;
+  role?: Role;
+  /* @conditional-compile-remove(rooms) */
+  userId?: CommunicationUserIdentifier;
+  /* @conditional-compile-remove(rooms) */
+  option?: string;
   /* @conditional-compile-remove(PSTN-calls) */
   outboundParticipants?: string[];
-}): CallAdapterLocator {
+}): Promise<CallAdapterLocator> {
+  console.log('PROPS: ', props);
   /* @conditional-compile-remove(PSTN-calls) */
   if (props.outboundParticipants) {
     // set call participants and do not update the window URL since there is not a joinable link
     return { participantIDs: props.outboundParticipants };
   }
+
+  // There is an API call involved with creating a room so lets only create one if we know we have to
   /* @conditional-compile-remove(rooms) */
-  if (props.roomLocator) {
-    return props.roomLocator;
+  if (props.option === 'StartRooms') {
+    try {
+      return { roomId: await createRoomId() };
+    } catch (e) {
+      throw e;
+    }
+  } else if (props.option === 'Rooms' && props.locator && 'roomId' in props.locator) {
+    if (props.userId) {
+      await joinRoom(props.userId.communicationUserId, (props.locator as RoomLocator).roomId, props.role as Role);
+    } else {
+      throw 'Invalid userId!';
+    }
   }
+
   /* @conditional-compile-remove(rooms) */
-  const roomId = getRoomIdFromUrl();
+  const room = getRoomIdFromUrl();
   /* @conditional-compile-remove(rooms) */
-  if (roomId) {
-    return roomId;
+  if (room) {
+    return room;
   }
-  return props.teamsLink || getTeamsLinkFromUrl() || getGroupIdFromUrl() || createGroupId();
+  return props.locator || getTeamsLinkFromUrl() || getGroupIdFromUrl() || createGroupId();
 }
 
 const getJoinParams = (

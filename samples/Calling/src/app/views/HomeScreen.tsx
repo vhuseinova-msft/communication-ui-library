@@ -34,9 +34,7 @@ import { getRoomIdFromUrl } from '../utils/AppUtils';
 export interface HomeScreenProps {
   startCallHandler(callDetails: {
     displayName: string;
-    teamsLink?: TeamsMeetingLinkLocator;
-    /* @conditional-compile-remove(rooms) */
-    roomLocator?: RoomLocator;
+    locator?: TeamsMeetingLinkLocator | /* @conditional-compile-remove(rooms) */ RoomLocator;
     /* @conditional-compile-remove(rooms) */
     option?: string;
     /* @conditional-compile-remove(rooms) */
@@ -82,9 +80,9 @@ export const HomeScreen = (props: HomeScreenProps): JSX.Element => {
   const [displayName, setDisplayName] = useState<string | undefined>(defaultDisplayName ?? undefined);
 
   const [chosenCallOption, setChosenCallOption] = useState<IChoiceGroupOption>(callOptions[0]);
-  const [teamsLink, setTeamsLink] = useState<TeamsMeetingLinkLocator>();
-  /* @conditional-compile-remove(rooms) */
-  const [roomLocator, setRoomLocator] = useState<RoomLocator>();
+  const [locator, setLocator] = useState<
+    TeamsMeetingLinkLocator | /* @conditional-compile-remove(rooms) */ RoomLocator
+  >();
   /* @conditional-compile-remove(rooms) */
   const [chosenRoomsRoleOption, setRoomsRoleOption] = useState<IChoiceGroupOption>(roomRoleOptions[1]);
   /* @conditional-compile-remove(PSTN-calls) */
@@ -104,10 +102,9 @@ export const HomeScreen = (props: HomeScreenProps): JSX.Element => {
   const buttonEnabled =
     displayName &&
     (startGroupCall ||
-      teamsLink ||
-      (teamsCallChosen && teamsLink) ||
+      (teamsCallChosen && locator) ||
       /* @conditional-compile-remove(rooms) */
-      (((chosenCallOption.key === 'Rooms' && roomLocator) || chosenCallOption.key === 'StartRooms') &&
+      (((chosenCallOption.key === 'Rooms' && locator) || chosenCallOption.key === 'StartRooms') &&
         chosenRoomsRoleOption) ||
       /* @conditional-compile-remove(PSTN-calls) */ (pstnCallChosen && dialPadParticipant && alternateCallerId) ||
       /* @conditional-compile-remove(one-to-n-calling) */ (outboundParticipants && acsCallChosen));
@@ -143,7 +140,7 @@ export const HomeScreen = (props: HomeScreenProps): JSX.Element => {
                 className={teamsItemStyle}
                 iconProps={{ iconName: 'Link' }}
                 placeholder={'Enter a Teams meeting link'}
-                onChange={(_, newValue) => newValue && setTeamsLink({ meetingLink: newValue })}
+                onChange={(_, newValue) => newValue && setLocator({ meetingLink: newValue })}
               />
             )}
             {
@@ -153,7 +150,7 @@ export const HomeScreen = (props: HomeScreenProps): JSX.Element => {
                     className={teamsItemStyle}
                     label={roomIdLabel}
                     placeholder={'Enter a room ID'}
-                    onChange={(_, newValue) => setRoomLocator(newValue ? { roomId: newValue } : undefined)}
+                    onChange={(_, newValue) => setLocator(newValue ? { roomId: newValue } : undefined)}
                   />
                 </Stack>
               )
@@ -220,9 +217,11 @@ export const HomeScreen = (props: HomeScreenProps): JSX.Element => {
                 const dialpadParticipantToCall = parseParticipants(dialPadParticipant);
                 props.startCallHandler({
                   displayName,
-                  teamsLink,
+                  locator,
                   /* @conditional-compile-remove(rooms) */
-                  roomLocator,
+                  role: chosenRoomsRoleOption.key as Role,
+                  /* @conditional-compile-remove(rooms) */
+                  option: chosenCallOption.key,
                   /* @conditional-compile-remove(PSTN-calls) */ /* @conditional-compile-remove(one-to-n-calling)  */
                   outboundParticipants: acsParticipantsToCall ? acsParticipantsToCall : dialpadParticipantToCall,
                   /* @conditional-compile-remove(PSTN-calls) */
