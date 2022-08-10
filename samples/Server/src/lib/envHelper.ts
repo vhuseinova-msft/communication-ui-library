@@ -19,6 +19,6 @@ export const getEndpoint = (): string => {
 };
 
 export const getBackendUrl = (): string => {
-  const uri = new URL(process.env['ApisUrl'] || appSettings.ApisUrl);
+  const uri = new URL(process.env['FunctionUrl'] || appSettings.FunctionUrl);
   return `${uri.protocol}//${uri.host}`;
 };

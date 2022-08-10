@@ -4,8 +4,11 @@
 import { AzureCommunicationTokenCredential, CommunicationTokenRefreshOptions } from '@azure/communication-common';
 import { AbortSignalLike } from '@azure/core-http';
 
-const postRefreshTokenParameters = {
-  method: 'POST'
+const postRefreshTokenParameters = (userIdentity: string) => {
+  return {
+    method: 'POST',
+    body: JSON.stringify({ acsUserId: userIdentity })
+  };
 };
 
 /**
@@ -18,6 +21,20 @@ export const createAutoRefreshingCredential = (userId: string, token: string): A
     refreshProactively: true
   };
   return new AzureCommunicationTokenCredential(options);
+};
+
+const fetchRefreshedToken = (userIdentity: string): ((abortSignal?: AbortSignalLike) => Promise<string>) => {
+  return async (): Promise<string> => {
+    const response = await fetch(
+      `http://localhost:7071/api/Identity-GetToken`,
+      postRefreshTokenParameters(userIdentity)
+    );
+    if (response.ok) {
+      return (await response.json()).token;
+    } else {
+      throw new Error('could not refresh token');
+    }
+  };
 };
 
 const refreshTokenAsync = (userIdentity: string): ((abortSignal?: AbortSignalLike) => Promise<string>) => {

@@ -2,25 +2,42 @@
 // Licensed under the MIT license.
 
 import { GroupLocator, TeamsMeetingLinkLocator } from '@azure/communication-calling';
+import { CommunicationUserIdentifier } from '@azure/communication-common';
 import { v1 as generateGUID } from 'uuid';
 
 /**
  * Get ACS user token from the Contoso server.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const fetchTokenResponse = async (): Promise<any> => {
-  const response = await fetch(
-    'https://alkwa-msft-azure-communication-ui-library-5g4rp9g57fp475-7071.githubpreview.dev/api/Identity-CreateUserAndToken',
-    { method: 'POST' }
-  );
-  if (response.ok) {
-    const responseAsJson = await response.json(); //(await response.json())?.value?.token;
-    const token = responseAsJson.token;
-    if (token) {
-      return responseAsJson;
-    }
+export type UserAndToken = {
+  user: CommunicationUserIdentifier;
+  token: string;
+};
+
+export const fetchFunctionBaseUrl = async (): Promise<string> => {
+  const response = await fetch(`/backend`, { method: 'GET' });
+  if (!response.ok) {
+    throw new Error(`Error! status: ${response.status}`);
   }
-  throw 'Invalid token response';
+  const output = await response.json();
+  return output.backendUrl;
+};
+
+export const fetchUserAndToken = async (baseUrl): Promise<UserAndToken> => {
+  try {
+    const response = await fetch(`${baseUrl}/api/Identity-CreateUserAndToken`, { method: 'POST', mode: 'cors' });
+    if (!response.ok) {
+      throw new Error(`Error! status: ${response.status}`);
+    }
+    // if the response is okay then apply the json() function on url response
+    const output = await response.json();
+    // return the result(response) from the url
+    return { token: output.accessToken.token, user: output.user };
+  } catch (ex) {
+    console.log(ex);
+  }
+
+  throw 'unable to retrieve user and token';
 };
 
 /**

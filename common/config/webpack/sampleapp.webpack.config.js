@@ -70,6 +70,10 @@ const webpackConfig = (sampleAppDir, env, babelConfig) => {
       static: { directory: path.resolve(sampleAppDir, 'public') },
       proxy: [
         {
+          path: '/backend',
+          target: 'http://[::1]:8080'
+        },
+        {
           path: '/token',
           target: 'http://[::1]:8080'
         },

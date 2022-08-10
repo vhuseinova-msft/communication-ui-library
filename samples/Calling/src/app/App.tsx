@@ -12,7 +12,8 @@ import {
   callingSDKVersion,
   communicationReactSDKVersion,
   createGroupId,
-  fetchTokenResponse,
+  fetchFunctionBaseUrl,
+  fetchUserAndToken,
   getGroupIdFromUrl,
   getTeamsLinkFromUrl,
   isLandscape,
@@ -58,7 +59,8 @@ const App = (): JSX.Element => {
   useEffect(() => {
     (async () => {
       try {
-        const { token, user } = await fetchTokenResponse();
+        const baseUrl = await fetchFunctionBaseUrl();
+        const { token, user } = await fetchUserAndToken(baseUrl);
         setToken(token);
         setUserId(user);
       } catch (e) {
