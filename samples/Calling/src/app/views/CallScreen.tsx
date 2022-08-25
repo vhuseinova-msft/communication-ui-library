@@ -26,7 +26,7 @@ export interface CallScreenProps {
   displayName: string;
   /* @conditional-compile-remove(PSTN-calls) */
   alternateCallerId?: string;
-  onCallEnded: () => void;
+  onCallEnded: (reason: string) => void;
   /* @conditional-compile-remove(rooms) */
   role?: Role;
 }
@@ -46,8 +46,32 @@ export const CallScreen = (props: CallScreenProps): JSX.Element => {
   const isMobileSession = useIsMobile();
   const afterCreate = useCallback(
     async (adapter: CallAdapter): Promise<CallAdapter> => {
-      adapter.on('callEnded', () => {
-        onCallEnded();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      adapter.on('callEnded', (e) => {
+        console.log(e);
+        // 5300 is kicked subcode
+        // 0 is kicked code
+        if (e.callEndedSubCode === 5300) {
+          onCallEnded('5300');
+        } else if (e.callEndedSubCode === 4501) {
+          onCallEnded('4501');
+        } else if (e.callEndedSubCode === 0) {
+          onCallEnded('0');
+        } else if (e.callEndedSubCode === 5000) {
+          onCallEnded('5000');
+        }
+
+        // 4501 left while in lobby subcode
+        // 487 left while in lobby code
+
+        // hangup from call screen subcode 0
+        // hangup from call screen code 0
+
+        // DENIED subcode 5854
+        // DENIED code 0
+
+        // kicked by another ACS user in teams interop subcode 5000
+        // kicked by another ACS user in teams interop code 0
       });
       adapter.on('error', (e) => {
         // Error is already acted upon by the Call composite, but the surrounding application could

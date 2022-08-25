@@ -32,6 +32,10 @@ import { EndCall } from './views/EndCall';
 import { HomeScreen } from './views/HomeScreen';
 import { PageOpenInAnotherTab } from './views/PageOpenInAnotherTab';
 import { UnsupportedBrowserPage } from './views/UnsupportedBrowserPage';
+import { JustForAnjul1 } from './views/KickedFromCall';
+import { JustForAnjul2 } from './views/leftFromCall';
+import { JustForAnjul4 } from './views/LeftFromLobby';
+import { JustForAnjul3 } from './views/kickedByAnotherACS';
 
 setLogLevel('warning');
 
@@ -41,7 +45,7 @@ console.log(
 
 initializeIcons();
 
-type AppPages = 'home' | 'call' | 'endCall';
+type AppPages = 'home' | 'call' | 'endCall' | 'kicked' | 'left' | 'lobbyLeft' | 'ACSremoved';
 
 const App = (): JSX.Element => {
   const [page, setPage] = useState<AppPages>('home');
@@ -157,6 +161,18 @@ const App = (): JSX.Element => {
       document.title = `end call - ${WEB_APP_TITLE}`;
       return <EndCall rejoinHandler={() => setPage('call')} homeHandler={navigateToHomePage} />;
     }
+    case 'kicked': {
+      return <JustForAnjul1 title="You were kicked!!" />;
+    }
+    case 'left': {
+      return <JustForAnjul2 title="You were kicked!!" />;
+    }
+    case 'lobbyLeft': {
+      return <JustForAnjul4 title="You were kicked!!" />;
+    }
+    case 'ACSremoved': {
+      return <JustForAnjul3 title="You were kicked by your friend!!" />;
+    }
     case 'call': {
       if (userCredentialFetchError) {
         document.title = `error - ${WEB_APP_TITLE}`;
@@ -182,7 +198,17 @@ const App = (): JSX.Element => {
           callLocator={callLocator}
           /* @conditional-compile-remove(PSTN-calls) */
           alternateCallerId={alternateCallerId}
-          onCallEnded={() => setPage('endCall')}
+          onCallEnded={(reason: string) => {
+            if (reason === '5300') {
+              setPage('kicked');
+            } else if (reason === '0') {
+              setPage('left');
+            } else if (reason === '4501') {
+              setPage('lobbyLeft');
+            } else if (reason === '5000') {
+              setPage('ACSremoved');
+            }
+          }}
           /* @conditional-compile-remove(rooms) */
           role={role}
         />
