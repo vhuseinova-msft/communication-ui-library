@@ -146,10 +146,13 @@ export const orientationArg = {
 };
 
 export const controlsToAdd = {
+  alternateCallerId: { control: 'text', description: 'added', defaultValue: '', name: 'Alternate CallerID' },
   avatarInitials: { control: 'text', defaultValue: 'A B', name: 'Avatar initials' },
   botAvatar: { control: 'radio', options: botAvatars, defaultValue: 'Default', name: 'Bot Avatar' },
   botToken: { control: 'text', defaultValue: '', name: 'Valid token for bot' },
   botUserId: { control: 'text', defaultValue: '', name: 'User identifier for bot' },
+  calleeUserId: { control: 'text', defaultValue: '8:echo123', name: "Callee's User identifier" },
+  calleeToken: { control: 'text', defaultValue: '', name: "Callee's Valid token" },
   callerImages: { control: 'file', accept: '.jpeg, .jpg, .png', defaultValue: [], name: 'Avatar' },
   callerName: { control: 'text', defaultValue: 'Maximus Aurelius', name: 'Caller Name' },
   callerNameAlt: { control: 'text', defaultValue: '1st', name: 'Caller Name Alt' },
@@ -168,6 +171,11 @@ export const controlsToAdd = {
   callLocator: {
     control: 'object',
     name: 'Call locator'
+  },
+  callParticipantsLocator: {
+    control: 'array',
+    defaultValue: ['+###########'],
+    name: 'Call locator (participants phone numbers)'
   },
   callModalAlertText: { control: 'text', defaultValue: 'Incoming Video Call', name: 'Alert Text' },
   callToastAlertText: { control: 'text', defaultValue: 'Incoming Call', name: 'Alert Text' },
