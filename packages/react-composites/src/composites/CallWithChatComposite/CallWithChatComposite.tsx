@@ -99,7 +99,7 @@ export type CallWithChatCompositeOptions = {
    * @remarks
    * if this is not supplied, the composite will not show a 'further troubleshooting' link.
    */
-  onPermissionsTroubleshootingClick?: (permissionsState: {
+  onPermissionsTroubleshootingClick?: (permissionsState?: {
     camera: PermissionState;
     microphone: PermissionState;
   }) => void;
@@ -196,6 +196,13 @@ type CallWithChatScreenProps = {
   /* @conditional-compile-remove(file-sharing) */
   fileSharing?: FileSharingOptions;
   rtl?: boolean;
+  /* @conditional-compile-remove(call-readiness) */
+  onPermissionsTroubleshootingClick?: (permissionsState?: {
+    camera: PermissionState;
+    microphone: PermissionState;
+  }) => void;
+  /* @conditional-compile-remove(call-readiness) */
+  onNetworkingTroubleShootingClick?: () => void;
 };
 
 const CallWithChatScreen = (props: CallWithChatScreenProps): JSX.Element => {
@@ -352,7 +359,13 @@ const CallWithChatScreen = (props: CallWithChatScreenProps): JSX.Element => {
             <CallComposite
               {...props}
               formFactor={formFactor}
-              options={{ callControls: false }}
+              options={{
+                callControls: false,
+                /* @conditional-compile-remove(call-readiness) */
+                onNetworkingTroubleShootingClick: props.onNetworkingTroubleShootingClick,
+                /* @conditional-compile-remove(call-readiness) */
+                onPermissionsTroubleshootingClick: props.onPermissionsTroubleshootingClick
+              }}
               adapter={callAdapter}
               fluentTheme={fluentTheme}
             />

@@ -106,6 +106,14 @@ export const CallScreen = (props: CallScreenProps): JSX.Element => {
       formFactor={isMobileSession ? 'mobile' : 'desktop'}
       /* @conditional-compile-remove(rooms) */
       role={role}
+      options={{
+        onNetworkingTroubleShootingClick: () => {
+          alert('network issue');
+        },
+        onPermissionsTroubleshootingClick: () => {
+          alert('permissions issue');
+        }
+      }}
     />
   );
 };

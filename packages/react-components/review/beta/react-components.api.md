@@ -573,6 +573,11 @@ export const ErrorBar: (props: ErrorBarProps) => JSX.Element;
 // @public
 export interface ErrorBarProps extends IMessageBarProps {
     activeErrorMessages: ActiveErrorMessage[];
+    onNetworkingTroubleShootingClick?: () => void;
+    onPermissionsTroubleshootingClick?: (permissionsState?: {
+        camera: PermissionState;
+        microphone: PermissionState;
+    }) => void;
     strings?: ErrorBarStrings;
 }
 

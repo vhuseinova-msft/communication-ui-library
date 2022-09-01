@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import React, { useEffect, useState } from 'react';
-import { IIconProps, IMessageBarProps, MessageBar, MessageBarType, Stack } from '@fluentui/react';
+import { IIconProps, IMessageBarProps, Link, MessageBar, MessageBarType, Stack } from '@fluentui/react';
 import { useLocale } from '../localization';
 
 /**
@@ -23,6 +23,39 @@ export interface ErrorBarProps extends IMessageBarProps {
    * Currently active errors.
    */
   activeErrorMessages: ActiveErrorMessage[];
+  /* @conditional-compile-remove(call-readiness) */
+  /**
+   * Callback you may provide to supplu users with further steps to troubleshoot why they have been
+   * having network issues when connecting to the call.
+   *
+   * @example
+   * ```ts
+   * onNetworkingTroubleShootingClick?: () =>
+   *  window.open('https://contoso.com/network-troubleshooting', '_blank');
+   * ```
+   *
+   * @remarks
+   * if this is not supplied, the composite will not show a 'network troubleshooting' link.
+   */
+  onNetworkingTroubleShootingClick?: () => void;
+  /* @conditional-compile-remove(call-readiness) */
+  /**
+   * Callback you may provide to supply users with further steps to troubleshoot why they have been
+   * unable to grant your site the required permissions for the call.
+   *
+   * @example
+   * ```ts
+   * onPermissionsTroubleshootingClick: () =>
+   *  window.open('https://contoso.com/permissions-troubleshooting', '_blank');
+   * ```
+   *
+   * @remarks
+   * if this is not supplied, the composite will not show a 'further troubleshooting' link.
+   */
+  onPermissionsTroubleshootingClick?: (permissionsState?: {
+    camera: PermissionState;
+    microphone: PermissionState;
+  }) => void;
 }
 
 /**
@@ -237,6 +270,34 @@ export const ErrorBar = (props: ErrorBarProps): JSX.Element => {
 
   const toShow = errorsToShow(props.activeErrorMessages, dismissedErrors);
 
+  /* @conditional-compile-remove(call-readiness) */
+  const hasDevicePermissionsIssue = (error: string): boolean => {
+    console.log(error);
+    if (
+      error ===
+      (strings.callCameraAccessDenied ||
+        strings.callCameraAlreadyInUse ||
+        strings.callMicrophoneAccessDenied ||
+        strings.callNoMicrophoneFound ||
+        strings.callMacOsCameraAccessDenied ||
+        strings.callMacOsMicrophoneAccessDenied)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  /* @conditional-compile-remove(call-readiness) */
+  const hasNetworkIssue = (error: string): boolean => {
+    console.log(error);
+    if (error === strings.callNetworkQualityLow) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <Stack data-ui-id="error-bar-stack">
       {toShow.map((error) => (
@@ -266,6 +327,24 @@ export const ErrorBar = (props: ErrorBarProps): JSX.Element => {
           dismissIconProps={{ iconName: 'ErrorBarClear' }}
         >
           {strings[error.type]}
+          <>
+            {props.onPermissionsTroubleshootingClick && hasDevicePermissionsIssue(error.type) && (
+              <Link
+                onClick={() => {
+                  props.onPermissionsTroubleshootingClick && props.onPermissionsTroubleshootingClick();
+                }}
+              ></Link>
+            )}
+          </>
+          <>
+            {props.onNetworkingTroubleShootingClick && hasNetworkIssue(error.type) && (
+              <Link
+                onClick={() => {
+                  props.onNetworkingTroubleShootingClick && props.onNetworkingTroubleShootingClick();
+                }}
+              ></Link>
+            )}
+          </>
         </MessageBar>
       ))}
     </Stack>

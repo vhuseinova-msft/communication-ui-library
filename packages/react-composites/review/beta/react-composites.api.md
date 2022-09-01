@@ -291,7 +291,7 @@ export type CallCompositeIcons = {
 export type CallCompositeOptions = {
     errorBar?: boolean;
     callControls?: boolean | CallControlOptions;
-    onPermissionsTroubleshootingClick?: (permissionsState: {
+    onPermissionsTroubleshootingClick?: (permissionsState?: {
         camera: PermissionState;
         microphone: PermissionState;
     }) => void;
@@ -652,7 +652,7 @@ export type CallWithChatCompositeIcons = {
 export type CallWithChatCompositeOptions = {
     callControls?: boolean | CallWithChatControlOptions;
     fileSharing?: FileSharingOptions;
-    onPermissionsTroubleshootingClick?: (permissionsState: {
+    onPermissionsTroubleshootingClick?: (permissionsState?: {
         camera: PermissionState;
         microphone: PermissionState;
     }) => void;

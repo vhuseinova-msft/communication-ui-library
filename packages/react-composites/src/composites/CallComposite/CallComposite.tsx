@@ -96,7 +96,7 @@ export type CallCompositeOptions = {
    * @remarks
    * if this is not supplied, the composite will not show a 'further troubleshooting' link.
    */
-  onPermissionsTroubleshootingClick?: (permissionsState: {
+  onPermissionsTroubleshootingClick?: (permissionsState?: {
     camera: PermissionState;
     microphone: PermissionState;
   }) => void;
@@ -128,10 +128,26 @@ type MainScreenProps = {
   options?: CallCompositeOptions;
   /* @conditional-compile-remove(rooms) */
   role?: Role;
+  /* @conditional-compile-remove(call-readiness) */
+  onNetworkingTroubleShootingClick?: () => void;
+  /* @conditional-compile-remove(call-readiness) */
+  onPermissionsTroubleshootingClick?: (permissionsState?: {
+    camera: PermissionState;
+    microphone: PermissionState;
+  }) => void;
 };
 
 const MainScreen = (props: MainScreenProps): JSX.Element => {
-  const { callInvitationUrl, onRenderAvatar, onFetchAvatarPersonaData, onFetchParticipantMenuItems } = props;
+  const {
+    callInvitationUrl,
+    onRenderAvatar,
+    onFetchAvatarPersonaData,
+    onFetchParticipantMenuItems,
+    /* @conditional-compile-remove(call-readiness) */
+    onNetworkingTroubleShootingClick,
+    /* @conditional-compile-remove(call-readiness) */
+    onPermissionsTroubleshootingClick
+  } = props;
   const page = useSelector(getPage);
 
   const adapter = useAdapter();
@@ -146,6 +162,10 @@ const MainScreen = (props: MainScreenProps): JSX.Element => {
           startCallHandler={(): void => {
             adapter.joinCall();
           }}
+          /* @conditional-compile-remove(call-readiness) */
+          onNetworkingTroubleShootingClick={onNetworkingTroubleShootingClick}
+          /* @conditional-compile-remove(call-readiness) */
+          onPermissionsTroubleshootingClick={onPermissionsTroubleshootingClick}
         />
       );
       break;

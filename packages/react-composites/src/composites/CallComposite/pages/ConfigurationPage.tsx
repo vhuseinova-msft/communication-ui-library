@@ -40,13 +40,27 @@ import { useAdapter } from '../adapter/CallAdapterProvider';
 export interface ConfigurationPageProps {
   mobileView: boolean;
   startCallHandler(): void;
+  /* @conditional-compile-remove(call-readiness) */
+  onNetworkingTroubleShootingClick?: () => void;
+  /* @conditional-compile-remove(call-readiness) */
+  onPermissionsTroubleshootingClick?: (permissionsState?: {
+    camera: PermissionState;
+    microphone: PermissionState;
+  }) => void;
 }
 
 /**
  * @private
  */
 export const ConfigurationPage = (props: ConfigurationPageProps): JSX.Element => {
-  const { startCallHandler, mobileView } = props;
+  const {
+    startCallHandler,
+    mobileView,
+    /* @conditional-compile-remove(call-readiness) */
+    onNetworkingTroubleShootingClick,
+    /* @conditional-compile-remove(call-readiness) */
+    onPermissionsTroubleshootingClick
+  } = props;
 
   const options = useAdaptedSelector(getCallingSelector(DevicesButton));
   const localDeviceSettingsHandlers = useHandlers(LocalDeviceSettings);
@@ -81,7 +95,12 @@ export const ConfigurationPage = (props: ConfigurationPageProps): JSX.Element =>
   return (
     <Stack className={mobileView ? configurationContainerStyleMobile : configurationContainerStyleDesktop}>
       <Stack styles={bannerNotificationStyles}>
-        <ErrorBar {...errorBarProps} />
+        <ErrorBar
+          {...errorBarProps} /* @conditional-compile-remove(call-readiness) */
+          onNetworkingTroubleShootingClick={onNetworkingTroubleShootingClick}
+          /* @conditional-compile-remove(call-readiness) */
+          onPermissionsTroubleshootingClick={onPermissionsTroubleshootingClick}
+        />
       </Stack>
       <Stack
         grow
