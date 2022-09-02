@@ -33,6 +33,12 @@ export interface CallPageProps {
   onFetchAvatarPersonaData?: AvatarPersonaDataCallback;
   onFetchParticipantMenuItems?: ParticipantMenuItemsCallback;
   options?: CallCompositeOptions;
+  onNetworkingTroubleShootingClick?: () => void;
+  /* @conditional-compile-remove(call-readiness) */
+  onPermissionsTroubleshootingClick?: (permissionsState?: {
+    camera: PermissionState;
+    microphone: PermissionState;
+  }) => void;
 }
 
 /**

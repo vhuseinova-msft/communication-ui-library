@@ -272,7 +272,7 @@ export const ErrorBar = (props: ErrorBarProps): JSX.Element => {
 
   /* @conditional-compile-remove(call-readiness) */
   const hasDevicePermissionsIssue = (error: string): boolean => {
-    console.log(error);
+    console.log(error); // why is this not printing? is this error bar firing on the config screen?
     if (
       error ===
       (strings.callCameraAccessDenied ||
