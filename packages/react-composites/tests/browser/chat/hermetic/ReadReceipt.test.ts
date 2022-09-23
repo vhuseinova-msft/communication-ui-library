@@ -10,7 +10,7 @@ import { dataUiId, stableScreenshot, waitForSelector } from '../../common/utils'
 import { buildUrlForChatAppUsingFakeAdapter, DEFAULT_FAKE_CHAT_ADAPTER_ARGS, test } from './fixture';
 
 test.describe('Chat Composite E2E Tests', () => {
-  test('participant can receive message and send readReceipt to message sender', async ({ serverUrl, page }) => {
+  test.only('participant can receive message and send readReceipt to message sender', async ({ serverUrl, page }) => {
     const messageReader = DEFAULT_FAKE_CHAT_ADAPTER_ARGS.remoteParticipants[0];
     page.goto(
       buildUrlForChatAppUsingFakeAdapter(serverUrl, {
