@@ -20,7 +20,7 @@ test.describe('Chat Composite E2E Tests', () => {
     );
     await setParticipantAbleToSeeMessages(page, messageReader, false);
     // wait long enough for hidden composites to disappear.
-    await blockForMinutes(0.1);
+    // await blockForMinutes(0.1);
 
     const testMessageText = 'How the turn tables';
     await sendMessage(page, testMessageText);
@@ -94,9 +94,10 @@ async function setParticipantAbleToSeeMessages(
     await messageReaderCompositeHandle.evaluate((node) => (node.style.display = 'block'));
   } else {
     // Do not display the hidden composite so that messages sent will not be seen
-    await messageReaderCompositeHandle.evaluate((node) => (node.style.display = 'none'));
-    // setTimeout(() => {
-    //   messageReaderCompositeHandle.evaluate((node) => (node.style.display = 'none'));
-    // }, 300);
+    // await messageReaderCompositeHandle.evaluate((node) => (node.style.display = 'none'));
+    // Force the issue.
+    setTimeout(() => {
+      messageReaderCompositeHandle.evaluate((node) => (node.style.display = 'none'));
+    }, 500);
   }
 }
