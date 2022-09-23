@@ -141,14 +141,22 @@ const sendRemoteFileSharingMessage = (
   );
 };
 
-const createHiddenComposites = (remoteAdapters: ChatAdapter[]): JSX.Element[] => {
-  return remoteAdapters.map((remoteAdapter) => {
-    const userId = toFlatCommunicationIdentifier(remoteAdapter.getState().userId);
-    const compositeID = `hidden-composite-${userId}`;
-    return (
-      <div id={compositeID} key={compositeID} style={{ height: '100px', width: '100px', overflow: 'hidden' }}>
-        <ChatComposite adapter={remoteAdapter} options={{ participantPane: true }} />
-      </div>
-    );
-  });
+const createHiddenComposites = (remoteAdapters: ChatAdapter[]): JSX.Element => {
+  return (
+    <div style={{ position: 'absolute', left: '10px', top: '10px' }}>
+      {remoteAdapters.map((remoteAdapter) => {
+        const userId = toFlatCommunicationIdentifier(remoteAdapter.getState().userId);
+        const compositeID = `hidden-composite-${userId}`;
+        return (
+          <div
+            id={compositeID}
+            key={compositeID}
+            style={{ height: '100px', width: '100px', overflow: 'hidden', display: 'block', zIndex: 999 }}
+          >
+            <ChatComposite adapter={remoteAdapter} options={{ participantPane: true }} />
+          </div>
+        );
+      })}
+    </div>
+  );
 };

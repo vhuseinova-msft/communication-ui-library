@@ -6,7 +6,7 @@ import { CommunicationIdentifier } from '@azure/communication-common';
 import { toFlatCommunicationIdentifier } from '@internal/acs-ui-common';
 import { ElementHandle, expect, Page } from '@playwright/test';
 import { sendMessage, waitForMessageDelivered, waitForMessageSeen } from '../../common/chatTestHelpers';
-import { dataUiId, stableScreenshot, waitForSelector } from '../../common/utils';
+import { blockForMinutes, dataUiId, stableScreenshot, waitForSelector } from '../../common/utils';
 import { buildUrlForChatAppUsingFakeAdapter, DEFAULT_FAKE_CHAT_ADAPTER_ARGS, test } from './fixture';
 
 test.describe('Chat Composite E2E Tests', () => {
@@ -19,6 +19,8 @@ test.describe('Chat Composite E2E Tests', () => {
       })
     );
     await setParticipantAbleToSeeMessages(page, messageReader, false);
+    // wait long enough for hidden composites to disappear.
+    await blockForMinutes(0.1);
 
     const testMessageText = 'How the turn tables';
     await sendMessage(page, testMessageText);
@@ -93,5 +95,8 @@ async function setParticipantAbleToSeeMessages(
   } else {
     // Do not display the hidden composite so that messages sent will not be seen
     await messageReaderCompositeHandle.evaluate((node) => (node.style.display = 'none'));
+    // setTimeout(() => {
+    //   messageReaderCompositeHandle.evaluate((node) => (node.style.display = 'none'));
+    // }, 300);
   }
 }
