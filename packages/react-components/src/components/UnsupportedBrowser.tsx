@@ -40,7 +40,7 @@ export interface UnsupportedBrowserProps {
   /** Handler to perform a action when the help link is actioned */
   onTroubleShootingClick: () => void;
   /** String overrides for the component */
-  strings: UnsupportedBrowserStrings;
+  strings?: UnsupportedBrowserStrings;
 }
 
 /* @conditional-compile-remove(unsupported-browser) */
@@ -49,15 +49,15 @@ const UnsupportedBrowserContainer = (props: UnsupportedBrowserProps): JSX.Elemen
   return (
     <Stack styles={containerStyles}>
       <Icon styles={iconStyles} iconName="UnsupportedBrowserWarning"></Icon>
-      <Text styles={mainTextStyles}>{strings.primaryText}</Text>
-      <Text styles={secondaryTextStyles}>{strings.secondaryText}</Text>
+      <Text styles={mainTextStyles}>{strings?.primaryText}</Text>
+      <Text styles={secondaryTextStyles}>{strings?.secondaryText}</Text>
       <Link
         styles={linkTextStyles}
         onClick={() => {
           onTroubleShootingClick();
         }}
       >
-        {strings.moreHelpLink}
+        {strings?.moreHelpLink}
       </Link>
     </Stack>
   );
