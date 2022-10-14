@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { Title, Heading, Description, Canvas } from '@storybook/addon-docs';
+import { Title, Heading, Description, Canvas, Source } from '@storybook/addon-docs';
 import { Meta } from '@storybook/react/types-6-0';
 import React from 'react';
 
@@ -13,6 +13,15 @@ const BrowserSupportExampleText =
   require('!!raw-loader!./snippets/CallReadinessExample.BrowserSupported.snippet.tsx').default;
 const DevicePermissionsCheckExampleText =
   require('!!raw-loader!./snippets/CallReadinessExample.DevicePermissionsCheck.snippet.tsx').default;
+
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+const fakeCallClientForBrowserCheck = {
+  getEnvironmentInfo: async () => {
+    await sleep(2000);
+    return { isSupportedEnvironment: false };
+  }
+};
 
 const getDocs: () => JSX.Element = () => {
   return (
@@ -32,7 +41,7 @@ const getDocs: () => JSX.Element = () => {
       </Description>
       <Canvas mdxSource={BrowserSupportExampleText}>
         <div style={{ height: '17.188rem' }}>
-          <BrowserSupportExample />
+          <BrowserSupportExample callClient={fakeCallClientForBrowserCheck as any} />
         </div>
       </Canvas>
       <Heading>Step 2 - Validating camera and microphone permissions</Heading>
@@ -45,6 +54,32 @@ const getDocs: () => JSX.Element = () => {
           <DevicePermissionsCheckExample />
         </div>
       </Canvas>
+      <Heading>Call readiness in the Call Composite</Heading>
+      <Description>
+        If you are making use of the CallComposite or CallWithChatComposite, you can get this behavior by enabling the
+        following properties:
+      </Description>
+      <Source
+        language="tsx"
+        code={`<CallComposite
+  options={{
+    features: {
+      browserCheck: true,
+      devicePermissionHelpers: true
+    }
+  }}
+/>`}
+      />
+      <Heading>Alternative Experience - Call Setup Checks Experience</Heading>
+      <Description>Or we could create a pre-call experience that does all this...</Description>
+      <Source
+        language="tsx"
+        code={`<CallSetupChecks
+  onSuccess={() => void}
+  onBrowserUnsupportedFurtherTroubleshooting={(environment) => void}
+  onPermissionsFurtherTroubleshooting={(deviceStatus) => void}
+/>`}
+      />
     </>
   );
 };
