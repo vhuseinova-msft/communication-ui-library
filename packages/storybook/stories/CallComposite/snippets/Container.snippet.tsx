@@ -2,13 +2,14 @@ import { AzureCommunicationTokenCredential, CommunicationUserIdentifier } from '
 import {
   CallAdapter,
   CallAdapterLocator,
+  CallAdapterState,
   CallComposite,
   CallCompositeOptions,
   CompositeLocale,
   useAzureCommunicationCallAdapter
 } from '@azure/communication-react';
 import { PartialTheme, Theme } from '@fluentui/react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, useRef } from 'react';
 import { validate as validateUUID } from 'uuid';
 
 export type ContainerProps = {
@@ -57,6 +58,19 @@ export const ContosoCallContainer = (props: ContainerProps): JSX.Element => {
   }, [props.token]);
 
   const locator = useMemo(() => createCallAdapterLocator(props.locator), [props.locator]);
+  const callIdRef = useRef<string>();
+  const afterCreate = useCallback(
+    async (adapter: CallAdapter): Promise<CallAdapter> => {
+      adapter.onStateChange((state: CallAdapterState) => {
+        if (state?.call?.id && callIdRef.current !== state?.call?.id) {
+          callIdRef.current = state?.call?.id;
+          console.log('call id: ' + callIdRef.current);
+        }
+      });
+      return adapter;
+    },
+    [callIdRef]
+  );
 
   const adapter = useAzureCommunicationCallAdapter(
     {
@@ -65,7 +79,7 @@ export const ContosoCallContainer = (props: ContainerProps): JSX.Element => {
       credential,
       locator
     },
-    undefined,
+    afterCreate,
     leaveCall
   );
 
