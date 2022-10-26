@@ -182,7 +182,6 @@ const App = (): JSX.Element => {
           callLocator={callLocator}
           /* @conditional-compile-remove(PSTN-calls) */
           alternateCallerId={alternateCallerId}
-          onCallEnded={() => setPage('endCall')}
           /* @conditional-compile-remove(rooms) */
           role={role}
         />

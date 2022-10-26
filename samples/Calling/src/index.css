@@ -25,6 +25,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1rem solid rgb(16, 110, 190);
 }
 
 .ui-provider {

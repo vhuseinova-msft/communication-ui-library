@@ -12,12 +12,15 @@ import {
 } from '@azure/communication-react';
 /* @conditional-compile-remove(rooms) */
 import { Role } from '@azure/communication-react';
-import { Spinner } from '@fluentui/react';
+import { DefaultButton, Spinner, Stack } from '@fluentui/react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSwitchableFluentTheme } from '../theming/SwitchableFluentThemeProvider';
 import { createAutoRefreshingCredential } from '../utils/credential';
-import { WEB_APP_TITLE } from '../utils/AppUtils';
+import { navigateToHomePage, WEB_APP_TITLE } from '../utils/AppUtils';
 import { useIsMobile } from '../utils/useIsMobile';
+import { buttonStyle, buttonWithIconStyles } from '../styles/EndCall.styles';
+
+const goHomePage = 'Go to homepage';
 
 export interface CallScreenProps {
   token: string;
@@ -26,7 +29,6 @@ export interface CallScreenProps {
   displayName: string;
   /* @conditional-compile-remove(PSTN-calls) */
   alternateCallerId?: string;
-  onCallEnded: () => void;
   /* @conditional-compile-remove(rooms) */
   role?: Role;
 }
@@ -37,17 +39,23 @@ export const CallScreen = (props: CallScreenProps): JSX.Element => {
     userId,
     callLocator,
     displayName,
-    onCallEnded,
+    // onCallEnded,
     /* @conditional-compile-remove(PSTN-calls) */ alternateCallerId,
     /* @conditional-compile-remove(rooms) */ role
   } = props;
   const callIdRef = useRef<string>();
   const { currentTheme, currentRtl } = useSwitchableFluentTheme();
   const isMobileSession = useIsMobile();
+  const [isEndCallScreen, setIsEndCallScreen] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsEndCallScreen(false);
+  }, []);
+
   const afterCreate = useCallback(
     async (adapter: CallAdapter): Promise<CallAdapter> => {
       adapter.on('callEnded', () => {
-        onCallEnded();
+        setIsEndCallScreen(true);
       });
       adapter.on('error', (e) => {
         // Error is already acted upon by the Call composite, but the surrounding application could
@@ -65,7 +73,7 @@ export const CallScreen = (props: CallScreenProps): JSX.Element => {
       });
       return adapter;
     },
-    [callIdRef, onCallEnded]
+    [callIdRef]
   );
 
   const credential = useMemo(
@@ -117,17 +125,38 @@ export const CallScreen = (props: CallScreenProps): JSX.Element => {
   };
 
   return (
-    <CallComposite
-      adapter={adapter}
-      fluentTheme={currentTheme.theme}
-      rtl={currentRtl}
-      callInvitationUrl={callInvitationUrl}
-      formFactor={isMobileSession ? 'mobile' : 'desktop'}
-      /* @conditional-compile-remove(rooms) */
-      role={role}
-      /* @conditional-compile-remove(call-readiness) */
-      options={{ onPermissionsTroubleshootingClick, onNetworkingTroubleShootingClick }}
-    />
+    <Stack style={{ position: 'relative', width: '100%', height: '100%' }} grow>
+      <Stack style={{ height: isEndCallScreen ? '90%' : '100%', width: '100%', position: 'relative' }} grow>
+        <CallComposite
+          adapter={adapter}
+          fluentTheme={currentTheme.theme}
+          rtl={currentRtl}
+          callInvitationUrl={callInvitationUrl}
+          formFactor={isMobileSession ? 'mobile' : 'desktop'}
+          /* @conditional-compile-remove(rooms) */
+          role={role}
+          /* @conditional-compile-remove(call-readiness) */
+          options={{ onPermissionsTroubleshootingClick, onNetworkingTroubleShootingClick }}
+        />
+      </Stack>
+      {isEndCallScreen && (
+        <Stack
+          style={{ position: 'relative', width: '100%', height: '10%', background: 'rgb(16, 110, 190)' }}
+          grow
+          verticalAlign="center"
+        >
+          <DefaultButton
+            style={{ margin: 'auto' }}
+            className={buttonStyle}
+            styles={buttonWithIconStyles}
+            text={goHomePage}
+            onClick={() => {
+              navigateToHomePage();
+            }}
+          />
+        </Stack>
+      )}
+    </Stack>
   );
 };
 
