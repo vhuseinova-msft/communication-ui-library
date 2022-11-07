@@ -13,29 +13,24 @@ import { ContosoChatContainer } from './snippets/Container.snippet';
 import { ConfigJoinChatThreadHintBanner } from './snippets/Utils';
 
 const storyControls = {
-  userId: controlsToAdd.userId,
-  token: controlsToAdd.token,
-  endpointUrl: controlsToAdd.endpointUrl,
-  displayName: controlsToAdd.requiredDisplayName,
-  threadId: controlsToAdd.chatThreadId
+  displayName: controlsToAdd.requiredDisplayName
 };
 
 const JoinExistingChatThreadStory = (args: ArgsFrom<typeof storyControls>, context): JSX.Element => {
   const {
     globals: { locale }
   } = context;
-  const areAllControlsSet =
-    !!args.endpointUrl && !!args.threadId && !!args.userId && !!args.token && !!args.displayName;
+  const areAllControlsSet = !!args.displayName;
 
   return (
     <Stack horizontalAlign="center" verticalAlign="center" styles={compositeExperienceContainerStyle}>
       {areAllControlsSet ? (
         <ContosoChatContainer
           fluentTheme={context.theme}
-          endpointUrl={args.endpointUrl}
-          threadId={args.threadId}
-          userIdentifier={args.userId}
-          token={args.token}
+          endpointUrl={''}
+          threadId={''}
+          userIdentifier={''}
+          token={''}
           displayName={args.displayName}
           locale={compositeLocale(locale)}
         />

@@ -6,6 +6,7 @@ export {
   createAzureCommunicationChatAdapterFromClient,
   useAzureCommunicationChatAdapter
 } from './adapter/AzureCommunicationChatAdapter';
+export { FakeChatAdapter } from './adapter/FakeChatAdapter';
 export type { AzureCommunicationChatAdapterArgs } from './adapter/AzureCommunicationChatAdapter';
 
 export { ChatComposite } from './ChatComposite';

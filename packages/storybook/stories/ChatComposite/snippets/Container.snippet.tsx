@@ -1,10 +1,5 @@
-import { AzureCommunicationTokenCredential, CommunicationUserIdentifier } from '@azure/communication-common';
-import {
-  ChatComposite,
-  CompositeLocale,
-  fromFlatCommunicationIdentifier,
-  useAzureCommunicationChatAdapter
-} from '@azure/communication-react';
+import { AzureCommunicationTokenCredential } from '@azure/communication-common';
+import { ChatComposite, CompositeLocale, FakeChatAdapter } from '@azure/communication-react';
 import { PartialTheme, Theme } from '@fluentui/react';
 import React, { useMemo } from 'react';
 
@@ -33,19 +28,9 @@ export const ContosoChatContainer = (props: ContainerProps): JSX.Element => {
     }
   }, [props.token]);
 
-  const userId = useMemo(
-    () => fromFlatCommunicationIdentifier(props.userIdentifier) as CommunicationUserIdentifier,
-    [props.userIdentifier]
-  );
-
-  const adapter = useAzureCommunicationChatAdapter({
-    endpoint: props.endpointUrl,
-    userId,
-    displayName: props.displayName,
-    credential,
-    threadId: props.threadId
-  });
-
+  const adapter = useMemo(() => {
+    return new FakeChatAdapter();
+  }, []);
   if (adapter) {
     return (
       <div style={{ height: '90vh', width: '90vw' }}>

@@ -2004,6 +2004,81 @@ export interface ErrorBarStrings {
 // @public
 export type ErrorType = keyof ErrorBarStrings;
 
+// @public (undocumented)
+export class FakeChatAdapter implements ChatAdapter {
+    constructor();
+    // (undocumented)
+    cancelFileUpload: (id: string) => void;
+    // (undocumented)
+    clearFileUploads: () => void;
+    // (undocumented)
+    deleteMessage(messageId: string): Promise<void>;
+    // (undocumented)
+    dispose(): void;
+    // (undocumented)
+    fetchInitialData(): Promise<void>;
+    // (undocumented)
+    getState(): ChatAdapterState;
+    // (undocumented)
+    loadPreviousChatMessages(messagesToLoad: number): Promise<boolean>;
+    // (undocumented)
+    off(event: 'messageReceived', listener: MessageReceivedListener): void;
+    // (undocumented)
+    off(event: 'messageSent', listener: MessageReceivedListener): void;
+    // (undocumented)
+    off(event: 'messageRead', listener: MessageReadListener): void;
+    // (undocumented)
+    off(event: 'participantsAdded', listener: ParticipantsAddedListener): void;
+    // (undocumented)
+    off(event: 'participantsRemoved', listener: ParticipantsRemovedListener): void;
+    // (undocumented)
+    off(event: 'topicChanged', listener: TopicChangedListener): void;
+    // (undocumented)
+    off(event: 'error', listener: (e: AdapterError) => void): void;
+    // (undocumented)
+    offStateChange(handler: (state: ChatAdapterState) => void): void;
+    // (undocumented)
+    on(event: 'messageReceived', listener: MessageReceivedListener): void;
+    // (undocumented)
+    on(event: 'messageSent', listener: MessageReceivedListener): void;
+    // (undocumented)
+    on(event: 'messageRead', listener: MessageReadListener): void;
+    // (undocumented)
+    on(event: 'participantsAdded', listener: ParticipantsAddedListener): void;
+    // (undocumented)
+    on(event: 'participantsRemoved', listener: ParticipantsRemovedListener): void;
+    // (undocumented)
+    on(event: 'topicChanged', listener: TopicChangedListener): void;
+    // (undocumented)
+    on(event: 'error', listener: (e: AdapterError) => void): void;
+    // (undocumented)
+    onStateChange(handler: (state: ChatAdapterState) => void): void;
+    // (undocumented)
+    registerActiveFileUploads(files: File[]): FileUploadManager[];
+    // (undocumented)
+    registerCompletedFileUploads: (metadata: FileMetadata[]) => FileUploadManager[];
+    // (undocumented)
+    removeParticipant(userId: string): Promise<void>;
+    // (undocumented)
+    sendMessage(content: string, options?: SendMessageOptions | undefined): Promise<void>;
+    // (undocumented)
+    sendReadReceipt(chatMessageId: string): Promise<void>;
+    // (undocumented)
+    sendTypingIndicator(): Promise<void>;
+    // (undocumented)
+    setTopic(topicName: string): Promise<void>;
+    // (undocumented)
+    updateFileUploadErrorMessage: (id: string, errorMessage: string) => void;
+    // (undocumented)
+    updateFileUploadMetadata: (id: string, metadata: FileMetadata) => void;
+    // (undocumented)
+    updateFileUploadProgress: (id: string, progress: number) => void;
+    // (undocumented)
+    updateMessage(messageId: string, content: string, metadata?: Record<string, string> | undefined, options?: {
+        attachedFilesMetadata?: FileMetadata[] | undefined;
+    } | undefined): Promise<void>;
+}
+
 // @beta
 export interface FileDownloadError {
     errorMessage: string;

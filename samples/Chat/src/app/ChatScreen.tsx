@@ -8,7 +8,7 @@ import {
   ChatComposite,
   fromFlatCommunicationIdentifier,
   toFlatCommunicationIdentifier,
-  useAzureCommunicationChatAdapter
+  FakeChatAdapter
 } from '@azure/communication-react';
 import { Stack } from '@fluentui/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -65,7 +65,10 @@ export const ChatScreen = (props: ChatScreenProps): JSX.Element => {
     }),
     [endpointUrl, userId, displayName, token, threadId]
   );
-  const adapter = useAzureCommunicationChatAdapter(adapterArgs, adapterAfterCreate);
+
+  const adapter = useMemo(() => {
+    return new FakeChatAdapter();
+  }, []);
 
   // Dispose of the adapter in the window's before unload event
   useEffect(() => {
