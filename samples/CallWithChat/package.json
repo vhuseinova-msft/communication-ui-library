@@ -48,7 +48,8 @@
     "react-dom": "16.13.1",
     "react-router-dom": "^5.1.2",
     "reselect": "~4.0.0",
-    "uuid": "^8.1.0"
+    "uuid": "^8.1.0",
+    "@types/node-fetch": "~2.6.2"
   },
   "devDependencies": {
     "@babel/core": "~7.16.0",

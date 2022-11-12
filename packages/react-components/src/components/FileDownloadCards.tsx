@@ -136,7 +136,25 @@ export const _FileDownloadCards = (props: _FileDownloadCards): JSX.Element => {
   const fileDownloadHandler = useCallback(
     async (userId, file) => {
       if (!props.downloadHandler) {
-        window.open(file.url, '_blank', 'noopener,noreferrer');
+        if (file.url.endsWith('/views/imgo')) {
+          const bodyContent = JSON.stringify({ token: window['tokenTest'], url: file.url });
+          await fetch('/downloadFromAMS', {
+            method: 'POST',
+            body: bodyContent,
+            headers: { 'Content-Type': 'application/json' }
+          })
+            .then((res) => {
+              return res.blob();
+            })
+            .then((data) => {
+              var a = document.createElement('a');
+              a.href = window.URL.createObjectURL(data);
+              a.download = 'UploadedTimesFile.jpg';
+              a.click();
+            });
+        } else {
+          window.open(file.url, '_blank', 'noopener,noreferrer');
+        }
       } else {
         setShowSpinner(true);
         try {

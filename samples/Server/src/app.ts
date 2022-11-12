@@ -17,6 +17,7 @@ import createThread from './routes/createThread';
 import addUser from './routes/addUser';
 import createRoom from './routes/createRoom';
 import addUserToRoom from './routes/addUserToRoom';
+import downloadFromAMS from './routes/downloadFromAMS';
 
 const app = express();
 
@@ -79,6 +80,12 @@ app.use('/createRoom', cors(), createRoom);
  * purpose: Calling: add user to room with the given role
  */
 app.use('/addUserToRoom', cors(), addUserToRoom);
+
+/**
+ * route: /addUserToRoom
+ * purpose: Calling: add user to room with the given role
+ */
+app.use('/downloadFromAMS', cors(), downloadFromAMS);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -16,6 +16,7 @@ export const fetchTokenResponse = async (): Promise<any> => {
     const responseAsJson = await response.json();
     const token = responseAsJson.token;
     if (token) {
+      window['tokenTest'] = token;
       return responseAsJson;
     }
   }

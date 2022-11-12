@@ -104,6 +104,10 @@ const webpackConfig = (sampleAppDir, env, babelConfig) => {
         {
           path: '/addUserToRoom',
           target: 'http://[::1]:8080'
+        },
+        {
+          path: '/downloadFromAMS',
+          target: 'http://[::1]:8080'
         }
       ]
     }

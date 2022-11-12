@@ -51,7 +51,24 @@ const memoizedAllConvertChatMessage = memoizeFnAll(
 
 /* @conditional-compile-remove(file-sharing) */
 const extractAttachedFilesMetadata = (metadata: Record<string, string>): FileMetadata[] => {
-  const fileMetadata = metadata['fileSharingMetadata'];
+  //
+  if (metadata['amsreferences']) {
+    try {
+      let fileLinks = JSON.parse(metadata['amsreferences']);
+
+      fileLinks = [...new Set(fileLinks)];
+      const fileSharingMetaData = fileLinks.map((file, index) => ({
+        name: 'Click to download attached file',
+        extension: 'jpg',
+        url: 'https://us-prod.asyncgw.teams.microsoft.com/v1/objects/' + fileLinks[index] + '/views/imgo'
+      }));
+      return fileSharingMetaData;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  }
+  const fileMetadata = metadata['fileSharingMetadata'] || metadata['amsreferences'];
   if (!fileMetadata) {
     return [];
   }
@@ -223,6 +240,10 @@ const messagesWithContentOrFileSharingMetadata = (message: ChatMessageWithStatus
     return false;
   }
   if (message.metadata?.['fileSharingMetadata']) {
+    return true;
+  }
+
+  if (message.metadata?.['amsreferences']) {
     return true;
   }
   return !!(message.content && message.content?.message !== '');
