@@ -184,11 +184,65 @@
     "participantStateRinging": "Bellen...",
     "participantStateHold": "In de wacht"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "Toestaan dat {appName} uw camera en microfoon gebruikt",
     "secondaryText": "Dit is zodat deelnemers u kunnen zien en horen.",
     "linkText": "Hulp nodig? Hulp bij probleemoplossing",
-    "primaryButtonText": "Toegang verlenen"
+    "primaryButtonText": "Doorgaan zonder camera en microfoon",
+    "ariaLabel": "Toegang tot camera en microfoon toestaan"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "{appName} toestaan om uw camera te gebruiken",
+    "secondaryText": "Dit is zodat deelnemers u kunnen zien.",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing",
+    "primaryButtonText": "Doorgaan zonder camera",
+    "ariaLabel": "Cameratoegang toestaan"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "{appName} toestaan om uw microfoon te gebruiken",
+    "secondaryText": "Dit is zodat deelnemers u kunnen horen.",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing",
+    "primaryButtonText": "Doorgaan zonder microfoon",
+    "ariaLabel": "Microfoontoegang toestaan"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "Controleren op toegang tot camera en microfoon",
+    "secondaryText": "Toegang toestaan als hierom wordt gevraagd. Dit is zodat deelnemers u kunnen zien en horen.",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing",
+    "primaryButtonText": "Doorgaan zonder camera en microfoon",
+    "ariaLabel": "Controleren op toegang tot camera en microfoon. Toegang toestaan als hierom wordt gevraagd."
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "Controleren op cameratoegang",
+    "secondaryText": "Toegang toestaan als hierom wordt gevraagd. Dit is zodat deelnemers u kunnen zien.",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing",
+    "primaryButtonText": "Doorgaan zonder camera",
+    "ariaLabel": "Controleren op cameratoegang. Toegang toestaan als hierom wordt gevraagd."
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "Controleren op toegang tot microfoon",
+    "secondaryText": "Toegang toestaan als hierom wordt gevraagd. Dit is zodat deelnemers u kunnen horen.",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing",
+    "primaryButtonText": "Doorgaan zonder microfoon",
+    "ariaLabel": "Controleren op toegang tot microfoon. Toegang toestaan als hierom wordt gevraagd."
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "Geen toegang tot camera en microfoon",
+    "secondaryText": "Klik op het vergrendelingspictogram op de adresbalk om microfoonmachtigingen toe te kennen aan deze webpagina. Mogelijk is een paginavernieuwing vereist.",
+    "primaryButtonText": "Doorgaan zonder camera en microfoon",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "Geen toegang tot camera",
+    "secondaryText": "Klik op het vergrendelingspictogram op de adresbalk om cameramachtigingen toe te kennen aan deze webpagina. Mogelijk is een paginavernieuwing vereist.",
+    "primaryButtonText": "Doorgaan zonder camera",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "Geen toegang tot microfoon",
+    "secondaryText": "Klik op het vergrendelingspictogram op de adresbalk om microfoonmachtigingen toe te kennen aan deze webpagina. Mogelijk is een paginavernieuwing vereist.",
+    "primaryButtonText": "Doorgaan zonder microfoon",
+    "linkText": "Hulp nodig? Hulp bij probleemoplossing"
   },
   "UnsupportedBrowser": {
     "primaryText": "Browser wordt niet ondersteund",

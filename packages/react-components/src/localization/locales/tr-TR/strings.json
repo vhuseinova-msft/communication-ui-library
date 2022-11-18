@@ -184,11 +184,65 @@
     "participantStateRinging": "Aranıyor...",
     "participantStateHold": "Beklemede"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "{appName} uygulamasının kameranızı ve mikrofonunuzu kullanmasına izin verin",
     "secondaryText": "Bu, katılımcıların sizi görebilmesi ve duyabilmesi içindir.",
     "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın",
-    "primaryButtonText": "Erişime İzin Ver"
+    "primaryButtonText": "Kamera ve mikrofon olmadan devam et",
+    "ariaLabel": "Kamera ve mikrofon erişimine izin ver"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "{appName} uygulamasının kameranızı kullanmasına izin verin",
+    "secondaryText": "Bu, katılımcıların sizi görebilmesi içindir.",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın",
+    "primaryButtonText": "Kamera olmadan devam et",
+    "ariaLabel": "Kamera erişimine izin ver"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "{appName} uygulamasının mikrofonunuzu kullanmasına izin verin",
+    "secondaryText": "Bu, katılımcıların sizi duyabilmesi içindir.",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın",
+    "primaryButtonText": "Mikrofon olmadan devam et",
+    "ariaLabel": "Mikrofon erişimine izin ver"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "Kamera ve mikrofon erişimi denetleniyor",
+    "secondaryText": "İstenirse erişime izin verin. Bu, katılımcıların sizi görebilmesi ve duyabilmesi içindir.",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın",
+    "primaryButtonText": "Kamera ve mikrofon olmadan devam et",
+    "ariaLabel": "Kamera ve mikrofon erişimi denetleniyor. İstenirse erişime izin verin."
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "Kamera erişimi denetleniyor",
+    "secondaryText": "İstenirse erişime izin verin. Bu, katılımcıların sizi görebilmesi içindir.",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın",
+    "primaryButtonText": "Kamera olmadan devam et",
+    "ariaLabel": "Kamera erişimi denetleniyor. İstenirse erişime izin verin."
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "Mikrofon erişimi denetleniyor",
+    "secondaryText": "İstenirse erişime izin verin. Bu, katılımcıların sizi duyabilmesi içindir.",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın",
+    "primaryButtonText": "Mikrofon olmadan devam et",
+    "ariaLabel": "Mikrofon erişimi denetleniyor. İstenirse erişime izin verin."
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "Kamera ve mikrofona erişemiyor",
+    "secondaryText": "Bu web sayfası için mikrofon izinleri vermek için adres çubuğundaki kilit simgesine tıklayın. Sayfa yenilemesi gerekebilir.",
+    "primaryButtonText": "Kamera ve mikrofon olmadan devam et",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "Kameraya erişilemiyor",
+    "secondaryText": "Bu web sayfasında kamera izinleri vermek için adres çubuğundaki kilit simgesine tıklayın. Sayfa yenilemesi gerekebilir.",
+    "primaryButtonText": "Kamera olmadan devam et",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "Mikrofona erişilemiyor",
+    "secondaryText": "Bu web sayfası için mikrofon izinleri vermek için adres çubuğundaki kilit simgesine tıklayın. Sayfa yenilemesi gerekebilir.",
+    "primaryButtonText": "Mikrofon olmadan devam et",
+    "linkText": "Yardıma mı ihtiyacınız var? Sorun giderme yardımı alın"
   },
   "UnsupportedBrowser": {
     "primaryText": "Tarayıcı desteklenmiyor",

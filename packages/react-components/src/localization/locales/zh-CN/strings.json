@@ -184,11 +184,65 @@
     "participantStateRinging": "正在呼叫...",
     "participantStateHold": "待机音乐"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "允许{appName}使用你的相机和麦克风",
     "secondaryText": "这样参与者就可以看到并听到你的声音。",
     "linkText": "需要帮助? 获取疑难解答帮助",
-    "primaryButtonText": "允许访问"
+    "primaryButtonText": "不使用摄像头和麦克风继续",
+    "ariaLabel": "允许相机和麦克风访问权限"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "允许 {appName} 使用你的相机",
+    "secondaryText": "这样参与者就可以看到你了。",
+    "linkText": "需要帮助? 获取疑难解答帮助",
+    "primaryButtonText": "不使用摄像头继续",
+    "ariaLabel": "允许相机访问权限"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "允许 {appName} 使用你的麦克风",
+    "secondaryText": "这样参与者就可以听到你的声音。",
+    "linkText": "需要帮助? 获取疑难解答帮助",
+    "primaryButtonText": "不使用麦克风继续",
+    "ariaLabel": "允许麦克风访问权限"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "检查摄像头和麦克风访问权限",
+    "secondaryText": "如果出现提示，请允许访问。这样参与者就可以看到并听到你的声音。",
+    "linkText": "需要帮助? 获取疑难解答帮助",
+    "primaryButtonText": "不使用相机和麦克风继续",
+    "ariaLabel": "正在检查摄像头和麦克风访问权限。如果出现提示，请允许访问。"
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "检查摄像头访问权限",
+    "secondaryText": "如果出现提示，请允许访问。这样参与者就可以看到你了。",
+    "linkText": "需要帮助? 获取疑难解答帮助",
+    "primaryButtonText": "不使用相机继续",
+    "ariaLabel": "正在检查摄像头访问权限。如果出现提示，请允许访问。"
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "正在检查麦克风访问权限",
+    "secondaryText": "如果出现提示，请允许访问。这样参与者就可以听到你的声音。",
+    "linkText": "需要帮助? 获取疑难解答帮助",
+    "primaryButtonText": "不使用麦克风继续",
+    "ariaLabel": "正在检查麦克风访问权限。如果出现提示，请允许访问。"
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "无法访问相机和麦克风",
+    "secondaryText": "单击地址栏中的锁图标以向此网页授予麦克风权限。可能需要页面刷新。",
+    "primaryButtonText": "不使用相机和麦克风继续",
+    "linkText": "需要帮助? 获取疑难解答帮助"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "无法访问相机",
+    "secondaryText": "单击地址栏中的锁图标以向此网页授予相机权限。可能需要页面刷新。",
+    "primaryButtonText": "不使用相机继续",
+    "linkText": "需要帮助? 获取疑难解答帮助"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "无法访问麦克风",
+    "secondaryText": "单击地址栏中的锁图标以向此网页授予麦克风权限。可能需要页面刷新。",
+    "primaryButtonText": "不使用麦克风继续",
+    "linkText": "需要帮助? 获取疑难解答帮助"
   },
   "UnsupportedBrowser": {
     "primaryText": "浏览器不受支持",

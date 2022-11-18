@@ -184,11 +184,65 @@
     "participantStateRinging": "撥號中...",
     "participantStateHold": "電話保留"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "允許 {appName} 使用您的相機和麥克風",
     "secondaryText": "這樣參與者才能看到您並聽到您的聲音。",
     "linkText": "需要協助嗎? 取得疑難排解說明",
-    "primaryButtonText": "允許存取"
+    "primaryButtonText": "在沒有相機和麥克風的情況下繼續",
+    "ariaLabel": "允許相機和麥克風存取"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "允許 {appName} 使用您的相機",
+    "secondaryText": "這樣參與者才能看到您。",
+    "linkText": "需要協助嗎? 取得疑難排解說明",
+    "primaryButtonText": "在沒有相機的情況下繼續",
+    "ariaLabel": "允許存取相機"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "允許 {appName} 使用您的麥克風",
+    "secondaryText": "這樣參與者才能聽到您的聲音。",
+    "linkText": "需要協助嗎? 取得疑難排解說明",
+    "primaryButtonText": "在沒有麥克風的情況下繼續",
+    "ariaLabel": "允許麥克風存取"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "正在檢查相機和麥克風存取",
+    "secondaryText": "如果系統提示，則允許存取。這樣參與者才能看到您並聽到您的聲音。",
+    "linkText": "需要協助嗎? 取得疑難排解說明",
+    "primaryButtonText": "在沒有相機和麥克風的情況下繼續",
+    "ariaLabel": "正在檢查相機和麥克風存取。如果系統提示，則允許存取。"
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "正在檢查相機存取",
+    "secondaryText": "如果系統提示，則允許存取。這樣參與者才能看到您。",
+    "linkText": "需要協助嗎? 取得疑難排解說明",
+    "primaryButtonText": "在沒有相機的情況下繼續",
+    "ariaLabel": "正在檢查相機存取。如果系統提示，則允許存取。"
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "正在檢查麥克風存取",
+    "secondaryText": "如果系統提示，則允許存取。這樣參與者才能聽到您的聲音。",
+    "linkText": "需要協助嗎? 取得疑難排解說明",
+    "primaryButtonText": "在沒有麥克風的情況下繼續",
+    "ariaLabel": "正在檢查麥克風存取。如果系統提示，則允許存取。"
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "無法存取攝影機和麥克風",
+    "secondaryText": "按一下網址列中的鎖定圖示，以授與此網頁的麥克風許可權。可能需要重新整理頁面。",
+    "primaryButtonText": "在沒有相機和麥克風的情況下繼續",
+    "linkText": "需要協助嗎? 取得疑難排解說明"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "無法存取攝影機",
+    "secondaryText": "按一下網址列中的鎖定圖示，以授與此網頁的相機許可權。可能需要重新整理頁面。",
+    "primaryButtonText": "在沒有相機的情況下繼續",
+    "linkText": "需要協助嗎? 取得疑難排解說明"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "無法存取麥克風",
+    "secondaryText": "按一下網址列中的鎖定圖示，以授與此網頁的麥克風許可權。可能需要重新整理頁面。",
+    "primaryButtonText": "在沒有麥克風的情況下繼續",
+    "linkText": "需要協助嗎? 取得疑難排解說明"
   },
   "UnsupportedBrowser": {
     "primaryText": "不支援瀏覽器",

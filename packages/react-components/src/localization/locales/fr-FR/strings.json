@@ -184,11 +184,65 @@
     "participantStateRinging": "Appel en cours...",
     "participantStateHold": "En attente"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "Autoriser {appName} à utiliser votre caméra et votre microphone",
     "secondaryText": "Cela permet aux participants de vous voir et de vous entendre.",
     "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes",
-    "primaryButtonText": "Autoriser l’accès"
+    "primaryButtonText": "Continuer sans caméra ni microphone",
+    "ariaLabel": "Autoriser l'accès à la caméra et au microphone"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "Autoriser {appName} à utiliser votre caméra",
+    "secondaryText": "Cela permet aux participants de vous voir.",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes",
+    "primaryButtonText": "Continuer sans caméra",
+    "ariaLabel": "Autoriser l’accès à la caméra"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "Autoriser {appName} à utiliser votre micro",
+    "secondaryText": "Cela permet aux participants de vous écouter.",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes",
+    "primaryButtonText": "Continuer sans microphone",
+    "ariaLabel": "Autoriser l’accès au micro"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "Vérification de l’accès à la caméra et au microphone",
+    "secondaryText": "Autorisez l’accès si vous y êtes invité. Cela permet aux participants de vous voir et de vous entendre.",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes",
+    "primaryButtonText": "Continuer sans caméra ni micro",
+    "ariaLabel": "Vérification de l’accès à la caméra et au microphone. Autorisez l’accès si vous y êtes invité."
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "Vérification de l’accès à la caméra",
+    "secondaryText": "Autorisez l’accès si vous y êtes invité. Cela permet aux participants de vous voir.",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes",
+    "primaryButtonText": "Continuer sans appareil photo",
+    "ariaLabel": "Vérification de l’accès à la caméra. Autorisez l’accès si vous y êtes invité."
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "Vérification de l’accès au microphone",
+    "secondaryText": "Autorisez l’accès si vous y êtes invité. Cela permet aux participants de vous entendre.",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes",
+    "primaryButtonText": "Continuer sans microphone",
+    "ariaLabel": "Vérification de l’accès au microphone. Autorisez l’accès si vous y êtes invité."
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "Nous n’avons pas pu accéder au micro et à la caméra.",
+    "secondaryText": "Cliquez sur l’icône de verrouillage dans la barre d’adresses pour accorder des autorisations de microphone à cette page Web. Une actualisation de page peut être nécessaire.",
+    "primaryButtonText": "Continuer sans caméra ni micro",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "Nous n’avons pas pu accéder à la caméra.",
+    "secondaryText": "Cliquez sur l’icône de verrouillage dans la barre d’adresses pour accorder des autorisations d’appareil photo à cette page Web. Une actualisation de page peut être nécessaire.",
+    "primaryButtonText": "Continuer sans appareil photo",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "Nous n’avons pas pu accéder au micro.",
+    "secondaryText": "Cliquez sur l’icône de verrouillage dans la barre d’adresses pour accorder des autorisations de microphone à cette page Web. Une actualisation de page peut être nécessaire.",
+    "primaryButtonText": "Continuer sans microphone",
+    "linkText": "Besoin d’aide ? Obtenir de l’aide sur la résolution des problèmes"
   },
   "UnsupportedBrowser": {
     "primaryText": "Navigateur non pris en charge",

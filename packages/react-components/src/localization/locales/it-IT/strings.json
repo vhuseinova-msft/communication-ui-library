@@ -184,11 +184,65 @@
     "participantStateRinging": "Chiamata in corso...",
     "participantStateHold": "Per l'attesa"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "Consenti a {appName} di usare la fotocamera e il microfono",
     "secondaryText": "In questo modo i partecipanti possono vederti e sentirti.",
     "linkText": "Serve aiuto? Guida alla risoluzione dei problemi",
-    "primaryButtonText": "Consenti l'accesso"
+    "primaryButtonText": "Continua senza fotocamera e microfono",
+    "ariaLabel": "Consenti l'accesso alla fotocamera e al microfono"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "Consenti a {appName} di usare la fotocamera",
+    "secondaryText": "In questo modo i partecipanti possono vederti.",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi",
+    "primaryButtonText": "Continua senza fotocamera",
+    "ariaLabel": "Consenti l'accesso alla fotocamera"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "Consenti a {appName} di usare il microfono",
+    "secondaryText": "In questo modo i partecipanti possono sentirti.",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi",
+    "primaryButtonText": "Continua senza microfono",
+    "ariaLabel": "Consenti l'accesso al microfono"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "Verifica dell'accesso alla fotocamera e al microfono",
+    "secondaryText": "Consenti l'accesso se richiesto. In questo modo i partecipanti possono vederti e sentirti.",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi",
+    "primaryButtonText": "Continua senza fotocamera e microfono",
+    "ariaLabel": "Verifica dell'accesso alla fotocamera e al microfono. Consenti l'accesso se richiesto."
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "Verifica dell'accesso alla fotocamera",
+    "secondaryText": "Consenti l'accesso se richiesto. In questo modo i partecipanti possono vederti.",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi",
+    "primaryButtonText": "Continua senza fotocamera",
+    "ariaLabel": "Verifica dell'accesso alla fotocamera. Consenti l'accesso se richiesto."
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "Verifica dell'accesso al microfono",
+    "secondaryText": "Consenti l'accesso se richiesto. In questo modo i partecipanti possono sentirti.",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi",
+    "primaryButtonText": "Continua senza microfono",
+    "ariaLabel": "Verifica dell'accesso al microfono. Consenti l'accesso se richiesto."
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "Non è possibile accedere alla fotocamera e al microfono",
+    "secondaryText": "Fare clic sull'icona di blocco nella barra degli indirizzi per concedere le autorizzazioni del microfono a questa pagina Web. Potrebbe essere necessario un aggiornamento della pagina.",
+    "primaryButtonText": "Continua senza fotocamera e microfono",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "Impossibile accedere alla videocamera",
+    "secondaryText": "Fare clic sull'icona di blocco nella barra degli indirizzi per concedere le autorizzazioni della fotocamera a questa pagina Web. Potrebbe essere necessario un aggiornamento della pagina.",
+    "primaryButtonText": "Continua senza fotocamera",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "Impossibile accedere al microfono",
+    "secondaryText": "Fare clic sull'icona di blocco nella barra degli indirizzi per concedere le autorizzazioni del microfono a questa pagina Web. Potrebbe essere necessario un aggiornamento della pagina.",
+    "primaryButtonText": "Continua senza microfono",
+    "linkText": "Serve aiuto? Guida alla risoluzione dei problemi"
   },
   "UnsupportedBrowser": {
     "primaryText": "Browser non supportato",

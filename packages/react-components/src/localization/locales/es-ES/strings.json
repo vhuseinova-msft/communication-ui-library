@@ -184,11 +184,65 @@
     "participantStateRinging": "Llamando...",
     "participantStateHold": "En espera"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "Permitir que {appName} usen la cámara y el micrófono",
     "secondaryText": "Esto es para que los participantes puedan verle y oírle.",
     "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas",
-    "primaryButtonText": "Permitir acceso"
+    "primaryButtonText": "Continuar sin cámara ni micrófono",
+    "ariaLabel": "Permitir el acceso a la cámara y al micrófono"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "Permitir que {appName} use la cámara",
+    "secondaryText": "Esto sirve para que los participantes puedan verle.",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas",
+    "primaryButtonText": "Continuar sin cámara",
+    "ariaLabel": "Permitir el acceso a la cámara"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "Permitir que {appName} use el micrófono",
+    "secondaryText": "Esto sirve para que los participantes puedan oírle.",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas",
+    "primaryButtonText": "Continuar sin micrófono",
+    "ariaLabel": "Permitir el acceso al micrófono"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "Comprobando el acceso a la cámara y al micrófono",
+    "secondaryText": "Permitir el acceso si se le solicita. Esto es para que los participantes puedan verle y oírle.",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas",
+    "primaryButtonText": "Continuar sin cámara ni micrófono",
+    "ariaLabel": "Comprobando el acceso a la cámara y al micrófono. Permitir el acceso si se le solicita."
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "Comprobando el acceso a la cámara",
+    "secondaryText": "Permitir el acceso si se le solicita. Esto es para que los participantes puedan verlo.",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas",
+    "primaryButtonText": "Continuar sin cámara",
+    "ariaLabel": "Comprobando el acceso a la cámara. Permitir el acceso si se le solicita."
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "Comprobando el acceso al micrófono",
+    "secondaryText": "Permitir el acceso si se le solicita. Esto es para que los participantes puedan oírle.",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas",
+    "primaryButtonText": "Continuar sin micrófono",
+    "ariaLabel": "Comprobando el acceso al micrófono. Permitir el acceso si se le solicita."
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "No se puede permitir el acceso a la cámara ni al micrófono.",
+    "secondaryText": "Haga clic en el icono de bloqueo de la barra de direcciones para conceder permisos de micrófono a esta página web. Es posible que sea necesario actualizar la página.",
+    "primaryButtonText": "Continuar sin cámara ni micrófono",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "No se puede acceder a la cámara.",
+    "secondaryText": "Haga clic en el icono de bloqueo de la barra de direcciones para conceder permisos de cámara a esta página web. Es posible que sea necesario actualizar la página.",
+    "primaryButtonText": "Continuar sin cámara",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "No se puede acceder al micrófono.",
+    "secondaryText": "Haga clic en el icono de bloqueo de la barra de direcciones para conceder permisos de micrófono a esta página web. Es posible que sea necesario actualizar la página.",
+    "primaryButtonText": "Continuar sin micrófono",
+    "linkText": "¿Necesitas ayuda? Obtén ayuda para la solución de problemas"
   },
   "UnsupportedBrowser": {
     "primaryText": "Explorador no compatible",

@@ -184,11 +184,65 @@
     "participantStateRinging": "呼び出し中...",
     "participantStateHold": "保留中"
   },
-  "DomainPermissions": {
+  "CameraAndMicrophoneDomainPermissionsRequest": {
     "primaryText": "{appName}にカメラとマイクの使用を許可する",
     "secondaryText": "これは、参加者があなたのことを見たり聞いたりできるようにするものです。",
     "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示",
-    "primaryButtonText": "アクセスを許可"
+    "primaryButtonText": "カメラとマイクなしで続行",
+    "ariaLabel": "カメラとマイクへのアクセスが許可する"
+  },
+  "CameraDomainPermissionsRequest": {
+    "primaryText": "{appName} にカメラの使用を許可する",
+    "secondaryText": "これは、参加者に表示されるようにするためです。",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示",
+    "primaryButtonText": "カメラなしで続行",
+    "ariaLabel": "カメラへのアクセスを許可"
+  },
+  "MicrophoneDomainPermissionsRequest": {
+    "primaryText": "{appName} にマイクの使用を許可する",
+    "secondaryText": "これは、参加者に聞こえるようにするためです。",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示",
+    "primaryButtonText": "マイクなしで続行",
+    "ariaLabel": "マイクへのアクセスを許可する"
+  },
+  "CameraAndMicrophoneDomainPermissionsCheck": {
+    "primaryText": "カメラとマイクへのアクセスを確認しています",
+    "secondaryText": "プロンプトが表示されたら、アクセスを許可します。これは、参加者があなたを見たり聞いたりできるようにするためです。",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示",
+    "primaryButtonText": "カメラとマイクなしで続行する",
+    "ariaLabel": "カメラとマイクへのアクセスを確認しています。プロンプトが表示されたら、アクセスを許可します。"
+  },
+  "CameraDomainPermissionsCheck": {
+    "primaryText": "カメラへのアクセスを確認しています",
+    "secondaryText": "プロンプトが表示されたら、アクセスを許可します。これは、参加者があなたを見ることができるようにするためです。",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示",
+    "primaryButtonText": "カメラなしで続行する",
+    "ariaLabel": "カメラへのアクセスを確認しています。プロンプトが表示されたら、アクセスを許可します。"
+  },
+  "MicrophoneDomainPermissionsCheck": {
+    "primaryText": "マイクへのアクセスを確認しています",
+    "secondaryText": "プロンプトが表示されたら、アクセスを許可します。これは、参加者があなたの声を聞くことができるようにするためです。",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示",
+    "primaryButtonText": "マイクなしで続行する",
+    "ariaLabel": "マイクへのアクセスを確認しています。プロンプトが表示されたら、アクセスを許可します。"
+  },
+  "CameraAndMicrophoneDomainPermissionsDenied": {
+    "primaryText": "カメラとマイクにアクセスできません",
+    "secondaryText": "アドレス バーのロック アイコンをクリックして、この Web ページにマイクのアクセス許可を付与します。ページの更新が必要な可能性があります。",
+    "primaryButtonText": "カメラとマイクなしで続行する",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示"
+  },
+  "CameraDomainPermissionsDenied": {
+    "primaryText": "カメラにアクセスできません",
+    "secondaryText": "アドレス バーのロック アイコンをクリックして、この Web ページにカメラのアクセス許可を付与します。ページの更新が必要な可能性があります。",
+    "primaryButtonText": "カメラなしで続行する",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示"
+  },
+  "MicrophoneDomainPermissionsDenied": {
+    "primaryText": "マイクにアクセスできません",
+    "secondaryText": "アドレス バーのロック アイコンをクリックして、この Web ページにマイクのアクセス許可を付与します。ページの更新が必要な可能性があります。",
+    "primaryButtonText": "マイクなしで続行する",
+    "linkText": "ヘルプが必要ですか? トラブルシューティングのヘルプを表示"
   },
   "UnsupportedBrowser": {
     "primaryText": "サポートされていないブラウザーです",
