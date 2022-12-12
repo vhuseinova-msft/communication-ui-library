@@ -14,7 +14,7 @@ import { DevicesButton, ErrorBar } from '@internal/react-components';
 /* @conditional-compile-remove(rooms) */
 import { _usePermissions, _Permissions } from '@internal/react-components';
 import { getCallingSelector } from '@internal/calling-component-bindings';
-import { Stack } from '@fluentui/react';
+import { DefaultButton, Stack } from '@fluentui/react';
 import { LocalPreview } from '../components/LocalPreview';
 import {
   callDetailsStyleDesktop,
@@ -279,6 +279,15 @@ export const ConfigurationPage = (props: ConfigurationPageProps): JSX.Element =>
               disabled={disableStartCallButton}
             />
           </Stack>
+          <DefaultButton
+            onClick={() => {
+              alert(
+                'Permissions Camera: ' + permissionsState.camera + ' ' + 'Microphone: ' + permissionsState.microphone
+              );
+            }}
+          >
+            See Permissions in API
+          </DefaultButton>
         </Stack>
       </Stack>
     </Stack>
