@@ -12,6 +12,7 @@ import { BaseCustomStyles } from '../../types';
  */
 export const DrawerContentContainer = (props: {
   children: React.ReactNode;
+  heading?: string;
   styles?: BaseCustomStyles;
 }): JSX.Element => {
   const theme = useTheme();
@@ -19,7 +20,18 @@ export const DrawerContentContainer = (props: {
   const borderRadius = theme.effects.roundedCorner4;
   const rootStyles = mergeStyles(containerStyles(backgroundColor, borderRadius), props.styles?.root);
 
-  return <Stack className={rootStyles}>{props.children}</Stack>;
+  return (
+    <Stack className={rootStyles}>
+      {props.heading && (
+        <Stack
+          styles={{ root: { background: backgroundColor, color: theme.palette.neutralSecondary, textAlign: 'center' } }}
+        >
+          {props.heading}
+        </Stack>
+      )}
+      {props.children}
+    </Stack>
+  );
 };
 
 const containerStyles = (backgroundColor: string, borderRadius: string): IStyle => ({

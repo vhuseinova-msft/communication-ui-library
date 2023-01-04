@@ -3,6 +3,7 @@
 
 import { LayerHost, mergeStyles, Stack } from '@fluentui/react';
 import { useId } from '@fluentui/react-hooks';
+import { _pxToRem } from '@internal/acs-ui-common';
 import React from 'react';
 import { useTheme } from '../../theming';
 import { GridLayout } from '../GridLayout';
@@ -12,9 +13,11 @@ import { FloatingLocalVideoLayoutProps } from './FloatingLocalVideoLayout';
 import {
   localVideoTileContainerStyle,
   localVideoTileWithControlsContainerStyle,
-  LOCAL_VIDEO_TILE_ZINDEX
+  LOCAL_VIDEO_TILE_ZINDEX,
+  SMALL_FLOATING_MODAL_SIZE_PX
 } from './styles/FloatingLocalVideo.styles';
 import { innerLayoutStyle, layerHostStyle, rootLayoutStyle } from './styles/FloatingLocalVideoLayout.styles';
+import { SMALL_HORIZONTAL_GALLERY_TILE_STYLE } from './styles/VideoGalleryResponsiveHorizontalGallery.styles';
 import { usePinnedParticipantLayout } from './utils/videoGalleryLayoutUtils';
 import { VideoGalleryResponsiveHorizontalGallery } from './VideoGalleryResponsiveHorizontalGallery';
 
@@ -32,6 +35,10 @@ export interface PinnedParticipantsLayoutProps extends FloatingLocalVideoLayoutP
    * Whether local video should be floating
    */
   isLocalVideoFloating?: boolean;
+  /**
+   * Whether to use horizontal gallery
+   */
+  useHorizontalGallery?: boolean;
 }
 
 /**
@@ -53,7 +60,8 @@ export const PinnedParticipantsLayout = (props: PinnedParticipantsLayoutProps): 
     showCameraSwitcherInLocalPreview,
     parentWidth,
     parentHeight,
-    isLocalVideoFloating
+    isLocalVideoFloating,
+    useHorizontalGallery = true
   } = props;
 
   const theme = useTheme();
@@ -132,13 +140,40 @@ export const PinnedParticipantsLayout = (props: PinnedParticipantsLayoutProps): 
             {gridTiles}
           </GridLayout>
         )}
-        {horizontalGalleryTiles.length > 0 && (
+        {horizontalGalleryTiles.length > 0 && useHorizontalGallery ? (
           <VideoGalleryResponsiveHorizontalGallery
             isNarrow={isNarrow}
             shouldFloatLocalVideo={true}
             horizontalGalleryElements={horizontalGalleryTiles}
             styles={styles?.horizontalGallery}
           />
+        ) : (
+          <Stack
+            styles={{
+              root: {
+                paddingTop: '0.5rem',
+                width: `calc(100% - ${_pxToRem(SMALL_FLOATING_MODAL_SIZE_PX.width)})`,
+                paddingRight: '0.5rem'
+              }
+            }}
+          >
+            <Stack
+              horizontal={true}
+              styles={{
+                root: {
+                  width: '100%',
+                  '> *': SMALL_HORIZONTAL_GALLERY_TILE_STYLE,
+                  overflowX: 'auto',
+                  '-ms-overflow-style': 'none',
+                  'scrollbar-width': 'none',
+                  '::-webkit-scrollbar': { display: 'none' }
+                }
+              }}
+              tokens={{ childrenGap: '0.5rem' }}
+            >
+              {horizontalGalleryTiles}
+            </Stack>
+          </Stack>
         )}
         <LayerHost id={layerHostId} className={mergeStyles(layerHostStyle)} />
       </Stack>

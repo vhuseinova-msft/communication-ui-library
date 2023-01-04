@@ -351,7 +351,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
           /* @conditional-compile-remove(PSTN-calls) */
           participantState={participant.state}
           /* @conditional-compile-remove(pinned-participants) */
-          showRemoteVideoTileContextualMenu={props.showRemoteVideoTileContextualMenu}
+          showRemoteVideoTileContextualMenu={isNarrow ? false : props.showRemoteVideoTileContextualMenu}
           drawerMenuHostId={drawerMenuHostId}
           /* @conditional-compile-remove(pinned-participants) */
           onPinParticipant={onPinParticipant}
@@ -432,7 +432,7 @@ export const VideoGallery = (props: VideoGalleryProps): JSX.Element => {
   const videoGalleryLayout = useMemo(() => {
     /* @conditional-compile-remove(pinned-participants) */
     if (layoutProps.pinnedParticipants.length > 0) {
-      return <PinnedParticipantsLayout {...layoutProps} />;
+      return <PinnedParticipantsLayout {...layoutProps} useHorizontalGallery={!isNarrow} />;
     }
     if (layout === 'floatingLocalVideo') {
       return <FloatingLocalVideoLayout {...layoutProps} />;
