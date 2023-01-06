@@ -20,7 +20,7 @@ test.describe('VideoGalleryLayout tests', async () => {
   }, testInfo) => {
     test.skip(isTestProfileMobile(testInfo));
     const paul = defaultMockRemoteParticipant('Paul Bridges');
-    addVideoStream(paul, true);
+    addVideoStream(paul, true, 'Fit');
 
     const participants = [paul];
     const initialState = defaultMockCallAdapterState(participants);
