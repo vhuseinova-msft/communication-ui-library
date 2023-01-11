@@ -29,6 +29,8 @@ jobs:
         id: workflow_dispatch
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: echo "found=true" >> $GITHUB_OUTPUT
+      - name: Dump job context
+        run: echo '${{ toJSON(job) }}'
       - name: Found required label
         id: label
         if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'update_snapshots') }}
