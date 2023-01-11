@@ -5,9 +5,9 @@ import { expect } from '@playwright/test';
 import { IDS } from '../../common/constants';
 import {
   dataUiId,
-  dragToRight,
   isTestProfileMobile,
   pageClick,
+  pageDrag,
   stableScreenshot,
   waitForSelector
 } from '../../common/utils';
@@ -72,7 +72,8 @@ test.describe('HorizontalGallery tests', async () => {
 
     /* @conditional-compile-remove(pinned-participants) */
     if (isTestProfileMobile(testInfo)) {
-      await dragToRight(page, dataUiId('scrollable-horizontal-gallery'));
+      // drag scrollable horizontal gallery 100px to the right
+      await pageDrag(page, dataUiId('scrollable-horizontal-gallery'), 100, 0);
       expect(await stableScreenshot(page)).toMatchSnapshot(
         'horizontal-gallery-with-many-audio-participants-dragged.png'
       );
@@ -165,7 +166,8 @@ test.describe('HorizontalGallery tests', async () => {
 
     /* @conditional-compile-remove(pinned-participants) */
     if (isTestProfileMobile(testInfo)) {
-      await dragToRight(page, dataUiId('scrollable-horizontal-gallery'));
+      // drag scrollable horizontal gallery 100px to the right
+      await pageDrag(page, dataUiId('scrollable-horizontal-gallery'), 100, 0);
       expect(await stableScreenshot(page)).toMatchSnapshot('horizontal-gallery-with-joining-participant-dragged.png');
       return;
     }
