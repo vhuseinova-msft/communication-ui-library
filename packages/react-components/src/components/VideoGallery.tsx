@@ -92,6 +92,18 @@ export interface VideoGalleryStrings {
   /* @conditional-compile-remove(pinned-participants) */
   /** Menu text shown in Video Tile contextual menu for setting a remote participant's video tile */
   unpinParticipantForMe: string;
+  /* @conditional-compile-remove(pinned-participants) */
+  /** Aria text for pin participant menu item of remote participant's video tile */
+  pinParticipantAriaText: string;
+  /* @conditional-compile-remove(pinned-participants) */
+  /** Aria text for unpin participant menu item of remote participant's video tile */
+  unpinParticipantAriaText: string;
+  /* @conditional-compile-remove(pinned-participants) */
+  /** Aria text when remote participant's video tile is pinned */
+  pinnedParticipantAriaText: string;
+  /* @conditional-compile-remove(pinned-participants) */
+  /** Aria text when remote participant's video tile is unpinned */
+  unpinnedParticipantAriaText: string;
 }
 
 /**

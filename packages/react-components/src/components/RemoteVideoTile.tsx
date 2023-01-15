@@ -2,9 +2,11 @@
 // Licensed under the MIT license.
 
 import { IContextualMenuProps, Layer, Stack } from '@fluentui/react';
-import React, { useMemo } from 'react';
+import { _formatString } from '@internal/acs-ui-common';
+import React, { useMemo, useState } from 'react';
 /* @conditional-compile-remove(pinned-participants) */
 import { KeyboardEvent, useCallback } from 'react';
+import { LiveMessage } from 'react-aria-live';
 import {
   CreateVideoStreamViewResult,
   OnRenderAvatarCallback,
@@ -111,8 +113,30 @@ export const _RemoteVideoTile = React.memo(
       /* @conditional-compile-remove(pinned-participants) */
       strings: { ...props.strings },
       isPinned,
-      onPinParticipant,
-      onUnpinParticipant,
+      onPinParticipant: onPinParticipant
+        ? (userId: string) => {
+            onPinParticipant(userId);
+            if (props.strings?.pinnedParticipantAriaText && remoteParticipant.displayName) {
+              setLiveMessage(
+                _formatString(props.strings.pinnedParticipantAriaText, {
+                  participantName: remoteParticipant.displayName
+                })
+              );
+            }
+          }
+        : undefined,
+      onUnpinParticipant: onUnpinParticipant
+        ? (userId: string) => {
+            onUnpinParticipant(userId);
+            if (props.strings?.unpinnedParticipantAriaText && remoteParticipant.displayName) {
+              setLiveMessage(
+                _formatString(props.strings.unpinnedParticipantAriaText, {
+                  participantName: remoteParticipant.displayName
+                })
+              );
+            }
+          }
+        : undefined,
       disablePinMenuItem
     });
 
@@ -151,6 +175,8 @@ export const _RemoteVideoTile = React.memo(
       },
       [setDrawerMenuItemProps, contextualMenuProps]
     );
+
+    const [liveMessage, setLiveMessage] = useState<string>('');
 
     return (
       <Stack
@@ -195,6 +221,7 @@ export const _RemoteVideoTile = React.memo(
             </Stack>
           </Layer>
         )}
+        <LiveMessage message={liveMessage} aria-live="polite" />
       </Stack>
     );
   }
