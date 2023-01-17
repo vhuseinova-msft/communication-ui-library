@@ -9,7 +9,8 @@ import {
   StatefulCallClient,
   StatefulChatClient,
   FluentThemeProvider,
-  DEFAULT_COMPOSITE_ICONS
+  DEFAULT_COMPOSITE_ICONS,
+  ChatMessageWithStatus
 } from '@azure/communication-react';
 import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 import { ChatThreadClient } from '@azure/communication-chat';
@@ -51,6 +52,18 @@ export const Examples = (): JSX.Element => {
       });
       // start realtime notification
       chatClient.startRealtimeNotifications();
+
+      let messages: {
+        [key: string]: ChatMessageWithStatus;
+      };
+
+      chatClient.onStateChange((state) => {
+        // only log when messages change
+        if (state.threads[threadId].chatMessages !== messages) {
+          messages = state.threads[threadId].chatMessages;
+          console.log(messages);
+        }
+      });
 
       setChatClient(chatClient);
       setChatThreadClient(chatClient.getChatThreadClient(threadId));

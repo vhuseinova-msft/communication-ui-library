@@ -51,6 +51,12 @@ class ProxyChatThreadClient implements ProxyHandler<ChatThreadClient> {
           };
           this._context.setChatMessage(chatThreadClient.threadId, newMessage);
 
+          this._context.setChatMessage(chatThreadClient.threadId, {
+            ...newMessage,
+            content: { message: 'An additional message' },
+            clientMessageId: new Date().toISOString()
+          });
+
           let result: SendChatMessageResult | undefined = undefined;
           try {
             result = await chatThreadClient.sendMessage(...args);
